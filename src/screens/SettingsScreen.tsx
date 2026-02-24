@@ -1,0 +1,826 @@
+import React, { useState, useEffect } from 'react';
+import {
+  View,
+  Text,
+  ScrollView,
+  Switch,
+  TouchableOpacity,
+  TextInput as RNTextInput,
+  StyleSheet,
+  Alert,
+  ActivityIndicator,
+  StatusBar,
+} from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import notifee, { AndroidImportance } from '@notifee/react-native';
+import { useTheme } from '../contexts/ThemeContext';
+import { useLanguage } from '../contexts/LanguageContext';
+import { useSms } from '../contexts/SmsContext';
+import { COLORS, SPACING, RADIUS, FONT_SIZE } from '../constants/theme';
+import { ALLOCATION_PRIORITY_OPTIONS, POLL_INTERVAL_OPTIONS } from '../constants/types';
+import {
+  getReminderSettings,
+  saveReminderSettings,
+  ReminderSettings,
+  getMotivationalMessage,
+} from '../services/notifications';
+import Card from '../components/Card';
+import UserNameModal from '../components/UserNameModal';
+
+export const USER_NAME_KEY = '@finvista_user_name';
+
+export default function SettingsScreen() {
+  const { theme, isDark, toggleTheme } = useTheme();
+  const { t, language, isRTL, setLanguage } = useLanguage();
+  const {
+    keywords,
+    addKeyword,
+    updateKeyword,
+    deleteKeyword,
+    resetKeywords,
+    priority,
+    setPriority,
+    pollInterval,
+    setPollInterval,
+    transactions,
+    clearHistory,
+    blockList,
+    removeFromBlockList,
+    hasPermission,
+    requestPermission,
+    scanInbox,
+    isScanning,
+    lastCheckedAt,
+  } = useSms();
+
+  const [reminders, setReminders] = useState<ReminderSettings>({
+    enabled: true,
+    frequency: 'daily',
+  });
+  const [isTesting, setIsTesting] = useState(false);
+  const [userName, setUserName] = useState('');
+  const [nameModalVisible, setNameModalVisible] = useState(false);
+
+  // Keyword editor state
+  const [newDepositKw, setNewDepositKw] = useState('');
+  const [newWithdrawalKw, setNewWithdrawalKw] = useState('');
+  const [editingKw, setEditingKw] = useState<{
+    kind: 'deposit' | 'withdrawal';
+    oldWord: string;
+    newWord: string;
+  } | null>(null);
+
+  useEffect(() => {
+    getReminderSettings().then(setReminders);
+    AsyncStorage.getItem(USER_NAME_KEY).then(val => {
+      if (val) setUserName(val);
+    });
+  }, []);
+
+  const handleSaveName = async (name: string) => {
+    setUserName(name);
+    await AsyncStorage.setItem(USER_NAME_KEY, name);
+    setNameModalVisible(false);
+  };
+
+  // ── Keyword helpers ────────────────────────────────────────────────────────
+  const handleAddKeyword = async (kind: 'deposit' | 'withdrawal') => {
+    const word = kind === 'deposit' ? newDepositKw.trim() : newWithdrawalKw.trim();
+    if (!word) return;
+    await addKeyword(kind, word);
+    if (kind === 'deposit') setNewDepositKw('');
+    else setNewWithdrawalKw('');
+  };
+
+  const handleEditKeyword = (kind: 'deposit' | 'withdrawal', oldWord: string) => {
+    setEditingKw({ kind, oldWord, newWord: oldWord });
+  };
+
+  const handleSaveEdit = async () => {
+    if (!editingKw) return;
+    await updateKeyword(editingKw.kind, editingKw.oldWord, editingKw.newWord);
+    setEditingKw(null);
+  };
+
+  const handleDeleteKeyword = (kind: 'deposit' | 'withdrawal', word: string) => {
+    Alert.alert(
+      'Delete Keyword',
+      `Remove "${word}" from ${kind} keywords?`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Delete', style: 'destructive', onPress: () => deleteKeyword(kind, word) },
+      ],
+    );
+  };
+
+  const handleResetKeywords = (kind: 'deposit' | 'withdrawal') => {
+    Alert.alert(
+      'Reset Keywords',
+      `Reset all ${kind} keywords to defaults?`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Reset', style: 'destructive', onPress: () => resetKeywords(kind) },
+      ],
+    );
+  };
+
+  // ── SMS Scan ───────────────────────────────────────────────────────────────
+  const handleScanInbox = async () => {
+    let granted = hasPermission;
+    if (!granted) {
+      granted = await requestPermission();
+      if (!granted) {
+        Alert.alert('Permission Denied', 'SMS permission is required to scan bank messages.');
+        return;
+      }
+    }
+    const { processed, skipped } = await scanInbox();
+    Alert.alert(
+      'Scan Complete ✅',
+      `Processed: ${processed} transaction(s)\nAlready seen / non-bank: ${skipped}`,
+    );
+  };
+
+  const handleClearHistory = () => {
+    Alert.alert(
+      'Clear History',
+      'This will clear all processed SMS transaction records. This cannot be undone.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Clear', style: 'destructive', onPress: clearHistory },
+      ],
+    );
+  };
+
+  const updateReminders = async (updates: Partial<ReminderSettings>) => {
+    const next = { ...reminders, ...updates };
+    setReminders(next);
+    await saveReminderSettings(next);
+  };
+
+  const handleTestNotification = async () => {
+    setIsTesting(true);
+    try {
+      const settings = await notifee.requestPermission();
+      if (settings.authorizationStatus < 1) {
+        Alert.alert(
+          language === 'ar' ? 'تنبيه' : 'Permission Required',
+          language === 'ar'
+            ? 'يرجى السماح بالإشعارات من إعدادات الجهاز'
+            : 'Please enable notifications in your device settings.',
+        );
+        return;
+      }
+
+      const channelId = await notifee.createChannel({
+        id: 'finvista_reminders',
+        name: 'FinVista Reminders',
+        importance: AndroidImportance.HIGH,
+        sound: 'default',
+      });
+
+      const message = getMotivationalMessage('your goal', language);
+
+      await notifee.displayNotification({
+        title: language === 'ar' ? 'تذكير FinVista 💰' : 'FinVista Reminder 💰',
+        body: message,
+        android: { channelId, pressAction: { id: 'default' }, sound: 'default' },
+        ios: { sound: 'default' },
+      });
+
+      Alert.alert(
+        language === 'ar' ? 'تم الإرسال! ✅' : 'Sent! ✅',
+        language === 'ar' ? 'تحقق من شريط الإشعارات' : 'Check your notification tray.',
+      );
+    } catch {
+      Alert.alert(
+        language === 'ar' ? 'خطأ' : 'Error',
+        language === 'ar' ? 'فشل إرسال الإشعار' : 'Failed to send test notification.',
+      );
+    } finally {
+      setIsTesting(false);
+    }
+  };
+
+  const Section = ({ title, children }: { title: string; children: React.ReactNode }) => (
+    <View style={styles.section}>
+      <Text style={[styles.sectionTitle, { color: theme.textSecondary }]}>
+        {title.toUpperCase()}
+      </Text>
+      <Card noPadding>{children}</Card>
+    </View>
+  );
+
+  const Row = ({
+    label,
+    right,
+    onPress,
+    noBorder,
+  }: {
+    label: string;
+    right: React.ReactNode;
+    onPress?: () => void;
+    noBorder?: boolean;
+  }) => (
+    <TouchableOpacity
+      disabled={!onPress}
+      onPress={onPress}
+      style={[
+        styles.row,
+        isRTL && styles.rtl,
+        !noBorder && { borderBottomWidth: 1, borderBottomColor: theme.cardBorder },
+      ]}>
+      <Text style={[styles.rowLabel, { color: theme.text }]}>{label}</Text>
+      {right}
+    </TouchableOpacity>
+  );
+
+  const freqOptions: Array<{ key: ReminderSettings['frequency']; label: string }> = [
+    { key: 'daily', label: t.daily },
+    { key: 'weekly', label: t.weekly },
+    { key: 'monthly', label: t.monthly },
+  ];
+
+  return (
+    <View style={[styles.container, { backgroundColor: theme.bg }]}>
+      <View style={styles.header}>
+        <Text style={[styles.title, { color: theme.text }]}>{t.settingsTitle}</Text>
+      </View>
+
+      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+
+        {/* Profile */}
+        <Section title="Profile">
+          <Row
+            label="Your Name"
+            noBorder
+            onPress={() => setNameModalVisible(true)}
+            right={
+              <View style={[styles.nameRight, isRTL && styles.rtl]}>
+                <Text style={[styles.nameValue, { color: theme.textMuted }]} numberOfLines={1}>
+                  {userName || 'Tap to set'}
+                </Text>
+                <Text style={{ color: theme.textMuted, marginLeft: 4 }}>›</Text>
+              </View>
+            }
+          />
+        </Section>
+
+        {/* Appearance */}
+        <Section title={t.appearance}>
+          <Row
+            label={t.darkMode}
+            right={
+              <Switch
+                value={isDark}
+                onValueChange={toggleTheme}
+                trackColor={{ true: COLORS.accent }}
+                thumbColor="#fff"
+              />
+            }
+          />
+          <Row
+            label={t.language}
+            noBorder
+            right={
+              <View style={[styles.langRow, isRTL && styles.rtl]}>
+                {(['en', 'ar'] as const).map(lang => (
+                  <TouchableOpacity
+                    key={lang}
+                    onPress={() => setLanguage(lang)}
+                    style={[
+                      styles.langBtn,
+                      language === lang && { backgroundColor: COLORS.accent },
+                    ]}>
+                    <Text
+                      style={[
+                        styles.langBtnTxt,
+                        { color: language === lang ? COLORS.primary : theme.textSecondary },
+                      ]}>
+                      {lang === 'en' ? 'EN' : 'ع'}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            }
+          />
+        </Section>
+
+        {/* Notifications */}
+        <Section title={t.notifications}>
+          <Row
+            label={t.remindersEnabled}
+            right={
+              <Switch
+                value={reminders.enabled}
+                onValueChange={v => updateReminders({ enabled: v })}
+                trackColor={{ true: COLORS.accent }}
+                thumbColor="#fff"
+              />
+            }
+          />
+          {reminders.enabled && (
+            <View
+              style={[
+                styles.freqSection,
+                { borderTopWidth: 1, borderTopColor: theme.cardBorder },
+              ]}>
+              <Text style={[styles.freqLabel, { color: theme.textSecondary }]}>
+                {t.reminderFrequency}
+              </Text>
+              <View style={[styles.freqRow, isRTL && styles.rtl]}>
+                {freqOptions.map(opt => (
+                  <TouchableOpacity
+                    key={opt.key}
+                    onPress={() => updateReminders({ frequency: opt.key })}
+                    style={[
+                      styles.freqBtn,
+                      { borderColor: theme.cardBorder },
+                      reminders.frequency === opt.key && {
+                        backgroundColor: COLORS.accent,
+                        borderColor: COLORS.accent,
+                      },
+                    ]}>
+                    <Text
+                      style={[
+                        styles.freqBtnTxt,
+                        {
+                          color:
+                            reminders.frequency === opt.key
+                              ? COLORS.primary
+                              : theme.textSecondary,
+                        },
+                      ]}>
+                      {opt.label}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
+          )}
+
+          <View
+            style={[styles.testSection, { borderTopWidth: 1, borderTopColor: theme.cardBorder }]}>
+            <TouchableOpacity
+              onPress={handleTestNotification}
+              disabled={isTesting}
+              style={[
+                styles.testBtn,
+                { borderColor: COLORS.accent, opacity: isTesting ? 0.6 : 1 },
+              ]}>
+              <Text style={[styles.testBtnTxt, { color: COLORS.accent }]}>
+                {isTesting
+                  ? language === 'ar'
+                    ? 'جاري الإرسال...'
+                    : 'Sending...'
+                  : language === 'ar'
+                  ? 'تجربة الإشعار'
+                  : 'Test Notification'}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </Section>
+
+        {/* ── Bank SMS Detection ─────────────────────────────────────── */}
+        <Section title="Bank SMS Detection">
+          {/* Permission Row */}
+          <Row
+            label={hasPermission ? 'SMS Permission Granted' : 'SMS Permission Required'}
+            onPress={hasPermission ? undefined : requestPermission}
+            right={
+              hasPermission ? (
+                <Text style={{ color: COLORS.success, fontSize: FONT_SIZE.sm }}>Granted</Text>
+              ) : (
+                <Text style={{ color: COLORS.accent, fontSize: FONT_SIZE.sm }}>Tap to Allow</Text>
+              )
+            }
+          />
+          {/* Scan Inbox */}
+          <TouchableOpacity
+            onPress={handleScanInbox}
+            disabled={isScanning}
+            style={[
+              styles.testBtn,
+              {
+                borderColor: COLORS.info,
+                marginHorizontal: SPACING.md,
+                marginVertical: SPACING.sm,
+                opacity: isScanning ? 0.6 : 1,
+              },
+            ]}>
+            {isScanning ? (
+              <ActivityIndicator color={COLORS.info} />
+            ) : (
+              <Text style={[styles.testBtnTxt, { color: COLORS.info }]}>
+                Scan Inbox for Bank SMS
+              </Text>
+            )}
+          </TouchableOpacity>
+          {/* Transaction count + clear */}
+          <View
+            style={[
+              styles.row,
+              { borderTopWidth: 1, borderTopColor: theme.cardBorder },
+              isRTL && styles.rtl,
+            ]}>
+            <Text style={[styles.rowLabel, { color: theme.text }]}>
+              Processed Transactions
+            </Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: SPACING.sm }}>
+              <Text style={{ color: theme.textMuted, fontSize: FONT_SIZE.md }}>
+                {transactions.length}
+              </Text>
+              {transactions.length > 0 && (
+                <TouchableOpacity onPress={handleClearHistory}>
+                  <Text style={{ color: COLORS.danger, fontSize: FONT_SIZE.sm, fontWeight: '700' }}>
+                    Clear
+                  </Text>
+                </TouchableOpacity>
+              )}
+            </View>
+          </View>
+          {/* Last checked timestamp */}
+          <View
+            style={[
+              styles.row,
+              { borderTopWidth: 1, borderTopColor: theme.cardBorder },
+              isRTL && styles.rtl,
+            ]}>
+            <Text style={[styles.rowLabel, { color: theme.text }]}>Last Checked</Text>
+            <Text style={{ color: theme.textMuted, fontSize: FONT_SIZE.sm }}>
+              {lastCheckedAt
+                ? new Date(lastCheckedAt).toLocaleString(undefined, {
+                    month: 'short', day: 'numeric', year: 'numeric',
+                    hour: '2-digit', minute: '2-digit', second: '2-digit',
+                  })
+                : 'Not checked yet'}
+            </Text>
+          </View>
+        </Section>
+
+        {/* ── Auto-Check Interval ───────────────────────────────── */}
+        <Section title="Auto-Check Interval">
+          <View style={{ paddingHorizontal: SPACING.md, paddingTop: SPACING.sm, paddingBottom: SPACING.xs }}>
+            <Text style={{ color: theme.textSecondary, fontSize: FONT_SIZE.sm, marginBottom: SPACING.sm }}>
+              How often the app automatically checks for new bank SMS messages.
+            </Text>
+          </View>
+          {POLL_INTERVAL_OPTIONS.map((opt, idx) => {
+            const isSelected = pollInterval === opt.value;
+            return (
+              <TouchableOpacity
+                key={opt.value}
+                onPress={() => setPollInterval(opt.value)}
+                style={[
+                  styles.priorityRow,
+                  isSelected && { backgroundColor: COLORS.accent + '18' },
+                  idx < POLL_INTERVAL_OPTIONS.length - 1 && {
+                    borderBottomWidth: 1,
+                    borderBottomColor: theme.cardBorder,
+                  },
+                ]}>
+                <View style={styles.priorityRadio}>
+                  <View
+                    style={[
+                      styles.radioOuter,
+                      { borderColor: isSelected ? COLORS.accent : theme.textMuted },
+                    ]}>
+                    {isSelected && <View style={styles.radioInner} />}
+                  </View>
+                </View>
+                <Text style={{ flex: 1, color: theme.text, fontSize: FONT_SIZE.md, fontWeight: isSelected ? '700' : '500' }}>
+                  {opt.label}
+                </Text>
+                {isSelected && (
+                  <Text style={{ color: COLORS.accent, fontSize: FONT_SIZE.sm, fontWeight: '700' }}>✓</Text>
+                )}
+              </TouchableOpacity>
+            );
+          })}
+        </Section>
+
+        {/* ── Keyword Settings ───────────────────────────────── */}
+        {(['deposit', 'withdrawal'] as const).map(kind => (
+          <Section key={kind} title={`${kind === 'deposit' ? 'Deposit' : 'Withdrawal'} Keywords`}>
+            {/* Existing keywords */}
+            {keywords[kind].map((word, idx) => (
+              <View
+                key={word}
+                style={[
+                  styles.kwRow,
+                  {
+                    borderBottomWidth: idx < keywords[kind].length - 1 ? 1 : 0,
+                    borderBottomColor: theme.cardBorder,
+                  },
+                ]}>
+                {editingKw?.kind === kind && editingKw?.oldWord === word ? (
+                  <RNTextInput
+                    value={editingKw.newWord}
+                    onChangeText={v => setEditingKw(prev => prev ? { ...prev, newWord: v } : null)}
+                    autoFocus
+                    style={[styles.kwInput, { color: theme.text, borderColor: theme.cardBorder, flex: 1 }]}
+                    onSubmitEditing={handleSaveEdit}
+                    returnKeyType="done"
+                  />
+                ) : (
+                  <Text style={[styles.kwChip, { color: theme.text }]}>{word}</Text>
+                )}
+                <View style={{ flexDirection: 'row', gap: SPACING.xs }}>
+                  {editingKw?.kind === kind && editingKw?.oldWord === word ? (
+                    <>
+                      <TouchableOpacity onPress={handleSaveEdit} style={[styles.kwBtn, { backgroundColor: COLORS.success }]}>
+                        <Text style={styles.kwBtnTxt}>Save</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity onPress={() => setEditingKw(null)} style={[styles.kwBtn, { backgroundColor: theme.cardBorder }]}>
+                        <Text style={[styles.kwBtnTxt, { color: theme.textSecondary }]}>✕</Text>
+                      </TouchableOpacity>
+                    </>
+                  ) : (
+                    <>
+                      <TouchableOpacity
+                        onPress={() => handleEditKeyword(kind, word)}
+                        style={[styles.kwBtn, { backgroundColor: COLORS.info + '22' }]}>
+                        <Text style={[styles.kwBtnTxt, { color: COLORS.info }]}>Edit</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        onPress={() => handleDeleteKeyword(kind, word)}
+                        style={[styles.kwBtn, { backgroundColor: COLORS.danger + '22' }]}>
+                        <Text style={[styles.kwBtnTxt, { color: COLORS.danger }]}>✕</Text>
+                      </TouchableOpacity>
+                    </>
+                  )}
+                </View>
+              </View>
+            ))}
+
+            {/* Add new keyword */}
+            <View style={[styles.kwAddRow, { borderTopWidth: 1, borderTopColor: theme.cardBorder }]}>
+              <RNTextInput
+                value={kind === 'deposit' ? newDepositKw : newWithdrawalKw}
+                onChangeText={v => kind === 'deposit' ? setNewDepositKw(v) : setNewWithdrawalKw(v)}
+                placeholder={`Add keyword…`}
+                placeholderTextColor={theme.textMuted}
+                style={[styles.kwInput, { color: theme.text, borderColor: theme.cardBorder, flex: 1 }]}
+                autoCapitalize="none"
+                returnKeyType="done"
+                onSubmitEditing={() => handleAddKeyword(kind)}
+              />
+              <TouchableOpacity
+                onPress={() => handleAddKeyword(kind)}
+                style={[styles.kwBtn, { backgroundColor: COLORS.accent }]}>
+                <Text style={[styles.kwBtnTxt, { color: COLORS.primary }]}>+ Add</Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* Reset button */}
+            <TouchableOpacity
+              onPress={() => handleResetKeywords(kind)}
+              style={[styles.resetBtn, { borderTopWidth: 1, borderTopColor: theme.cardBorder }]}>
+              <Text style={[styles.resetBtnTxt, { color: theme.textMuted }]}>
+                ↺ Reset to Defaults
+              </Text>
+            </TouchableOpacity>
+          </Section>
+        ))}
+
+        {/* ── Auto Allocation Priority ───────────────────────────────── */}
+        <Section title="Auto Allocation Priority">
+          <View style={{ paddingHorizontal: SPACING.md, paddingTop: SPACING.sm, paddingBottom: SPACING.xs }}>
+            <Text style={{ color: theme.textSecondary, fontSize: FONT_SIZE.sm, marginBottom: SPACING.sm }}>
+              Choose how detected deposits & withdrawals are distributed to your goals.
+            </Text>
+          </View>
+          {ALLOCATION_PRIORITY_OPTIONS.map((opt, idx) => {
+            const isSelected = priority === opt.key;
+            return (
+              <TouchableOpacity
+                key={opt.key}
+                onPress={() => setPriority(opt.key)}
+                style={[
+                  styles.priorityRow,
+                  isSelected && { backgroundColor: COLORS.accent + '18' },
+                  idx < ALLOCATION_PRIORITY_OPTIONS.length - 1 && {
+                    borderBottomWidth: 1,
+                    borderBottomColor: theme.cardBorder,
+                  },
+                ]}>
+                <View style={styles.priorityRadio}>
+                  <View
+                    style={[
+                      styles.radioOuter,
+                      { borderColor: isSelected ? COLORS.accent : theme.textMuted },
+                    ]}>
+                    {isSelected && <View style={styles.radioInner} />}
+                  </View>
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={{ color: theme.text, fontSize: FONT_SIZE.md, fontWeight: isSelected ? '700' : '500' }}>
+                    {opt.label}
+                  </Text>
+                  <Text style={{ color: theme.textSecondary, fontSize: FONT_SIZE.xs, marginTop: 2 }}>
+                    {opt.description}
+                  </Text>
+                </View>
+                {isSelected && (
+                  <Text style={{ color: COLORS.accent, fontSize: FONT_SIZE.sm, fontWeight: '700' }}>✓</Text>
+                )}
+              </TouchableOpacity>
+            );
+          })}
+        </Section>
+
+        {/* ── Blocked Senders ────────────────────────────────── */}
+        <Section title="Blocked Senders">
+          {blockList.length === 0 ? (
+            <View style={{ paddingHorizontal: SPACING.md, paddingVertical: SPACING.md }}>
+              <Text style={{ color: theme.textMuted, fontSize: FONT_SIZE.sm }}>
+                No senders blocked yet. Tap “Block Sender” on any SMS transaction.
+              </Text>
+            </View>
+          ) : (
+            blockList.map((sender, idx) => (
+              <View
+                key={sender}
+                style={[
+                  styles.row,
+                  isRTL && styles.rtl,
+                  { borderBottomWidth: idx < blockList.length - 1 ? 1 : 0, borderBottomColor: theme.cardBorder },
+                ]}>
+                <Text style={[styles.rowLabel, { color: theme.text, flex: 1 }]} numberOfLines={1}>
+                  {sender}
+                </Text>
+                <TouchableOpacity
+                  onPress={() =>
+                    Alert.alert(
+                      'Unblock Sender',
+                      `Remove "${sender}" from block list?`,
+                      [
+                        { text: 'Cancel', style: 'cancel' },
+                        { text: 'Unblock', onPress: () => removeFromBlockList(sender) },
+                      ],
+                    )
+                  }
+                  style={{ paddingHorizontal: SPACING.sm, paddingVertical: 4 }}>
+                  <Text style={{ color: COLORS.success, fontSize: FONT_SIZE.sm, fontWeight: '700' }}>
+                    Unblock
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            ))
+          )}
+        </Section>
+
+        {/* About */}
+        <Section title={t.about}>
+          <Row label={t.appName} right={<Text style={{ color: theme.textMuted }}>FinVista</Text>} />
+          <Row
+            label={t.version}
+            noBorder
+            right={<Text style={{ color: theme.textMuted }}>1.0.0</Text>}
+          />
+        </Section>
+
+        {/* Branding */}
+        <View style={styles.brand}>
+          <Text style={styles.brandEmoji}>💎</Text>
+          <Text style={[styles.brandName, { color: theme.textMuted }]}>FinVista</Text>
+          <Text style={[styles.brandTag, { color: theme.textMuted }]}>{t.tagline}</Text>
+        </View>
+
+        <View style={{ height: SPACING.xl }} />
+      </ScrollView>
+
+      <UserNameModal
+        visible={nameModalVisible}
+        currentName={userName}
+        onSave={handleSaveName}
+        onCancel={() => setNameModalVisible(false)}
+      />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, paddingTop: StatusBar.currentHeight },
+  header: {
+    paddingHorizontal: SPACING.lg,
+    paddingTop: SPACING.lg,
+    paddingBottom: SPACING.md,
+  },
+  title: { fontSize: FONT_SIZE.xxl, fontWeight: '800' },
+  content: { paddingHorizontal: SPACING.lg },
+  section: { marginBottom: SPACING.md },
+  sectionTitle: {
+    fontSize: FONT_SIZE.xs,
+    fontWeight: '700',
+    letterSpacing: 1,
+    marginBottom: SPACING.sm,
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.md,
+  },
+  rtl: { flexDirection: 'row-reverse' },
+  rowLabel: { fontSize: FONT_SIZE.md, fontWeight: '500' },
+  nameRight: { flexDirection: 'row', alignItems: 'center', maxWidth: 160 },
+  nameValue: { fontSize: FONT_SIZE.sm, fontWeight: '500' },
+  langRow: { flexDirection: 'row', gap: SPACING.xs },
+  langBtn: { paddingHorizontal: SPACING.sm, paddingVertical: 6, borderRadius: RADIUS.sm },
+  langBtnTxt: { fontSize: FONT_SIZE.sm, fontWeight: '700' },
+  freqSection: { paddingHorizontal: SPACING.md, paddingVertical: SPACING.md },
+  freqLabel: { fontSize: FONT_SIZE.sm, marginBottom: SPACING.sm },
+  freqRow: { flexDirection: 'row', gap: SPACING.sm },
+  freqBtn: {
+    flex: 1,
+    paddingVertical: 8,
+    borderRadius: RADIUS.sm,
+    borderWidth: 1.5,
+    alignItems: 'center',
+  },
+  freqBtnTxt: { fontSize: FONT_SIZE.sm, fontWeight: '600' },
+  testSection: { paddingHorizontal: SPACING.md, paddingVertical: SPACING.md },
+  testBtn: { paddingVertical: 10, borderRadius: RADIUS.sm, borderWidth: 1.5, alignItems: 'center' },
+  testBtnTxt: { fontSize: FONT_SIZE.sm, fontWeight: '700' },
+  brand: { alignItems: 'center', paddingVertical: SPACING.xl },
+  brandEmoji: { fontSize: 32, marginBottom: SPACING.sm },
+  brandName: { fontSize: FONT_SIZE.lg, fontWeight: '800', letterSpacing: 2 },
+  brandTag: { fontSize: FONT_SIZE.sm, marginTop: 4 },
+  // Keyword styles
+  kwRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm,
+    gap: SPACING.sm,
+  },
+  kwChip: {
+    flex: 1,
+    fontSize: FONT_SIZE.sm,
+    fontWeight: '500',
+  },
+  kwInput: {
+    fontSize: FONT_SIZE.sm,
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    borderRadius: RADIUS.sm,
+    borderWidth: 1,
+  },
+  kwBtn: {
+    paddingHorizontal: SPACING.sm,
+    paddingVertical: 5,
+    borderRadius: RADIUS.sm,
+  },
+  kwBtnTxt: {
+    fontSize: FONT_SIZE.xs,
+    fontWeight: '700',
+    color: '#fff',
+  },
+  kwAddRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm,
+    gap: SPACING.sm,
+  },
+  resetBtn: {
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm,
+    alignItems: 'center',
+  },
+  resetBtnTxt: {
+    fontSize: FONT_SIZE.xs,
+    fontWeight: '600',
+  },
+  // Priority styles
+  priorityRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.md,
+    gap: SPACING.sm,
+  },
+  priorityRadio: {
+    width: 22,
+    height: 22,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  radioOuter: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    borderWidth: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  radioInner: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: COLORS.accent,
+  },
+});
