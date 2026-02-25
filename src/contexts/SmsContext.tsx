@@ -33,6 +33,7 @@ import {
 import {
   requestSmsPermission,
   checkSmsPermission,
+  SmsPermissionStatus,
   readInboxSms,
   parseSms,
   markAsProcessed,
@@ -133,7 +134,7 @@ export interface SmsContextType {
 
   // SMS Scanning
   hasPermission: boolean;
-  requestPermission: () => Promise<boolean>;
+  requestPermission: () => Promise<SmsPermissionStatus>;
   scanInbox: () => Promise<{ processed: number; skipped: number }>;
   isScanning: boolean;
   /** Unix-ms timestamp of the last automatic or manual inbox check, null if never checked */
@@ -412,8 +413,9 @@ export function SmsProvider({ children }: { children: ReactNode }) {
   }, [processParsedMessage]);
 
   // ── Permission ────────────────────────────────────────────────────────────
-  const requestPermission = useCallback(async (): Promise<boolean> => {
-    const granted = await requestSmsPermission();
+  const requestPermission = useCallback(async (): Promise<SmsPermissionStatus> => {
+    const status = await requestSmsPermission();
+    const granted = status === 'granted';
     setHasPermission(granted);
     await AsyncStorage.setItem(PERMISSION_KEY, String(granted));
     if (granted) {
@@ -423,7 +425,7 @@ export function SmsProvider({ children }: { children: ReactNode }) {
         async () => { await bgCompleteRef.current?.(); },
       );
     }
-    return granted;
+    return status;
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pollInterval]);
 

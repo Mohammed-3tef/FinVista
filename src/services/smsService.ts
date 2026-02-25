@@ -36,10 +36,12 @@ export interface ParsedSms {
 }
 
 // ─── Permission ───────────────────────────────────────────────────────────────
-export async function requestSmsPermission(): Promise<boolean> {
-  if (Platform.OS !== 'android') return false;
+export type SmsPermissionStatus = 'granted' | 'denied' | 'never_ask_again';
+
+export async function requestSmsPermission(): Promise<SmsPermissionStatus> {
+  if (Platform.OS !== 'android') return 'denied';
   try {
-    const granted = await PermissionsAndroid.request(
+    const result = await PermissionsAndroid.request(
       PermissionsAndroid.PERMISSIONS.READ_SMS,
       {
         title: 'SMS Permission',
@@ -48,9 +50,11 @@ export async function requestSmsPermission(): Promise<boolean> {
         buttonNegative: 'Deny',
       },
     );
-    return granted === PermissionsAndroid.RESULTS.GRANTED;
+    if (result === PermissionsAndroid.RESULTS.GRANTED) return 'granted';
+    if (result === PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN) return 'never_ask_again';
+    return 'denied';
   } catch {
-    return false;
+    return 'denied';
   }
 }
 

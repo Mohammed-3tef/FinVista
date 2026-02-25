@@ -72,7 +72,7 @@ export async function scheduleReminder(
   const channelId = await notifee.createChannel({
     id: REMINDER_CHANNEL_ID,
     name: 'FinVista Reminders',
-    sound: 'reminder_sound',
+    sound: 'default',
     importance: AndroidImportance.HIGH
   });
 
@@ -110,7 +110,7 @@ export async function scheduleReminder(
       android: {
         channelId,
         pressAction: { id: 'default' },
-        // sound: 'default',
+        sound: 'default',
       },
       ios: { sound: 'default' },
     },
@@ -186,7 +186,7 @@ export async function checkAndFireMilestones(
     android: {
       channelId: MILESTONE_CHANNEL_ID,
       pressAction: { id: 'default' },
-      // sound: 'reminder_sound',
+      sound: 'reminder_sound',
     },
     ios: { sound: 'default' },
   });

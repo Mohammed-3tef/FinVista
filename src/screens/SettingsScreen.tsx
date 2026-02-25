@@ -10,6 +10,7 @@ import {
   Alert,
   ActivityIndicator,
   StatusBar,
+  Linking,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import notifee, { AndroidImportance } from '@notifee/react-native';
@@ -140,13 +141,46 @@ export default function SettingsScreen() {
     );
   };
 
+  // ── SMS Permission ────────────────────────────────────────────────────────
+  const handleSmsPermissionPress = async () => {
+    if (hasPermission) return;
+    const status = await requestPermission();
+    if (status === 'never_ask_again') {
+      Alert.alert(
+        'Permission Permanently Denied',
+        'SMS permission was permanently denied. Please open App Settings and enable it under Permissions → SMS.',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Open Settings', onPress: () => Linking.openSettings() },
+        ],
+      );
+    } else if (status === 'denied') {
+      Alert.alert(
+        'Permission Denied',
+        'SMS permission is required to auto-detect bank transactions. Tap "Tap to Allow" to try again.',
+      );
+    }
+  };
+
   // ── SMS Scan ───────────────────────────────────────────────────────────────
   const handleScanInbox = async () => {
     let granted = hasPermission;
     if (!granted) {
-      granted = await requestPermission();
+      const status = await requestPermission();
+      granted = status === 'granted';
       if (!granted) {
-        Alert.alert('Permission Denied', 'SMS permission is required to scan bank messages.');
+        if (status === 'never_ask_again') {
+          Alert.alert(
+            'Permission Permanently Denied',
+            'SMS permission was permanently denied. Please open App Settings and enable it under Permissions → SMS.',
+            [
+              { text: 'Cancel', style: 'cancel' },
+              { text: 'Open Settings', onPress: () => Linking.openSettings() },
+            ],
+          );
+        } else {
+          Alert.alert('Permission Denied', 'SMS permission is required to scan bank messages.');
+        }
         return;
       }
     }
@@ -432,7 +466,7 @@ export default function SettingsScreen() {
           {/* Permission Row */}
           <Row
             label={hasPermission ? 'SMS Permission Granted' : 'SMS Permission Required'}
-            onPress={hasPermission ? undefined : requestPermission}
+            onPress={hasPermission ? undefined : handleSmsPermissionPress}
             right={
               hasPermission ? (
                 <Text style={{ color: COLORS.success, fontSize: FONT_SIZE.sm }}>Granted</Text>
