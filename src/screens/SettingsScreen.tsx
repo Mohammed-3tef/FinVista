@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
+  Image,
   ScrollView,
   Switch,
   TouchableOpacity,
@@ -762,7 +763,11 @@ export default function SettingsScreen() {
 
         {/* Branding */}
         <View style={styles.brand}>
-          <Text style={styles.brandEmoji}>💎</Text>
+          <Image
+            source={require('../../android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png')}
+            style={styles.brandLogo}
+            resizeMode="contain"
+          />
           <Text style={[styles.brandName, { color: theme.textMuted }]}>FinVista</Text>
           <Text style={[styles.brandTag, { color: theme.textMuted }]}>{t.tagline}</Text>
         </View>
@@ -825,7 +830,7 @@ const styles = StyleSheet.create({
   testBtn: { paddingVertical: 10, borderRadius: RADIUS.sm, borderWidth: 1.5, alignItems: 'center' },
   testBtnTxt: { fontSize: FONT_SIZE.sm, fontWeight: '700' },
   brand: { alignItems: 'center', paddingVertical: SPACING.xl },
-  brandEmoji: { fontSize: 32, marginBottom: SPACING.sm },
+  brandLogo: { width: 56, height: 56, borderRadius: 14, marginBottom: SPACING.sm },
   brandName: { fontSize: FONT_SIZE.lg, fontWeight: '800', letterSpacing: 2 },
   brandTag: { fontSize: FONT_SIZE.sm, marginTop: 4 },
   // Keyword styles

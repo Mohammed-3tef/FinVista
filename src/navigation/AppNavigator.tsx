@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Text, View, BackHandler, Platform } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTheme } from '../contexts/ThemeContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { COLORS, SPACING } from '../constants/theme';
@@ -16,6 +17,7 @@ import GoalFormScreen from '../screens/GoalFormScreen';
 import AnalyticsScreen from '../screens/AnalyticsScreen';
 import SmsTransactionsScreen from '../screens/SmsTransactionsScreen';
 import SettingsScreen from '../screens/SettingsScreen';
+import OnboardingScreen from '../screens/OnboardingScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -120,10 +122,30 @@ function TabNavigator() {
 }
 
 export default function AppNavigator() {
+  const [initialRoute, setInitialRoute] = useState<'Onboarding' | 'MainTabs' | null>(null);
+
+  useEffect(() => {
+    AsyncStorage.getItem('hasSeenOnboarding').then(val => {
+      setInitialRoute(val === 'true' ? 'MainTabs' : 'Onboarding');
+    });
+  }, []);
+
+  // Show nothing (blank dark screen) while determining initial route
+  if (!initialRoute) return null;
+
   return (
     <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="Tabs" component={TabNavigator} />
+      <Stack.Navigator initialRouteName={initialRoute} screenOptions={{ headerShown: false }}>
+        <Stack.Screen
+          name="Onboarding"
+          component={OnboardingScreen}
+          options={{ animation: 'fade' }}
+        />
+        <Stack.Screen
+          name="MainTabs"
+          component={TabNavigator}
+          options={{ animation: 'fade' }}
+        />
         <Stack.Screen
           name="GoalDetail"
           component={GoalDetailScreen}
