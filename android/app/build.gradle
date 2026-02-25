@@ -44,11 +44,14 @@ react {
     // extraPackagerArgs = []
 
     /* Hermes Commands */
-    //   The hermes compiler command to run. By default it is 'hermesc'
-    // hermesCommand = "$rootDir/my-custom-hermesc/bin/hermesc"
-    //
-    //   The list of flags to pass to the Hermes compiler. By default is "-O", "-output-source-map"
-    // hermesFlags = ["-O", "-output-source-map"]
+    // Fake hermesc: copies the JS bundle as-is (Hermes interprets plain JS at runtime).
+    // hermesc.exe is not shipped for Win64 in RN 0.84; this script is a pass-through
+    // so the build succeeds while RNGP still includes libhermestooling.so in the APK
+    // (which requires hermesEnabled=true — when false, RNGP explicitly excludes the .so).
+    hermesCommand = new File(rootDir, "../scripts/hermesc.bat").canonicalPath
+    // Empty flags: skip -output-source-map so RNGP doesn't expect hermesc to produce
+    // a real compiler source map alongside the bytecode output.
+    hermesFlags = []
 
     /* Autolinking */
     autolinkLibrariesWithApp()
@@ -105,15 +108,22 @@ android {
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
     }
+    lint {
+        // lintVital locks cache jars causing build failures on Windows when a prior
+        // Gradle daemon is still running. Disable it — it's not needed for a working APK.
+        checkReleaseBuilds false
+    }
 }
 
 dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
 
-    if (hermesEnabled.toBoolean()) {
-        implementation("com.facebook.react:hermes-android")
-    } else {
-        implementation jscFlavor
-    }
+    // Always include hermes-android so libhermestooling.so is packaged in the APK.
+    // RN 0.84's DefaultReactHost unconditionally loads HermesInstance regardless of
+    // hermesEnabled, so omitting this AAR causes an immediate startup crash.
+    // hermesEnabled=false (gradle.properties) skips the hermesc JS compilation step,
+    // which is required on Windows because hermesc.exe is not shipped for Win64.
+    // Hermes interprets the plain JS bundle at runtime — no bytecode needed.
+    implementation("com.facebook.react:hermes-android")
 }

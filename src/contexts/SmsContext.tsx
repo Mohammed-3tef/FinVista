@@ -354,6 +354,8 @@ export function SmsProvider({ children }: { children: ReactNode }) {
   // Reads the full inbox but rely on isAlreadyProcessed for dedup — same logic
   // as scanInbox but silent (no isScanning spinner).
   const pollOnce = useCallback(async (): Promise<void> => {
+    // Nothing to allocate to — skip the inbox read entirely
+    if (!latestRef.current.goals.length) return;
     try {
       // Sort oldest-first so deposit SMS are processed before any later withdrawal
       // that hits the same batch — withdrawal needs a non-zero balance to deduct from.
@@ -379,6 +381,8 @@ export function SmsProvider({ children }: { children: ReactNode }) {
 
   // ── Inbox Scan (manual) ───────────────────────────────────────────────────
   const scanInbox = useCallback(async (): Promise<{ processed: number; skipped: number }> => {
+    // Nothing to allocate to — bail out immediately
+    if (!latestRef.current.goals.length) return { processed: 0, skipped: 0 };
     setIsScanning(true);
     let processed = 0;
     let skipped = 0;

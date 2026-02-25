@@ -105,7 +105,7 @@ export default function IconPicker({ value, onChange, label = 'Icon', isRTL }: P
               <Text style={[styles.sheetTitle, { color: theme.text }]}>Choose Icon</Text>
               <TouchableOpacity onPress={() => setVisible(false)}
                 style={[styles.closeBtn, { backgroundColor: theme.inputBg }]}>
-                <Text style={[styles.closeTxt, { color: theme.textSecondary }]}>✕</Text>
+                <Text style={[styles.closeTxt, { color: theme.text }]}>✕</Text>
               </TouchableOpacity>
             </View>
 

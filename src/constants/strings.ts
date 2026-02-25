@@ -7,7 +7,7 @@ const strings = {
     tagline: 'Your Financial Future',
 
     // Tabs
-    dashboard: 'Dashboard',
+    dashboard: 'Home',
     goals: 'Goals',
     analytics: 'Analytics',
     settings: 'Settings',

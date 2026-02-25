@@ -21,6 +21,8 @@ import { ALLOCATION_PRIORITY_OPTIONS, POLL_INTERVAL_OPTIONS } from '../constants
 import {
   getReminderSettings,
   saveReminderSettings,
+  scheduleReminder,
+  cancelReminder,
   ReminderSettings,
   getMotivationalMessage,
 } from '../services/notifications';
@@ -57,6 +59,7 @@ export default function SettingsScreen() {
     enabled: true,
     frequency: 'daily',
   });
+  const [notifPermission, setNotifPermission] = useState(false);
   const [isTesting, setIsTesting] = useState(false);
   const [userName, setUserName] = useState('');
   const [nameModalVisible, setNameModalVisible] = useState(false);
@@ -71,10 +74,23 @@ export default function SettingsScreen() {
   } | null>(null);
 
   useEffect(() => {
-    getReminderSettings().then(setReminders);
+    getReminderSettings().then(s => {
+      setReminders(s);
+      // Reschedule on mount in case a previous trigger expired (e.g. monthly)
+      notifee.getNotificationSettings().then(ns => {
+        const granted = ns.authorizationStatus >= 1;
+        setNotifPermission(granted);
+        if (granted && s.enabled) scheduleReminder(s, language);
+      });
+    });
     AsyncStorage.getItem(USER_NAME_KEY).then(val => {
       if (val) setUserName(val);
     });
+    // Check current notification permission state
+    notifee.getNotificationSettings().then(s => {
+      setNotifPermission(s.authorizationStatus >= 1);
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleSaveName = async (name: string) => {
@@ -156,21 +172,51 @@ export default function SettingsScreen() {
     const next = { ...reminders, ...updates };
     setReminders(next);
     await saveReminderSettings(next);
+    // Apply scheduling change immediately
+    if (next.enabled && notifPermission) {
+      await scheduleReminder(next, language);
+    } else {
+      await cancelReminder();
+    }
+  };
+
+  const handlePermissionSwitch = async (enable: boolean) => {
+    if (enable) {
+      // Request permission from the OS
+      const result = await notifee.requestPermission();
+      const granted = result.authorizationStatus >= 1;
+      setNotifPermission(granted);
+      if (!granted) {
+        Alert.alert(
+          language === 'ar' ? 'تنبيه' : 'Permission Denied',
+          language === 'ar'
+            ? 'يرجى السماح بالإشعارات من إعدادات الجهاز'
+            : 'Please enable notifications from your device settings.',
+        );
+      }
+    } else {
+      // Can't revoke programmatically — open system settings
+      await notifee.openNotificationSettings();
+      // Re-check permission after user returns from settings
+      const result = await notifee.getNotificationSettings();
+      setNotifPermission(result.authorizationStatus >= 1);
+    }
   };
 
   const handleTestNotification = async () => {
+    // Check permission first — don't request, the switch handles that
+    const settings = await notifee.getNotificationSettings();
+    if (settings.authorizationStatus < 1) {
+      Alert.alert(
+        language === 'ar' ? 'تنبيه' : 'Permission Required',
+        language === 'ar'
+          ? 'يرجى تفعيل إذن الإشعارات عبر المفتاح أعلاه أولاً'
+          : 'Please enable notification permission using the switch above first.',
+      );
+      return;
+    }
     setIsTesting(true);
     try {
-      const settings = await notifee.requestPermission();
-      if (settings.authorizationStatus < 1) {
-        Alert.alert(
-          language === 'ar' ? 'تنبيه' : 'Permission Required',
-          language === 'ar'
-            ? 'يرجى السماح بالإشعارات من إعدادات الجهاز'
-            : 'Please enable notifications in your device settings.',
-        );
-        return;
-      }
 
       const channelId = await notifee.createChannel({
         id: 'finvista_reminders',
@@ -274,7 +320,7 @@ export default function SettingsScreen() {
               <Switch
                 value={isDark}
                 onValueChange={toggleTheme}
-                trackColor={{ true: COLORS.accent }}
+                trackColor={{ true: COLORS.accent, false: theme.cardBorder }}
                 thumbColor="#fff"
               />
             }
@@ -312,9 +358,9 @@ export default function SettingsScreen() {
             label={t.remindersEnabled}
             right={
               <Switch
-                value={reminders.enabled}
-                onValueChange={v => updateReminders({ enabled: v })}
-                trackColor={{ true: COLORS.accent }}
+                value={notifPermission}
+                onValueChange={handlePermissionSwitch}
+                trackColor={{ true: COLORS.accent, false: theme.cardBorder }}
                 thumbColor="#fff"
               />
             }

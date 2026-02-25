@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import notifee, { AndroidImportance } from '@notifee/react-native';
+import notifee, { AndroidImportance, TriggerType, RepeatFrequency } from '@notifee/react-native';
+import type { TimestampTrigger } from '@notifee/react-native';
 import { Language } from '../constants/strings';
 
 export interface ReminderSettings {
@@ -47,7 +48,80 @@ export function getMotivationalMessage(goalName: string, _language: Language): s
   return msg.replace('[Goal]', goalName);
 }
 
-// ─── Goal Milestone Notifications ────────────────────────────────────────────
+// ─── Reminder Scheduling ──────────────────────────────────────────────────────
+
+const REMINDER_CHANNEL_ID      = 'finvista_reminders';
+const REMINDER_NOTIFICATION_ID = 'finvista_reminder';
+
+/**
+ * Schedule (or reschedule) a recurring motivational reminder.
+ * - daily   → fires every day at 9 AM
+ * - weekly  → fires every week at 9 AM
+ * - monthly → fires once in 30 days at 9 AM (rescheduled on next app open)
+ * Call this whenever settings change or the app starts with reminders enabled.
+ */
+export async function scheduleReminder(
+  settings: ReminderSettings,
+  language: Language,
+): Promise<void> {
+  // Always cancel any previously scheduled reminder first
+  await notifee.cancelNotification(REMINDER_NOTIFICATION_ID);
+
+  if (!settings.enabled) return;
+
+  const channelId = await notifee.createChannel({
+    id: REMINDER_CHANNEL_ID,
+    name: 'FinVista Reminders',
+    sound: 'reminder_sound',
+    importance: AndroidImportance.HIGH
+  });
+
+  // Target: 9:00 AM — move to tomorrow if today's 9 AM has already passed
+  const now = new Date();
+  const triggerDate = new Date();
+  triggerDate.setHours(9, 0, 0, 0);
+  if (triggerDate <= now) {
+    triggerDate.setDate(triggerDate.getDate() + 1);
+  }
+
+  // For monthly: jump 30 days ahead instead of just tomorrow
+  if (settings.frequency === 'monthly') {
+    triggerDate.setDate(now.getDate() + 30);
+    triggerDate.setHours(9, 0, 0, 0);
+  }
+
+  const trigger: TimestampTrigger = {
+    type: TriggerType.TIMESTAMP,
+    timestamp: triggerDate.getTime(),
+    // Monthly has no native repeat — it fires once and gets rescheduled on next app open
+    repeatFrequency:
+      settings.frequency === 'daily'
+        ? RepeatFrequency.DAILY
+        : settings.frequency === 'weekly'
+        ? RepeatFrequency.WEEKLY
+        : undefined,
+  };
+
+  await notifee.createTriggerNotification(
+    {
+      id: REMINDER_NOTIFICATION_ID,
+      title: language === 'ar' ? 'تذكير FinVista 💰' : 'FinVista Reminder 💰',
+      body: getMotivationalMessage('', language),
+      android: {
+        channelId,
+        pressAction: { id: 'default' },
+        // sound: 'default',
+      },
+      ios: { sound: 'default' },
+    },
+    trigger,
+  );
+}
+
+/** Cancel any scheduled reminder notification. */
+export async function cancelReminder(): Promise<void> {
+  await notifee.cancelNotification(REMINDER_NOTIFICATION_ID);
+}
 
 const GOAL_MILESTONES_KEY   = '@finvista_goal_milestones';
 const MILESTONE_CHANNEL_ID  = 'finvista_milestones';
@@ -98,7 +172,7 @@ export async function checkAndFireMilestones(
     id: MILESTONE_CHANNEL_ID,
     name: 'Goal Milestones',
     importance: AndroidImportance.HIGH,
-    sound: 'default',
+    sound: 'reminder_sound',
   });
 
   const isComplete = highest === 100;
@@ -112,7 +186,7 @@ export async function checkAndFireMilestones(
     android: {
       channelId: MILESTONE_CHANNEL_ID,
       pressAction: { id: 'default' },
-      sound: 'default',
+      // sound: 'reminder_sound',
     },
     ios: { sound: 'default' },
   });
