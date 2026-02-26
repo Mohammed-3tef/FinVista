@@ -33,11 +33,91 @@ export default function GoalDetailScreen({ navigation, route }: any) {
   const [showDeleteGoal, setShowDeleteGoal] = useState(false);
   const [deleteEntryId, setDeleteEntryId] = useState<string | null>(null);
 
-  const openAdd = () => { setAmount(''); setDate(new Date().toISOString().substring(0, 10)); setEditingEntry(null); setShowAddModal(true); };
-  const openEdit = (entry: any) => { setAmount(entry.amount.toString()); setDate(entry.date.substring(0, 10)); setEditingEntry(entry); setShowAddModal(true); };
+  // Validation state for the savings modal
+  const [entryErrors, setEntryErrors] = useState<{ amount?: string; date?: string }>({});
+  const [entryTouched, setEntryTouched] = useState<{ amount?: boolean; date?: boolean }>({});
+
+  const isValidDate = (s: string): boolean => {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(s)) return false;
+    const [y, m, d] = s.split('-').map(Number);
+    if (y < 1900 || y > 2100) return false;
+    if (m < 1 || m > 12) return false;
+    const dt = new Date(s);
+    return (
+      !isNaN(dt.getTime()) &&
+      dt.getFullYear() === y &&
+      dt.getMonth() + 1 === m &&
+      dt.getDate() === d
+    );
+  };
+
+  const buildEntryErrors = (fields: { amount: string; date: string }) => {
+    const e: { amount?: string; date?: string } = {};
+
+    if (!fields.amount.trim())
+      e.amount = t.required;
+    else if (isNaN(Number(fields.amount)) || Number(fields.amount) === 0)
+      e.amount = t.invalidAmount;
+    else if (Math.abs(Number(fields.amount)) > 999_999_999)
+      e.amount = 'Amount is too large';
+    else {
+      const newAmount = Number(fields.amount);
+      // Base total excludes the entry currently being edited
+      const baseTotal = editingEntry
+        ? totalSaved - editingEntry.amount
+        : totalSaved;
+      if (baseTotal + newAmount > goal.targetAmount)
+        e.amount = `Exceeds goal target (${formatCurrency(goal.targetAmount, t.currency)})`;
+    }
+
+    if (!fields.date)
+      e.date = t.required;
+    else if (!isValidDate(fields.date))
+      e.date = fields.date.length === 10
+        ? 'Invalid date (check month 1-12, day 1-31)'
+        : 'Use format YYYY-MM-DD';
+
+    return e;
+  };
+
+  const handleEntryChange = (field: 'amount' | 'date', value: string) => {
+    if (field === 'amount') setAmount(value);
+    else setDate(value);
+    if (entryTouched[field]) {
+      const updated = { amount, date, [field]: value };
+      const newErrors = buildEntryErrors(updated);
+      setEntryErrors(prev => ({ ...prev, [field]: newErrors[field] || '' }));
+    }
+  };
+
+  const handleEntryBlur = (field: 'amount' | 'date') => {
+    setEntryTouched(prev => ({ ...prev, [field]: true }));
+    const newErrors = buildEntryErrors({ amount, date });
+    setEntryErrors(prev => ({ ...prev, [field]: newErrors[field] || '' }));
+  };
+
+  const openAdd = () => {
+    setAmount('');
+    setDate(new Date().toISOString().substring(0, 10));
+    setEditingEntry(null);
+    setEntryErrors({});
+    setEntryTouched({});
+    setShowAddModal(true);
+  };
+  const openEdit = (entry: any) => {
+    setAmount(entry.amount.toString());
+    setDate(entry.date.substring(0, 10));
+    setEditingEntry(entry);
+    setEntryErrors({});
+    setEntryTouched({});
+    setShowAddModal(true);
+  };
 
   const handleSaveEntry = () => {
-    if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) return;
+    setEntryTouched({ amount: true, date: true });
+    const newErrors = buildEntryErrors({ amount, date });
+    setEntryErrors(newErrors);
+    if (newErrors.amount || newErrors.date) return;
     if (editingEntry) {
       updateEntry(editingEntry.id, { amount: Number(amount), date: new Date(date).toISOString() });
     } else {
@@ -179,34 +259,73 @@ export default function GoalDetailScreen({ navigation, route }: any) {
         <KeyboardAvoidingView style={styles.modalOuter} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
           <View style={[styles.bottomSheet, { backgroundColor: theme.card }]}>
             <Text style={[styles.sheetTitle, { color: theme.text }]}>{editingEntry ? t.edit : t.addSavings}</Text>
+
+            {/* Amount */}
             <View style={styles.inputGroup}>
-              <Text style={[styles.inputLabel, { color: theme.textSecondary }]}>{t.amount}</Text>
-              <View style={[styles.inputRow, { backgroundColor: theme.inputBg, borderColor: theme.cardBorder }]}>
+              <View style={styles.labelRow}>
+                <Text style={[styles.inputLabel, { color: theme.textSecondary }]}>{t.amount}</Text>
+                <Text style={styles.requiredStar}> *</Text>
+              </View>
+              <View style={[styles.inputRow, {
+                backgroundColor: theme.inputBg,
+                borderColor: entryErrors.amount && entryTouched.amount ? COLORS.danger : theme.cardBorder,
+                borderWidth: entryErrors.amount && entryTouched.amount ? 2 : 1.5,
+              }]}>
                 <Text style={[styles.inputPrefix, { color: COLORS.accent }]}>{t.currency}</Text>
                 <RNTextInput
                   style={[styles.sheetInput, { color: theme.text }]}
                   value={amount}
-                  onChangeText={setAmount}
+                  onChangeText={v => handleEntryChange('amount', v.replace(/[^0-9.\-]/g, ''))}
+                  onBlur={() => handleEntryBlur('amount')}
                   keyboardType="numeric"
                   placeholder="0.00"
                   placeholderTextColor={theme.textMuted}
                   textAlign={isRTL ? 'right' : 'left'}
+                  autoFocus
                 />
               </View>
+              {entryErrors.amount && entryTouched.amount && (
+                <View style={[styles.errorRow, isRTL && styles.rtl]}>
+                  <Text style={styles.errorIcon}>⚠</Text>
+                  <Text style={styles.errorText}>{entryErrors.amount}</Text>
+                </View>
+              )}
+              {!entryErrors.amount && (
+                <Text style={[styles.inputHint, { color: theme.textMuted }]}>Use a negative value to record a withdrawal</Text>
+              )}
             </View>
+
+            {/* Date */}
             <View style={styles.inputGroup}>
-              <Text style={[styles.inputLabel, { color: theme.textSecondary }]}>{t.date}</Text>
-              <View style={[styles.inputRow, { backgroundColor: theme.inputBg, borderColor: theme.cardBorder }]}>
+              <View style={styles.labelRow}>
+                <Text style={[styles.inputLabel, { color: theme.textSecondary }]}>{t.date}</Text>
+                <Text style={styles.requiredStar}> *</Text>
+              </View>
+              <View style={[styles.inputRow, {
+                backgroundColor: theme.inputBg,
+                borderColor: entryErrors.date && entryTouched.date ? COLORS.danger : theme.cardBorder,
+                borderWidth: entryErrors.date && entryTouched.date ? 2 : 1.5,
+              }]}>
                 <RNTextInput
                   style={[styles.sheetInput, { color: theme.text }]}
                   value={date}
-                  onChangeText={setDate}
+                  onChangeText={v => handleEntryChange('date', v)}
+                  onBlur={() => handleEntryBlur('date')}
                   placeholder="YYYY-MM-DD"
                   placeholderTextColor={theme.textMuted}
                   textAlign={isRTL ? 'right' : 'left'}
                 />
               </View>
+              {entryErrors.date && entryTouched.date ? (
+                <View style={[styles.errorRow, isRTL && styles.rtl]}>
+                  <Text style={styles.errorIcon}>⚠</Text>
+                  <Text style={styles.errorText}>{entryErrors.date}</Text>
+                </View>
+              ) : (
+                <Text style={[styles.inputHint, { color: theme.textMuted }]}>Format: YYYY-MM-DD</Text>
+              )}
             </View>
+
             <View style={[styles.sheetActions, isRTL && styles.rtl]}>
               <Button label={t.cancel} onPress={() => setShowAddModal(false)} variant="outline" style={{ flex: 1 }} />
               <Button label={t.save} onPress={handleSaveEntry} style={{ flex: 1 }} />
@@ -287,9 +406,15 @@ const styles = StyleSheet.create({
   bottomSheet: { borderTopLeftRadius: RADIUS.xl, borderTopRightRadius: RADIUS.xl, padding: SPACING.lg, paddingBottom: SPACING.xl },
   sheetTitle: { fontSize: FONT_SIZE.xl, fontWeight: '800', marginBottom: SPACING.lg },
   inputGroup: { marginBottom: SPACING.md },
-  inputLabel: { fontSize: FONT_SIZE.sm, fontWeight: '600', marginBottom: 6 },
+  labelRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 6 },
+  inputLabel: { fontSize: FONT_SIZE.sm, fontWeight: '600' },
+  requiredStar: { fontSize: FONT_SIZE.sm, fontWeight: '700', color: COLORS.danger },
   inputRow: { flexDirection: 'row', alignItems: 'center', borderRadius: RADIUS.md, borderWidth: 1.5, paddingHorizontal: SPACING.md },
   inputPrefix: { fontSize: FONT_SIZE.md, fontWeight: '700', marginRight: 4 },
   sheetInput: { flex: 1, fontSize: FONT_SIZE.md, paddingVertical: SPACING.sm + 4 },
+  errorRow: { flexDirection: 'row', alignItems: 'center', marginTop: 5, gap: 4 },
+  errorIcon: { fontSize: 11, color: COLORS.danger },
+  errorText: { color: COLORS.danger, fontSize: FONT_SIZE.xs, flex: 1 },
+  inputHint: { fontSize: FONT_SIZE.xs, marginTop: 4 },
   sheetActions: { flexDirection: 'row', gap: SPACING.sm, marginTop: SPACING.sm },
 });

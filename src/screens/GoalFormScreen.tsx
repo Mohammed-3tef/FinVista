@@ -29,20 +29,84 @@ export default function GoalFormScreen({ navigation, route }: Props) {
   const [deadline, setDeadline] = useState(editGoal?.deadline ? editGoal.deadline.substring(0, 10) : '');
   const [icon, setIcon] = useState(editGoal?.icon || '🎯');
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
 
-  const validate = () => {
+  const isValidDate = (s: string): boolean => {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(s)) return false;
+    const [y, m, d] = s.split('-').map(Number);
+    if (y < 1900 || y > 2100) return false;
+    if (m < 1 || m > 12) return false;
+    // Verify no roll-over (e.g. Feb 30, Apr 31)
+    const dt = new Date(s);
+    return (
+      !isNaN(dt.getTime()) &&
+      dt.getFullYear() === y &&
+      dt.getMonth() + 1 === m &&
+      dt.getDate() === d
+    );
+  };
+
+  const buildErrors = (fields: { name: string; target: string; startDate: string; deadline: string }) => {
     const e: Record<string, string> = {};
-    if (!name.trim()) e.name = t.required;
-    if (!target || isNaN(Number(target)) || Number(target) <= 0) e.target = t.invalidAmount;
-    if (!startDate) e.startDate = t.invalidDate;
-    if (!deadline) e.deadline = t.invalidDate;
-    if (startDate && deadline && new Date(deadline) <= new Date(startDate)) e.deadline = t.deadlineAfterStart;
-    setErrors(e);
-    return Object.keys(e).length === 0;
+
+    if (!fields.name.trim())
+      e.name = t.required;
+    else if (fields.name.trim().length < 2)
+      e.name = 'Name must be at least 2 characters';
+    else if (fields.name.trim().length > 50)
+      e.name = 'Name must be 50 characters or less';
+
+    if (!fields.target.trim())
+      e.target = t.required;
+    else if (isNaN(Number(fields.target)) || Number(fields.target) <= 0)
+      e.target = t.invalidAmount;
+    else if (Number(fields.target) > 999_999_999)
+      e.target = 'Amount is too large';
+
+    if (!fields.startDate)
+      e.startDate = t.required;
+    else if (!isValidDate(fields.startDate))
+      e.startDate = fields.startDate.length === 10
+        ? 'Invalid date (check month 1-12, day 1-31)'
+        : 'Use format YYYY-MM-DD';
+
+    if (!fields.deadline)
+      e.deadline = t.required;
+    else if (!isValidDate(fields.deadline))
+      e.deadline = fields.deadline.length === 10
+        ? 'Invalid date (check month 1-12, day 1-31)'
+        : 'Use format YYYY-MM-DD';
+    else if (isValidDate(fields.startDate) && new Date(fields.deadline) <= new Date(fields.startDate))
+      e.deadline = t.deadlineAfterStart;
+
+    return e;
+  };
+
+  const handleChange = (field: 'name' | 'target' | 'startDate' | 'deadline', value: string) => {
+    const setters = { name: setName, target: setTarget, startDate: setStartDate, deadline: setDeadline };
+    setters[field](value);
+    if (touched[field]) {
+      const updated = { name, target, startDate, deadline, [field]: value };
+      const newErrors = buildErrors(updated);
+      setErrors(prev => ({
+        ...prev,
+        [field]: newErrors[field] || '',
+        ...(field === 'startDate' ? { deadline: newErrors.deadline || '' } : {}),
+      }));
+    }
+  };
+
+  const handleBlur = (field: 'name' | 'target' | 'startDate' | 'deadline') => {
+    setTouched(prev => ({ ...prev, [field]: true }));
+    const newErrors = buildErrors({ name, target, startDate, deadline });
+    setErrors(prev => ({ ...prev, [field]: newErrors[field] || '' }));
   };
 
   const handleSave = () => {
-    if (!validate()) return;
+    setTouched({ name: true, target: true, startDate: true, deadline: true });
+    const newErrors = buildErrors({ name, target, startDate, deadline });
+    setErrors(newErrors);
+    if (Object.values(newErrors).some(Boolean)) return;
     const data = {
       name: name.trim(),
       targetAmount: Number(target),
@@ -91,15 +155,19 @@ export default function GoalFormScreen({ navigation, route }: Props) {
           <TextInput
             label={t.goalName}
             value={name}
-            onChangeText={setName}
+            onChangeText={v => handleChange('name', v.replace(/[^\s\S]/g, ''))}
+            onBlur={() => handleBlur('name')}
             placeholder="e.g. New Car, Vacation..."
             error={errors.name}
+            hint={!errors.name && name.trim().length > 0 ? `${name.trim().length}/50` : undefined}
+            maxLength={50}
             textAlign={isRTL ? 'right' : 'left'}
           />
           <TextInput
             label={t.targetAmount}
             value={target}
-            onChangeText={setTarget}
+            onChangeText={v => handleChange('target', v.replace(/[^0-9.]/g, ''))}
+            onBlur={() => handleBlur('target')}
             keyboardType="numeric"
             placeholder="0.00"
             prefix={t.currency}
@@ -109,17 +177,21 @@ export default function GoalFormScreen({ navigation, route }: Props) {
           <TextInput
             label={t.startDate}
             value={startDate}
-            onChangeText={setStartDate}
+            onChangeText={v => handleChange('startDate', v)}
+            onBlur={() => handleBlur('startDate')}
             placeholder="YYYY-MM-DD"
             error={errors.startDate}
+            hint={!errors.startDate ? 'Format: YYYY-MM-DD' : undefined}
             textAlign={isRTL ? 'right' : 'left'}
           />
           <TextInput
             label={t.deadline}
             value={deadline}
-            onChangeText={setDeadline}
+            onChangeText={v => handleChange('deadline', v)}
+            onBlur={() => handleBlur('deadline')}
             placeholder="YYYY-MM-DD"
             error={errors.deadline}
+            hint={!errors.deadline ? 'Format: YYYY-MM-DD' : undefined}
             textAlign={isRTL ? 'right' : 'left'}
           />
 

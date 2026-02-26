@@ -85,6 +85,26 @@ const strings = {
     day: 'day',
     days: 'days',
     noData: 'No data available',
+
+    // Search & Filter
+    searchGoals: 'Search goals...',
+    filter: 'Filter',
+    filterGoals: 'Filter Goals',
+    sortBy: 'Sort By',
+    statusFilter: 'Status',
+    allGoals: 'All Goals',
+    activeGoals2: 'Active',
+    completedGoals2: 'Completed',
+    sortNameAZ: 'Name (A → Z)',
+    sortNameZA: 'Name (Z → A)',
+    sortProgressHigh: 'Most Progress',
+    sortProgressLow: 'Least Progress',
+    sortDeadline: 'Nearest Deadline',
+    sortAmountHigh: 'Highest Target',
+    applyFilter: 'Apply',
+    resetFilter: 'Reset',
+    noResults: 'No goals match your search',
+    noResultsDesc: 'Try a different search term or reset filters',
   },
 
   ar: {
@@ -163,6 +183,26 @@ const strings = {
     day: 'يوم',
     days: 'أيام',
     noData: 'لا توجد بيانات',
+
+    // Search & Filter
+    searchGoals: 'ابحث عن أهداف...',
+    filter: 'تصفية',
+    filterGoals: 'تصفية الأهداف',
+    sortBy: 'ترتيب حسب',
+    statusFilter: 'الحالة',
+    allGoals: 'كل الأهداف',
+    activeGoals2: 'نشطة',
+    completedGoals2: 'مكتملة',
+    sortNameAZ: 'الاسم (أ → ي)',
+    sortNameZA: 'الاسم (ي → أ)',
+    sortProgressHigh: 'الأعلى تقدماً',
+    sortProgressLow: 'الأقل تقدماً',
+    sortDeadline: 'أقرب موعد نهائي',
+    sortAmountHigh: 'أعلى مبلغ مستهدف',
+    applyFilter: 'تطبيق',
+    resetFilter: 'إعادة تعيين',
+    noResults: 'لا توجد أهداف تطابق بحثك',
+    noResultsDesc: 'جرب كلمة بحث مختلفة أو أعد تعيين الفلتر',
   },
 };
 

@@ -21,6 +21,7 @@ import { SmsTransaction } from '../constants/types';
 import { COLORS, SPACING, RADIUS, FONT_SIZE } from '../constants/theme';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faBan, faTrashCan } from '@fortawesome/free-solid-svg-icons';
+import { faSearch } from '@fortawesome/free-solid-svg-icons/faSearch';
 
 type FilterType = 'all' | 'deposit' | 'withdrawal';
 
@@ -217,7 +218,9 @@ export default function SmsTransactionsScreen() {
 
       {/* Search */}
       <View style={[styles.searchWrap, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
-        <Text style={{ color: theme.textMuted, marginRight: SPACING.xs }}>🔍</Text>
+        <Text style={{ color: theme.textMuted, marginRight: SPACING.xs }}>
+          <FontAwesomeIcon icon={faSearch} size={14} color={theme.textSecondary} style={{ marginRight: SPACING.sm }} />
+        </Text>
         <TextInput
           value={search}
           onChangeText={setSearch}

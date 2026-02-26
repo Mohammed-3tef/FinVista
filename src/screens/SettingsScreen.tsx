@@ -12,6 +12,10 @@ import {
   ActivityIndicator,
   StatusBar,
   Linking,
+  Modal,
+  TouchableWithoutFeedback,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import notifee, { AndroidImportance } from '@notifee/react-native';
@@ -74,6 +78,10 @@ export default function SettingsScreen() {
     oldWord: string;
     newWord: string;
   } | null>(null);
+
+  // Modal visibility
+  const [pollModalVisible, setPollModalVisible] = useState(false);
+  const [kwModalKind, setKwModalKind] = useState<'deposit' | 'withdrawal' | null>(null);
 
   useEffect(() => {
     getReminderSettings().then(s => {
@@ -541,128 +549,45 @@ export default function SettingsScreen() {
 
         {/* ── Auto-Check Interval ───────────────────────────────── */}
         <Section title="Auto-Check Interval">
-          <View style={{ paddingHorizontal: SPACING.md, paddingTop: SPACING.sm, paddingBottom: SPACING.xs }}>
-            <Text style={{ color: theme.textSecondary, fontSize: FONT_SIZE.sm, marginBottom: SPACING.sm }}>
-              How often the app automatically checks for new bank SMS messages.
-            </Text>
-          </View>
-          {POLL_INTERVAL_OPTIONS.map((opt, idx) => {
-            const isSelected = pollInterval === opt.value;
-            return (
-              <TouchableOpacity
-                key={opt.value}
-                onPress={() => setPollInterval(opt.value)}
-                style={[
-                  styles.priorityRow,
-                  isSelected && { backgroundColor: COLORS.accent + '18' },
-                  idx < POLL_INTERVAL_OPTIONS.length - 1 && {
-                    borderBottomWidth: 1,
-                    borderBottomColor: theme.cardBorder,
-                  },
-                ]}>
-                <View style={styles.priorityRadio}>
-                  <View
-                    style={[
-                      styles.radioOuter,
-                      { borderColor: isSelected ? COLORS.accent : theme.textMuted },
-                    ]}>
-                    {isSelected && <View style={styles.radioInner} />}
-                  </View>
-                </View>
-                <Text style={{ flex: 1, color: theme.text, fontSize: FONT_SIZE.md, fontWeight: isSelected ? '700' : '500' }}>
-                  {opt.label}
+          <Row
+            label="Check Frequency"
+            noBorder
+            onPress={() => setPollModalVisible(true)}
+            right={
+              <View style={[styles.nameRight, isRTL && styles.rtl]}>
+                <Text style={[styles.nameValue, { color: theme.textMuted }]}>
+                  {POLL_INTERVAL_OPTIONS.find(o => o.value === pollInterval)?.label ?? ''}
                 </Text>
-                {isSelected && (
-                  <Text style={{ color: COLORS.accent, fontSize: FONT_SIZE.sm, fontWeight: '700' }}>✓</Text>
-                )}
-              </TouchableOpacity>
-            );
-          })}
+                <Text style={{ color: theme.textMuted, marginLeft: 4 }}>›</Text>
+              </View>
+            }
+          />
         </Section>
 
         {/* ── Keyword Settings ───────────────────────────────── */}
-        {(['deposit', 'withdrawal'] as const).map(kind => (
-          <Section key={kind} title={`${kind === 'deposit' ? 'Deposit' : 'Withdrawal'} Keywords`}>
-            {/* Existing keywords */}
-            {keywords[kind].map((word, idx) => (
-              <View
-                key={word}
-                style={[
-                  styles.kwRow,
-                  {
-                    borderBottomWidth: idx < keywords[kind].length - 1 ? 1 : 0,
-                    borderBottomColor: theme.cardBorder,
-                  },
-                ]}>
-                {editingKw?.kind === kind && editingKw?.oldWord === word ? (
-                  <RNTextInput
-                    value={editingKw.newWord}
-                    onChangeText={v => setEditingKw(prev => prev ? { ...prev, newWord: v } : null)}
-                    autoFocus
-                    style={[styles.kwInput, { color: theme.text, borderColor: theme.cardBorder, flex: 1 }]}
-                    onSubmitEditing={handleSaveEdit}
-                    returnKeyType="done"
-                  />
-                ) : (
-                  <Text style={[styles.kwChip, { color: theme.text }]}>{word}</Text>
-                )}
-                <View style={{ flexDirection: 'row', gap: SPACING.xs }}>
-                  {editingKw?.kind === kind && editingKw?.oldWord === word ? (
-                    <>
-                      <TouchableOpacity onPress={handleSaveEdit} style={[styles.kwBtn, { backgroundColor: COLORS.success }]}>
-                        <Text style={styles.kwBtnTxt}>Save</Text>
-                      </TouchableOpacity>
-                      <TouchableOpacity onPress={() => setEditingKw(null)} style={[styles.kwBtn, { backgroundColor: theme.cardBorder }]}>
-                        <Text style={[styles.kwBtnTxt, { color: theme.textSecondary }]}>✕</Text>
-                      </TouchableOpacity>
-                    </>
-                  ) : (
-                    <>
-                      <TouchableOpacity
-                        onPress={() => handleEditKeyword(kind, word)}
-                        style={[styles.kwBtn, { backgroundColor: COLORS.info + '22' }]}>
-                        <Text style={[styles.kwBtnTxt, { color: COLORS.info }]}>Edit</Text>
-                      </TouchableOpacity>
-                      <TouchableOpacity
-                        onPress={() => handleDeleteKeyword(kind, word)}
-                        style={[styles.kwBtn, { backgroundColor: COLORS.danger + '22' }]}>
-                        <Text style={[styles.kwBtnTxt, { color: COLORS.danger }]}>✕</Text>
-                      </TouchableOpacity>
-                    </>
-                  )}
-                </View>
+        <Section title="Keyword Settings">
+          <Row
+            label="Deposit Keywords"
+            onPress={() => { setEditingKw(null); setKwModalKind('deposit'); }}
+            right={
+              <View style={[styles.nameRight, isRTL && styles.rtl]}>
+                <Text style={[styles.nameValue, { color: theme.textMuted }]}>{keywords.deposit.length} words</Text>
+                <Text style={{ color: theme.textMuted, marginLeft: 4 }}>›</Text>
               </View>
-            ))}
-
-            {/* Add new keyword */}
-            <View style={[styles.kwAddRow, { borderTopWidth: 1, borderTopColor: theme.cardBorder }]}>
-              <RNTextInput
-                value={kind === 'deposit' ? newDepositKw : newWithdrawalKw}
-                onChangeText={v => kind === 'deposit' ? setNewDepositKw(v) : setNewWithdrawalKw(v)}
-                placeholder={`Add keyword…`}
-                placeholderTextColor={theme.textMuted}
-                style={[styles.kwInput, { color: theme.text, borderColor: theme.cardBorder, flex: 1 }]}
-                autoCapitalize="none"
-                returnKeyType="done"
-                onSubmitEditing={() => handleAddKeyword(kind)}
-              />
-              <TouchableOpacity
-                onPress={() => handleAddKeyword(kind)}
-                style={[styles.kwBtn, { backgroundColor: COLORS.accent }]}>
-                <Text style={[styles.kwBtnTxt, { color: COLORS.primary }]}>+ Add</Text>
-              </TouchableOpacity>
-            </View>
-
-            {/* Reset button */}
-            <TouchableOpacity
-              onPress={() => handleResetKeywords(kind)}
-              style={[styles.resetBtn, { borderTopWidth: 1, borderTopColor: theme.cardBorder }]}>
-              <Text style={[styles.resetBtnTxt, { color: theme.textMuted }]}>
-                ↺ Reset to Defaults
-              </Text>
-            </TouchableOpacity>
-          </Section>
-        ))}
+            }
+          />
+          <Row
+            label="Withdrawal Keywords"
+            noBorder
+            onPress={() => { setEditingKw(null); setKwModalKind('withdrawal'); }}
+            right={
+              <View style={[styles.nameRight, isRTL && styles.rtl]}>
+                <Text style={[styles.nameValue, { color: theme.textMuted }]}>{keywords.withdrawal.length} words</Text>
+                <Text style={{ color: theme.textMuted, marginLeft: 4 }}>›</Text>
+              </View>
+            }
+          />
+        </Section>
 
         {/* ── Auto Allocation Priority ───────────────────────────────── */}
         <Section title="Auto Allocation Priority">
@@ -781,6 +706,171 @@ export default function SettingsScreen() {
         onSave={handleSaveName}
         onCancel={() => setNameModalVisible(false)}
       />
+
+      {/* ── Poll Interval Modal ── */}
+      <Modal
+        visible={pollModalVisible}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setPollModalVisible(false)}>
+        <View style={styles.modalRoot}>
+          <TouchableWithoutFeedback onPress={() => setPollModalVisible(false)}>
+            <View style={StyleSheet.absoluteFill} />
+          </TouchableWithoutFeedback>
+          <View style={[styles.modalSheet, { backgroundColor: theme.card }]}>
+            <View style={[styles.modalHeader, isRTL && styles.rtl]}>
+              <Text style={[styles.modalTitle, { color: theme.text }]}>Auto-Check Interval</Text>
+              <TouchableOpacity onPress={() => setPollModalVisible(false)}>
+                <Text style={{ color: theme.textSecondary, fontSize: 20, lineHeight: 22 }}>✕</Text>
+              </TouchableOpacity>
+            </View>
+            <Text style={{ color: theme.textSecondary, fontSize: FONT_SIZE.sm, marginBottom: SPACING.md }}>
+              How often the app automatically checks for new bank SMS messages.
+            </Text>
+            {POLL_INTERVAL_OPTIONS.map((opt, idx) => {
+              const isSelected = pollInterval === opt.value;
+              return (
+                <TouchableOpacity
+                  key={opt.value}
+                  onPress={() => { setPollInterval(opt.value); setPollModalVisible(false); }}
+                  style={[
+                    styles.priorityRow,
+                    { borderRadius: RADIUS.md },
+                    isSelected && { backgroundColor: COLORS.accent + '18' },
+                    idx < POLL_INTERVAL_OPTIONS.length - 1 && {
+                      borderBottomWidth: StyleSheet.hairlineWidth,
+                      borderBottomColor: theme.cardBorder,
+                    },
+                  ]}>
+                  <View style={styles.priorityRadio}>
+                    <View style={[styles.radioOuter, { borderColor: isSelected ? COLORS.accent : theme.textMuted }]}>
+                      {isSelected && <View style={styles.radioInner} />}
+                    </View>
+                  </View>
+                  <Text style={{ flex: 1, color: theme.text, fontSize: FONT_SIZE.md, fontWeight: isSelected ? '700' : '500' }}>
+                    {opt.label}
+                  </Text>
+                  {isSelected && (
+                    <Text style={{ color: COLORS.accent, fontSize: FONT_SIZE.md, fontWeight: '700' }}>✓</Text>
+                  )}
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+        </View>
+      </Modal>
+
+      {/* ── Keywords Modal (shared for deposit / withdrawal) ── */}
+      <Modal
+        visible={kwModalKind !== null}
+        transparent
+        animationType="slide"
+        onRequestClose={() => { setEditingKw(null); setKwModalKind(null); }}>
+        <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+          <View style={styles.modalRoot}>
+            <TouchableWithoutFeedback onPress={() => { setEditingKw(null); setKwModalKind(null); }}>
+              <View style={StyleSheet.absoluteFill} />
+            </TouchableWithoutFeedback>
+            <View style={[styles.modalSheet, { backgroundColor: theme.card }]}>
+              {/* Header */}
+              <View style={[styles.modalHeader, isRTL && styles.rtl]}>
+                <Text style={[styles.modalTitle, { color: theme.text }]}>
+                  {kwModalKind === 'deposit' ? 'Deposit' : 'Withdrawal'} Keywords
+                </Text>
+                <TouchableOpacity onPress={() => { setEditingKw(null); setKwModalKind(null); }}>
+                  <Text style={{ color: theme.textSecondary, fontSize: 20, lineHeight: 22 }}>✕</Text>
+                </TouchableOpacity>
+              </View>
+
+              {/* Keyword list */}
+              <ScrollView
+                style={{ maxHeight: 320 }}
+                showsVerticalScrollIndicator={false}
+                keyboardShouldPersistTaps="handled">
+                {kwModalKind && keywords[kwModalKind].map((word, idx) => (
+                  <View
+                    key={word}
+                    style={[
+                      styles.kwRow,
+                      {
+                        borderBottomWidth: idx < keywords[kwModalKind!].length - 1 ? StyleSheet.hairlineWidth : 0,
+                        borderBottomColor: theme.cardBorder,
+                      },
+                    ]}>
+                    {editingKw?.kind === kwModalKind && editingKw?.oldWord === word ? (
+                      <RNTextInput
+                        value={editingKw.newWord}
+                        onChangeText={v => setEditingKw(prev => prev ? { ...prev, newWord: v } : null)}
+                        autoFocus
+                        style={[styles.kwInput, { color: theme.text, borderColor: theme.cardBorder, flex: 1 }]}
+                        onSubmitEditing={handleSaveEdit}
+                        returnKeyType="done"
+                      />
+                    ) : (
+                      <Text style={[styles.kwChip, { color: theme.text }]}>{word}</Text>
+                    )}
+                    <View style={{ flexDirection: 'row', gap: SPACING.xs }}>
+                      {editingKw?.kind === kwModalKind && editingKw?.oldWord === word ? (
+                        <>
+                          <TouchableOpacity onPress={handleSaveEdit} style={[styles.kwBtn, { backgroundColor: COLORS.success }]}>
+                            <Text style={styles.kwBtnTxt}>Save</Text>
+                          </TouchableOpacity>
+                          <TouchableOpacity onPress={() => setEditingKw(null)} style={[styles.kwBtn, { backgroundColor: theme.cardBorder }]}>
+                            <Text style={[styles.kwBtnTxt, { color: theme.textSecondary }]}>✕</Text>
+                          </TouchableOpacity>
+                        </>
+                      ) : (
+                        <>
+                          <TouchableOpacity
+                            onPress={() => handleEditKeyword(kwModalKind!, word)}
+                            style={[styles.kwBtn, { backgroundColor: COLORS.info + '22' }]}>
+                            <Text style={[styles.kwBtnTxt, { color: COLORS.info }]}>Edit</Text>
+                          </TouchableOpacity>
+                          <TouchableOpacity
+                            onPress={() => handleDeleteKeyword(kwModalKind!, word)}
+                            style={[styles.kwBtn, { backgroundColor: COLORS.danger + '22' }]}>
+                            <Text style={[styles.kwBtnTxt, { color: COLORS.danger }]}>✕</Text>
+                          </TouchableOpacity>
+                        </>
+                      )}
+                    </View>
+                  </View>
+                ))}
+              </ScrollView>
+
+              {/* Add new keyword */}
+              <View style={[styles.kwAddRow, { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: theme.cardBorder, marginTop: SPACING.sm }]}>
+                <RNTextInput
+                  value={kwModalKind === 'deposit' ? newDepositKw : newWithdrawalKw}
+                  onChangeText={v =>
+                    kwModalKind === 'deposit' ? setNewDepositKw(v) : setNewWithdrawalKw(v)
+                  }
+                  placeholder="Add keyword…"
+                  placeholderTextColor={theme.textMuted}
+                  style={[styles.kwInput, { color: theme.text, borderColor: theme.cardBorder, flex: 1 }]}
+                  autoCapitalize="none"
+                  returnKeyType="done"
+                  onSubmitEditing={() => kwModalKind && handleAddKeyword(kwModalKind)}
+                />
+                <TouchableOpacity
+                  onPress={() => kwModalKind && handleAddKeyword(kwModalKind)}
+                  style={[styles.kwBtn, { backgroundColor: COLORS.accent }]}>
+                  <Text style={[styles.kwBtnTxt, { color: COLORS.primary }]}>+ Add</Text>
+                </TouchableOpacity>
+              </View>
+
+              {/* Reset */}
+              <TouchableOpacity
+                onPress={() => kwModalKind && handleResetKeywords(kwModalKind)}
+                style={[styles.resetBtn, { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: theme.cardBorder }]}>
+                <Text style={[styles.resetBtnTxt, { color: theme.textMuted }]}>↺ Reset to Defaults</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </KeyboardAvoidingView>
+      </Modal>
     </View>
   );
 }
@@ -908,4 +998,24 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     backgroundColor: COLORS.accent,
   },
+  // Bottom-sheet modals
+  modalRoot: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    backgroundColor: 'rgba(0,0,0,0.45)',
+  },
+  modalSheet: {
+    borderTopLeftRadius: RADIUS.xl,
+    borderTopRightRadius: RADIUS.xl,
+    paddingHorizontal: SPACING.lg,
+    paddingTop: SPACING.lg,
+    paddingBottom: SPACING.xl,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: SPACING.lg,
+  },
+  modalTitle: { fontSize: FONT_SIZE.lg, fontWeight: '700' },
 });
