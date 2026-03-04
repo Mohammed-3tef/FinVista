@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { useApp } from '../context/AppContext';
-import { Spacing, Radius, Typography } from '../constants/theme';
+import { SPACING, RADIUS, FONT_SIZE } from '../constants/theme';
 
 interface StatCardProps {
   label: string;
@@ -37,31 +37,31 @@ export const StatCard: React.FC<StatCardProps> = ({ label, value, icon, color, s
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: Radius.lg,
-    padding: Spacing.md,
+    borderRadius: RADIUS.lg,
+    padding: SPACING.md,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 1,
     shadowRadius: 10,
     elevation: 3,
-    gap: Spacing.xs,
+    gap: SPACING.xs,
   },
   iconContainer: {
     width: 40,
     height: 40,
-    borderRadius: Radius.sm,
+    borderRadius: RADIUS.sm,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 4,
   },
   icon: {
-    fontSize: 20,
+    fontSize: FONT_SIZE.xl,
   },
   value: {
-    fontSize: Typography.fontSizes.xl,
-    fontWeight: Typography.fontWeights.bold,
+    fontSize: FONT_SIZE.xl,
+    fontWeight: 'bold',
   },
   label: {
-    fontSize: Typography.fontSizes.xs,
-    fontWeight: Typography.fontWeights.medium,
+    fontSize: FONT_SIZE.xs,
+    fontWeight: '500',
   },
 });

@@ -8,7 +8,7 @@ import React, {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { I18nManager } from 'react-native';
 import { Goal, ThemeMode, Language, ReminderSettings } from '../constants/types';
-import { Colors } from '../constants/theme';
+import { COLORS } from '../constants/theme';
 import { translations } from '../constants/translations';
 
 const STORAGE_KEYS = {
@@ -30,7 +30,7 @@ interface AppContextType {
   // Theme
   theme: ThemeMode;
   toggleTheme: () => void;
-  colors: typeof Colors.light;
+  colors: typeof COLORS.light;
 
   // Language
   language: Language;
@@ -167,7 +167,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     });
   }, []);
 
-  const colors = theme === 'light' ? Colors.light : Colors.dark;
+  const colors = theme === 'light' ? COLORS.light : COLORS.dark;
   const t = translations[language];
   const isRTL = language === 'ar';
 

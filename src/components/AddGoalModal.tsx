@@ -11,7 +11,7 @@ import {
   Platform,
 } from 'react-native';
 import { useApp } from '../context/AppContext';
-import { Spacing, Radius, Typography, Colors } from '../constants/theme';
+import { SPACING, RADIUS, FONT_SIZE, COLORS } from '../constants/theme';
 import { getTodayString } from '../utils/goalUtils';
 
 interface AddGoalModalProps {
@@ -157,7 +157,7 @@ export const AddGoalModal: React.FC<AddGoalModalProps> = ({ visible, onClose }) 
                   style={[styles.input, {
                     color: colors.text,
                     backgroundColor: colors.surfaceSecondary,
-                    borderColor: err('name') ? Colors.light.error : colors.border,
+                    borderColor: err('name') ? COLORS.error : colors.border,
                     textAlign: isRTL ? 'right' : 'left',
                   }]}
                   placeholder={t.goalNamePlaceholder}
@@ -181,7 +181,7 @@ export const AddGoalModal: React.FC<AddGoalModalProps> = ({ visible, onClose }) 
                   style={[styles.input, {
                     color: colors.text,
                     backgroundColor: colors.surfaceSecondary,
-                    borderColor: err('targetAmount') ? Colors.light.error : colors.border,
+                    borderColor: err('targetAmount') ? COLORS.error : colors.border,
                     textAlign: isRTL ? 'right' : 'left',
                   }]}
                   placeholder={t.amountPlaceholder}
@@ -200,7 +200,7 @@ export const AddGoalModal: React.FC<AddGoalModalProps> = ({ visible, onClose }) 
                   style={[styles.input, {
                     color: colors.text,
                     backgroundColor: colors.surfaceSecondary,
-                    borderColor: err('startDate') ? Colors.light.error : colors.border,
+                    borderColor: err('startDate') ? COLORS.error : colors.border,
                     textAlign: isRTL ? 'right' : 'left',
                   }]}
                   placeholder="YYYY-MM-DD"
@@ -218,7 +218,7 @@ export const AddGoalModal: React.FC<AddGoalModalProps> = ({ visible, onClose }) 
                   style={[styles.input, {
                     color: colors.text,
                     backgroundColor: colors.surfaceSecondary,
-                    borderColor: err('targetDate') ? Colors.light.error : colors.border,
+                    borderColor: err('targetDate') ? COLORS.error : colors.border,
                     textAlign: isRTL ? 'right' : 'left',
                   }]}
                   placeholder="YYYY-MM-DD"
@@ -236,7 +236,7 @@ export const AddGoalModal: React.FC<AddGoalModalProps> = ({ visible, onClose }) 
               <TouchableOpacity onPress={resetAndClose} style={[styles.cancelBtn, { backgroundColor: colors.border }]}>
                 <Text style={[styles.cancelText, { color: colors.textSecondary }]}>{t.cancel}</Text>
               </TouchableOpacity>
-              <TouchableOpacity onPress={handleCreate} style={[styles.createBtn, { backgroundColor: Colors.primary }]}>
+              <TouchableOpacity onPress={handleCreate} style={[styles.createBtn, { backgroundColor: COLORS.primary }]}>
                 <Text style={styles.createText}>{t.create}</Text>
               </TouchableOpacity>
             </View>
@@ -271,28 +271,28 @@ const styles = StyleSheet.create({
   overlay: { flex: 1, justifyContent: 'flex-end' },
   keyboardView: { justifyContent: 'flex-end' },
   sheet: {
-    borderTopLeftRadius: Radius.xl,
-    borderTopRightRadius: Radius.xl,
-    padding: Spacing.lg,
-    paddingBottom: Spacing.xxl,
+    borderTopLeftRadius: RADIUS.xl,
+    borderTopRightRadius: RADIUS.xl,
+    padding: SPACING.lg,
+    paddingBottom: SPACING.xxl,
     maxHeight: '90%',
   },
-  header: { justifyContent: 'space-between', alignItems: 'center', marginBottom: Spacing.lg },
-  title: { fontSize: Typography.fontSizes.xxl, fontWeight: Typography.fontWeights.bold },
+  header: { justifyContent: 'space-between', alignItems: 'center', marginBottom: SPACING.lg },
+  title: { fontSize: FONT_SIZE.xxl, fontWeight: '700' },
   closeBtn: { width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
-  closeBtnText: { fontSize: 14, fontWeight: '600' },
-  fieldContainer: { marginBottom: Spacing.md },
-  labelRow: { alignItems: 'center', marginBottom: Spacing.xs },
-  label: { fontSize: Typography.fontSizes.sm, fontWeight: Typography.fontWeights.medium },
-  requiredStar: { fontSize: Typography.fontSizes.sm, fontWeight: '700', color: Colors.light.error },
-  input: { borderRadius: Radius.md, borderWidth: 1.5, padding: Spacing.md, fontSize: Typography.fontSizes.md },
+  closeBtnText: { fontSize: FONT_SIZE.sm, fontWeight: '600' },
+  fieldContainer: { marginBottom: SPACING.md },
+  labelRow: { alignItems: 'center', marginBottom: SPACING.xs },
+  label: { fontSize: FONT_SIZE.sm, fontWeight: '500' },
+  requiredStar: { fontSize: FONT_SIZE.sm, fontWeight: '700', color: COLORS.error },
+  input: { borderRadius: RADIUS.md, borderWidth: 1.5, padding: SPACING.md, fontSize: FONT_SIZE.md },
   errorRow: { alignItems: 'center', marginTop: 5, gap: 4 },
-  errorIcon: { fontSize: 11, color: Colors.light.error },
-  errorText: { color: Colors.light.error, fontSize: Typography.fontSizes.xs, flex: 1 },
-  charCount: { fontSize: Typography.fontSizes.xs, textAlign: 'right', marginTop: 4 },
-  actions: { gap: Spacing.sm, marginTop: Spacing.lg },
-  cancelBtn: { flex: 1, padding: Spacing.md, borderRadius: Radius.md, alignItems: 'center' },
-  cancelText: { fontSize: Typography.fontSizes.md, fontWeight: Typography.fontWeights.semibold },
-  createBtn: { flex: 2, padding: Spacing.md, borderRadius: Radius.md, alignItems: 'center' },
-  createText: { color: '#fff', fontSize: Typography.fontSizes.md, fontWeight: Typography.fontWeights.bold },
+  errorIcon: { fontSize: 11, color: COLORS.error },
+  errorText: { color: COLORS.error, fontSize: FONT_SIZE.xs, flex: 1 },
+  charCount: { fontSize: FONT_SIZE.xs, textAlign: 'right', marginTop: 4 },
+  actions: { gap: SPACING.sm, marginTop: SPACING.lg },
+  cancelBtn: { flex: 1, padding: SPACING.md, borderRadius: RADIUS.md, alignItems: 'center' },
+  cancelText: { fontSize: FONT_SIZE.md, fontWeight: '600' },
+  createBtn: { flex: 2, padding: SPACING.md, borderRadius: RADIUS.md, alignItems: 'center' },
+  createText: { color: '#fff', fontSize: FONT_SIZE.md, fontWeight: '700' },
 });

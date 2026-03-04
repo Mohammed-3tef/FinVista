@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Modal, KeyboardAvoidingView, Platform, TextInput as RNTextInput, StatusBar } from 'react-native';
+import React, { useState, useCallback } from 'react';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Modal, KeyboardAvoidingView, Platform, TextInput as RNTextInput, StatusBar, Alert } from 'react-native';
 import { useTheme } from '../contexts/ThemeContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useGoals } from '../contexts/GoalsContext';
@@ -9,8 +9,12 @@ import Card from '../components/Card';
 import ProgressBar from '../components/ProgressBar';
 import Button from '../components/Button';
 import ConfirmModal from '../components/ConfirmModal';
+import ExportBottomSheet, { ExportOption } from '../components/ExportBottomSheet';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faArrowLeft, faArrowRight, faTrashCan, faPenToSquare } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft, faArrowRight, faTrashCan, faPenToSquare, faEllipsisVertical, faFilePdf, faFileExcel } from '@fortawesome/free-solid-svg-icons';
+import { exportGoalProgressPDF } from '../services/reports/pdfGenerator';
+import { exportGoalSavingsHistoryExcel } from '../services/reports/excelGenerator';
+import { GoalProgressReportData, GoalSavingsHistoryReportData } from '../services/reports/types';
 
 export default function GoalDetailScreen({ navigation, route }: any) {
   const { theme } = useTheme();
@@ -32,6 +36,8 @@ export default function GoalDetailScreen({ navigation, route }: any) {
   const [date, setDate] = useState(new Date().toISOString().substring(0, 10));
   const [showDeleteGoal, setShowDeleteGoal] = useState(false);
   const [deleteEntryId, setDeleteEntryId] = useState<string | null>(null);
+  const [showGoalExport, setShowGoalExport] = useState(false);
+  const [loadingExportId, setLoadingExportId] = useState<string | null>(null);
 
   // Validation state for the savings modal
   const [entryErrors, setEntryErrors] = useState<{ amount?: string; date?: string }>({});
@@ -131,6 +137,62 @@ export default function GoalDetailScreen({ navigation, route }: any) {
     navigation.goBack();
   };
 
+  // ─── Export helpers ─────────────────────────────────────────────────────────
+
+  const buildProgressReport = useCallback((): GoalProgressReportData => ({
+    generatedAt: new Date().toLocaleString('en-US'),
+    goalName: goal.name,
+    targetAmount: goal.targetAmount,
+    savedAmount: totalSaved,
+    progressPercent: progress,
+    currency: t.currency,
+  }), [goal, totalSaved, progress, t.currency]);
+
+  const buildSavingsHistoryReport = useCallback((): GoalSavingsHistoryReportData => ({
+    goalName: goal.name,
+    currency: t.currency,
+    entries: goalEntries.map(e => ({
+      date: formatDate(e.date),
+      amount: e.amount,
+      note: (e as any).note,
+      type: e.amount >= 0 ? 'deposit' : 'withdrawal',
+      currency: t.currency,
+    })),
+  }), [goal.name, t.currency, goalEntries]);
+
+  const runExport = useCallback(async (id: string, fn: () => Promise<void>) => {
+    setLoadingExportId(id);
+    try {
+      await fn();
+    } catch (err: any) {
+      if (err?.message !== 'User did not share') {
+        Alert.alert('Export Failed', err?.message ?? 'Something went wrong.');
+      }
+    } finally {
+      setLoadingExportId(null);
+      setShowGoalExport(false);
+    }
+  }, []);
+
+  const goalExportOptions: ExportOption[] = [
+    {
+      id: 'progress-pdf',
+      label: 'Progress PDF',
+      subtitle: 'Goal name, target, saved amount & progress %',
+      icon: faFilePdf,
+      iconColor: COLORS.danger,
+      onPress: () => runExport('progress-pdf', () => exportGoalProgressPDF(buildProgressReport())),
+    },
+    {
+      id: 'savings-excel',
+      label: 'Savings History Excel',
+      subtitle: 'Full savings history — date, amount & notes',
+      icon: faFileExcel,
+      iconColor: COLORS.success,
+      onPress: () => runExport('savings-excel', () => exportGoalSavingsHistoryExcel(buildSavingsHistoryReport())),
+    },
+  ];
+
   const color = progress >= 100 ? COLORS.success : progress >= 60 ? COLORS.accent : COLORS.info;
   const icon = goal.icon || '🎯';
 
@@ -141,7 +203,6 @@ export default function GoalDetailScreen({ navigation, route }: any) {
             <FontAwesomeIcon icon={isRTL ? faArrowRight : faArrowLeft} size={15} color={theme.text} />
         </TouchableOpacity>
         <View style={[styles.headerCenter, isRTL && styles.rtl]}>
-          <Text style={styles.headerIcon}>{icon}</Text>
           <Text style={[styles.goalName, { color: theme.text }]} numberOfLines={1}>{goal.name}</Text>
         </View>
         <View style={[styles.headerActions, isRTL && styles.rtl]}>
@@ -150,6 +211,9 @@ export default function GoalDetailScreen({ navigation, route }: any) {
           </TouchableOpacity>
           <TouchableOpacity onPress={() => setShowDeleteGoal(true)} style={[styles.iconBtn, { backgroundColor: COLORS.danger + '22' }]}>
             <FontAwesomeIcon icon={faTrashCan} size={16} color={theme.text} />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => setShowGoalExport(true)} style={[styles.iconBtn, { backgroundColor: COLORS.warning + '22' }]}>
+            <FontAwesomeIcon icon={faEllipsisVertical} size={16} color={theme.text} />
           </TouchableOpacity>
         </View>
       </View>
@@ -352,6 +416,14 @@ export default function GoalDetailScreen({ navigation, route }: any) {
         onConfirm={() => { deleteEntry(deleteEntryId!); setDeleteEntryId(null); }}
         onCancel={() => setDeleteEntryId(null)}
       />
+
+      <ExportBottomSheet
+        visible={showGoalExport}
+        title="Export Goal"
+        options={goalExportOptions}
+        loadingId={loadingExportId}
+        onClose={() => setShowGoalExport(false)}
+      />
     </View>
   );
 }
@@ -360,15 +432,14 @@ const styles = StyleSheet.create({
   container: { flex: 1, paddingTop: StatusBar.currentHeight },
   header: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: SPACING.lg, paddingTop: SPACING.lg, paddingBottom: SPACING.md },
   rtl: { flexDirection: 'row-reverse' },
-  backBtn: { width: 40, height: 40, borderRadius: RADIUS.md, alignItems: 'center', justifyContent: 'center', marginRight: SPACING.sm },
+  backBtn: { width: 38, height: 38, borderRadius: RADIUS.md, alignItems: 'center', justifyContent: 'center', marginRight: SPACING.sm },
   headerCenter: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: SPACING.xs },
-  headerIcon: { fontSize: 20 },
-  goalName: { flex: 1, fontSize: FONT_SIZE.xl, fontWeight: '800', marginHorizontal: SPACING.xs },
+  goalName: { flex: 1, fontSize: FONT_SIZE.lg, fontWeight: '800', marginHorizontal: SPACING.xs },
   headerActions: { flexDirection: 'row', gap: SPACING.sm },
   iconBtn: { width: 36, height: 36, borderRadius: RADIUS.md, alignItems: 'center', justifyContent: 'center' },
   content: { paddingHorizontal: SPACING.lg },
   summaryCard: { marginBottom: SPACING.md },
-  summaryIconRow: { flexDirection: 'row', alignItems: 'center', gap: SPACING.sm, marginBottom: SPACING.md },
+  summaryIconRow: { flexDirection: 'row', alignItems: 'center', gap: SPACING.sm, marginBottom: SPACING.xs },
   summaryIconWrap: { width: 52, height: 52, borderRadius: RADIUS.lg, alignItems: 'center', justifyContent: 'center' },
   summaryIcon: { fontSize: 28 },
   summaryGoalName: { fontSize: FONT_SIZE.md, fontWeight: '700' },

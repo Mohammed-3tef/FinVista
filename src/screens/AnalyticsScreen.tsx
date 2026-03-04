@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, ScrollView, StyleSheet, StatusBar } from 'react-native';
+import React, { useState, useCallback } from 'react';
+import { View, Text, ScrollView, StyleSheet, StatusBar, TouchableOpacity, Alert } from 'react-native';
 import { useTheme } from '../contexts/ThemeContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useGoals } from '../contexts/GoalsContext';
@@ -7,11 +7,28 @@ import { getTotalSaved, getProgress, formatCurrency } from '../utils/calculation
 import { COLORS, SPACING, RADIUS, FONT_SIZE } from '../constants/theme';
 import Card from '../components/Card';
 import ProgressBar from '../components/ProgressBar';
+import ExportBottomSheet, { ExportOption } from '../components/ExportBottomSheet';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import {
+  faFilePdf,
+  faFileExcel,
+  faFileCsv,
+  faChartBar,
+  faCalendarDays,
+  faArrowUpFromBracket,
+} from '@fortawesome/free-solid-svg-icons';
+import { exportAnalyticsPDF } from '../services/reports/pdfGenerator';
+import { exportAnalyticsExcel } from '../services/reports/excelGenerator';
+import { exportAnalyticsCsv } from '../services/reports/csvGenerator';
+import { AnalyticsReportData } from '../services/reports/types';
 
 export default function AnalyticsScreen() {
   const { theme } = useTheme();
   const { t, isRTL } = useLanguage();
   const { goals, entries } = useGoals();
+
+  const [showExport, setShowExport] = useState(false);
+  const [loadingExportId, setLoadingExportId] = useState<string | null>(null);
 
   const totalSavedAll = goals.reduce((sum, g) => sum + getTotalSaved(entries, g.id), 0);
   const totalDeposits = entries.filter(e => e.amount > 0).reduce((sum, e) => sum + e.amount, 0);
@@ -37,6 +54,86 @@ export default function AnalyticsScreen() {
 
   const mostProgress = goalStats[0];
 
+  // ─── Export helpers ───────────────────────────────────────────────────────
+
+  const buildReportData = useCallback((): AnalyticsReportData => ({
+    generatedAt: new Date().toLocaleString('en-US'),
+    totalSaved: totalSavedAll,
+    totalDeposits,
+    totalWithdrawals,
+    depositCount,
+    avgPerDeposit: avgPerEntry,
+    currency: t.currency,
+    goals: goalStats.map(s => ({
+      name: s.goal.name,
+      targetAmount: s.goal.targetAmount,
+      saved: s.saved,
+      progress: s.progress,
+      deadline: (s.goal as any).deadline ?? '',
+      currency: t.currency,
+    })),
+  }), [totalSavedAll, totalDeposits, totalWithdrawals, depositCount, avgPerEntry, t.currency, goalStats]);
+
+  const runExport = useCallback(
+    async (id: string, fn: (data: AnalyticsReportData) => Promise<void>) => {
+      setLoadingExportId(id);
+      try {
+        await fn(buildReportData());
+      } catch (err: any) {
+        if (err?.message !== 'User did not share') {
+          Alert.alert('Export Failed', err?.message ?? 'Something went wrong.');
+        }
+      } finally {
+        setLoadingExportId(null);
+        setShowExport(false);
+      }
+    },
+    [buildReportData],
+  );
+
+  const exportOptions: ExportOption[] = [
+    {
+      id: 'pdf',
+      label: 'Export PDF',
+      subtitle: 'Full analytics report as a styled PDF',
+      icon: faFilePdf,
+      iconColor: COLORS.danger,
+      onPress: () => runExport('pdf', exportAnalyticsPDF),
+    },
+    {
+      id: 'excel',
+      label: 'Export Excel',
+      subtitle: 'Summary & goal breakdown spreadsheet (.xlsx)',
+      icon: faFileExcel,
+      iconColor: COLORS.success,
+      onPress: () => runExport('excel', exportAnalyticsExcel),
+    },
+    {
+      id: 'csv',
+      label: 'Export CSV',
+      subtitle: 'Comma-separated values for any tool',
+      icon: faFileCsv,
+      iconColor: COLORS.accent,
+      onPress: () => runExport('csv', exportAnalyticsCsv),
+    },
+    {
+      id: 'compare',
+      label: 'Compare Months',
+      subtitle: 'Side-by-side monthly savings comparison',
+      icon: faChartBar,
+      iconColor: COLORS.info,
+      onPress: () => Alert.alert('Coming Soon', 'Monthly comparison will be available in the next update.'),
+    },
+    {
+      id: 'daterange',
+      label: 'Custom Date Range',
+      subtitle: 'Export data for a specific period',
+      icon: faCalendarDays,
+      iconColor: COLORS.warning,
+      onPress: () => Alert.alert('Coming Soon', 'Custom date range export will be available soon.'),
+    },
+  ];
+
   const statCards = [
     { label: t.totalSaved, value: formatCurrency(totalSavedAll, t.currency), emoji: '💰', color: COLORS.success },
     { label: t.totalGoals, value: goals.length.toString(), emoji: '🎯', color: COLORS.info },
@@ -48,8 +145,14 @@ export default function AnalyticsScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.bg }]}>
-      <View style={styles.header}>
+      <View style={[styles.header, isRTL && styles.rtlRow]}>
         <Text style={[styles.title, { color: theme.text }]}>{t.analyticsTitle}</Text>
+        <TouchableOpacity
+          style={[styles.exportBtn, { backgroundColor: COLORS.accent }]}
+          onPress={() => setShowExport(true)} activeOpacity={0.8}
+        >
+          <FontAwesomeIcon icon={faArrowUpFromBracket} size={FONT_SIZE.md} color={COLORS.primary} />
+        </TouchableOpacity>
       </View>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
 
@@ -116,14 +219,24 @@ export default function AnalyticsScreen() {
 
         <View style={{ height: SPACING.xl }} />
       </ScrollView>
+
+      <ExportBottomSheet
+        visible={showExport}
+        title="Export Report"
+        options={exportOptions}
+        loadingId={loadingExportId}
+        onClose={() => setShowExport(false)}
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, paddingTop: StatusBar.currentHeight },
-  header: { paddingHorizontal: SPACING.lg, paddingTop: SPACING.lg, paddingBottom: SPACING.md },
+  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: SPACING.lg, paddingTop: SPACING.lg, paddingBottom: SPACING.md },
+  rtlRow: { flexDirection: 'row-reverse' },
   title: { fontSize: FONT_SIZE.xxl, fontWeight: '800' },
+  exportBtn: { width: 38, height: 38, borderRadius: RADIUS.md, alignItems: 'center', justifyContent: 'center', marginRight: SPACING.sm },
   content: { paddingHorizontal: SPACING.lg },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: SPACING.sm, marginBottom: SPACING.md },
   statCard: { width: '47.5%', alignItems: 'center', paddingVertical: SPACING.md },

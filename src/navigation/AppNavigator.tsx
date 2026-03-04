@@ -2,12 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { Text, View, BackHandler, Platform } from 'react-native';
+import { Text, View, BackHandler } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTheme } from '../contexts/ThemeContext';
 import { useLanguage } from '../contexts/LanguageContext';
-import { COLORS, SPACING } from '../constants/theme';
+import { COLORS } from '../constants/theme';
 import ConfirmModal from '../components/ConfirmModal';
 
 import DashboardScreen from '../screens/DashboardScreen';

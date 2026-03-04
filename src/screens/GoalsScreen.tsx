@@ -5,6 +5,7 @@ import {
 } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faSearch, faSlidersH, faTimes, faCheck } from '@fortawesome/free-solid-svg-icons';
+import { CATEGORIES } from '../constants/strings';
 import { useTheme } from '../contexts/ThemeContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useGoals } from '../contexts/GoalsContext';
@@ -24,29 +25,34 @@ export default function GoalsScreen({ navigation }: any) {
   const [filterVisible, setFilterVisible] = useState(false);
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
   const [sortOption, setSortOption] = useState<SortOption>('nameAZ');
+  const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
 
   // Pending state while modal is open
   const [pendingStatus, setPendingStatus] = useState<StatusFilter>('all');
   const [pendingSort, setPendingSort] = useState<SortOption>('nameAZ');
+  const [pendingCategory, setPendingCategory] = useState<string | null>(null);
 
   const openFilter = () => {
     setPendingStatus(statusFilter);
     setPendingSort(sortOption);
+    setPendingCategory(categoryFilter);
     setFilterVisible(true);
   };
 
   const applyFilter = () => {
     setStatusFilter(pendingStatus);
     setSortOption(pendingSort);
+    setCategoryFilter(pendingCategory);
     setFilterVisible(false);
   };
 
   const resetFilter = () => {
     setPendingStatus('all');
     setPendingSort('nameAZ');
+    setPendingCategory(null);
   };
 
-  const isFiltered = statusFilter !== 'all' || sortOption !== 'nameAZ';
+  const isFiltered = statusFilter !== 'all' || sortOption !== 'nameAZ' || categoryFilter !== null;
 
   const filteredGoals = useMemo(() => {
     let result = [...goals];
@@ -55,6 +61,14 @@ export default function GoalsScreen({ navigation }: any) {
     const q = searchQuery.trim().toLowerCase();
     if (q) {
       result = result.filter(g => g.name.toLowerCase().includes(q));
+    }
+
+    // Category filter
+    if (categoryFilter !== null) {
+      const cat = CATEGORIES.find(c => c.label === categoryFilter);
+      if (cat) {
+        result = result.filter(g => cat.icons.includes((g as any).icon ?? ''));
+      }
     }
 
     // Status filter
@@ -90,7 +104,7 @@ export default function GoalsScreen({ navigation }: any) {
     });
 
     return result;
-  }, [goals, entries, searchQuery, statusFilter, sortOption]);
+  }, [goals, entries, searchQuery, statusFilter, sortOption, categoryFilter]);
 
   const statusOptions: { key: StatusFilter; label: string }[] = [
     { key: 'all', label: t.allGoals },
@@ -217,6 +231,47 @@ export default function GoalsScreen({ navigation }: any) {
             ))}
           </View>
 
+          {/* Category Filter */}
+          <Text style={[styles.sectionLabel, { color: theme.textSecondary }]}>Category</Text>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.categoryScroll}
+            style={{ marginBottom: SPACING.lg }}
+          >
+            <TouchableOpacity
+              onPress={() => setPendingCategory(null)}
+              style={[
+                styles.categoryChip,
+                {
+                  backgroundColor: pendingCategory === null ? COLORS.accent + '22' : theme.inputBg,
+                  borderColor: pendingCategory === null ? COLORS.accent : theme.cardBorder,
+                },
+              ]}
+            >
+              <Text style={[styles.categoryChipTxt, { color: pendingCategory === null ? COLORS.accent : theme.textSecondary }]}>
+                🗂️ All
+              </Text>
+            </TouchableOpacity>
+            {CATEGORIES.map(cat => (
+              <TouchableOpacity
+                key={cat.label}
+                onPress={() => setPendingCategory(cat.label)}
+                style={[
+                  styles.categoryChip,
+                  {
+                    backgroundColor: pendingCategory === cat.label ? COLORS.accent + '22' : theme.inputBg,
+                    borderColor: pendingCategory === cat.label ? COLORS.accent : theme.cardBorder,
+                  },
+                ]}
+              >
+                <Text style={[styles.categoryChipTxt, { color: pendingCategory === cat.label ? COLORS.accent : theme.textSecondary }]}>
+                  {cat.label}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+
           {/* Sort By */}
           <Text style={[styles.sectionLabel, { color: theme.textSecondary }]}>{t.sortBy}</Text>
           <View style={styles.sortList}>
@@ -329,6 +384,12 @@ const styles = StyleSheet.create({
     paddingVertical: 12, borderBottomWidth: StyleSheet.hairlineWidth,
   },
   sortLabel: { fontSize: FONT_SIZE.md },
+  categoryScroll: { paddingBottom: 4, gap: SPACING.xs },
+  categoryChip: {
+    paddingHorizontal: SPACING.md, paddingVertical: 8,
+    borderRadius: RADIUS.full, borderWidth: 1.5, marginRight: SPACING.xs,
+  },
+  categoryChipTxt: { fontSize: FONT_SIZE.sm, fontWeight: '600' },
   modalActions: {
     flexDirection: 'row', gap: SPACING.sm, marginTop: SPACING.sm,
   },

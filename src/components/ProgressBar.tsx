@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { View, Animated, StyleSheet, Text } from 'react-native';
 import { useTheme } from '../contexts/ThemeContext';
-import { COLORS, RADIUS, FONT_SIZE } from '../constants/theme';
+import { COLORS, FONT_SIZE } from '../constants/theme';
 
 interface Props {
   progress: number; // 0-100

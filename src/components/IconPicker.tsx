@@ -10,45 +10,7 @@ import {
 } from 'react-native';
 import { useTheme } from '../contexts/ThemeContext';
 import { COLORS, SPACING, RADIUS, FONT_SIZE } from '../constants/theme';
-
-const CATEGORIES = [
-    {
-        label: '👕 Clothes',
-        icons: ['👕', '👗', '👖', '🧥', '👔', '👟', '🎒', '⌚', '🕶️', '🧢'],
-    },
-    {
-        label: '🏠 Life',
-        icons: ['🏠', '🏡', '🛋️', '🔑', '🏗️', '🏢', '🏘️', '🛏️', '🚿', '🪴'],
-    },
-    {
-        label: '🚗 Travel',
-        icons: ['🚗', '✈️', '🏖️', '⛵', '🚀', '🏕️', '🗺️', '🧳', '🚢', '🚂'],
-    },
-    {
-        label: '💻 Tech',
-        icons: ['💻', '📱', '🎮', '📷', '🎧', '⌚', '🖥️', '📺', '🎙️', '🔋'],
-    },
-    {
-        label: '📚 Education',
-        icons: ['📚', '🎓', '✏️', '🏫', '🔬', '💡', '📖', '🎨', '🖌️', '🧪'],
-    },
-    {
-        label: '❤️ Health',
-        icons: ['❤️', '💪', '🏃', '🧘', '🍎', '🏋️', '⚽', '🚴', '🧠', '🏊'],
-    },
-    {
-        label: '💰 Finance',
-        icons: ['💰', '💎', '🏦', '📈', '💳', '🪙', '💵', '🏆', '🎯', '⭐'],
-    },
-    {
-        label: '🎉 Fun',
-        icons: ['🎉', '🎂', '🎁', '🎸', '🎬', '🎭', '🎪', '🛍️', '👗', '👟'],
-    },
-    {
-        label: '👨‍👩‍👧 Family',
-        icons: ['👨‍👩‍👧', '👶', '🐶', '🐱', '💍', '💒', '🤝', '🫂', '🧸', '🌸'],
-    },
-];
+import { CATEGORIES } from '../constants/strings';
 
 interface Props {
   value: string;

@@ -10,7 +10,7 @@ import {
   Platform,
 } from 'react-native';
 import { useApp } from '../context/AppContext';
-import { Spacing, Radius, Typography, Colors } from '../constants/theme';
+import { SPACING, RADIUS, FONT_SIZE, Colors } from '../constants/theme';
 import { getTodayString } from '../utils/goalUtils';
 
 interface AddSavingModalProps {
@@ -156,7 +156,7 @@ export const AddSavingModal: React.FC<AddSavingModalProps> = ({ visible, onClose
             )}
 
             {/* Date */}
-            <View style={[styles.labelRow, { flexDirection: isRTL ? 'row-reverse' : 'row', marginTop: Spacing.md }]}>
+            <View style={[styles.labelRow, { flexDirection: isRTL ? 'row-reverse' : 'row', marginTop: SPACING.md }]}>
               <Text style={[styles.label, { color: colors.textSecondary }]}>{t.date}</Text>
               <Text style={styles.requiredStar}> *</Text>
             </View>
@@ -183,7 +183,7 @@ export const AddSavingModal: React.FC<AddSavingModalProps> = ({ visible, onClose
             )}
 
             {/* Note */}
-            <View style={[styles.labelRow, { flexDirection: isRTL ? 'row-reverse' : 'row', marginTop: Spacing.md }]}>
+            <View style={[styles.labelRow, { flexDirection: isRTL ? 'row-reverse' : 'row', marginTop: SPACING.md }]}>
               <Text style={[styles.label, { color: colors.textSecondary }]}>{t.note}</Text>
               <Text style={[styles.label, { color: colors.textTertiary, fontWeight: '400' }]}>
                 {' '}({t.optional ?? 'optional'})
@@ -197,7 +197,7 @@ export const AddSavingModal: React.FC<AddSavingModalProps> = ({ visible, onClose
                 textAlign: isRTL ? 'right' : 'left',
                 height: 80,
                 textAlignVertical: 'top',
-                paddingTop: Spacing.md,
+                paddingTop: SPACING.md,
                 borderWidth: err('note') ? 2 : 1.5,
               }]}
               placeholder={t.notePlaceholder}
@@ -240,27 +240,27 @@ const styles = StyleSheet.create({
   overlay: { flex: 1, justifyContent: 'flex-end' },
   keyboardView: { justifyContent: 'flex-end' },
   sheet: {
-    borderTopLeftRadius: Radius.xl,
-    borderTopRightRadius: Radius.xl,
-    padding: Spacing.lg,
-    paddingBottom: Spacing.xxl,
+    borderTopLeftRadius: RADIUS.xl,
+    borderTopRightRadius: RADIUS.xl,
+    padding: SPACING.lg,
+    paddingBottom: SPACING.xxl,
   },
-  header: { justifyContent: 'space-between', alignItems: 'center', marginBottom: Spacing.lg },
-  title: { fontSize: Typography.fontSizes.xxl, fontWeight: Typography.fontWeights.bold },
+  header: { justifyContent: 'space-between', alignItems: 'center', marginBottom: SPACING.lg },
+  title: { fontSize: FONT_SIZE.xxl, fontWeight: Typography.fontWeights.bold },
   closeBtn: { width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
-  closeBtnText: { fontSize: 14, fontWeight: '600' },
-  labelRow: { alignItems: 'center', marginBottom: Spacing.xs },
-  label: { fontSize: Typography.fontSizes.sm, fontWeight: Typography.fontWeights.medium },
-  requiredStar: { fontSize: Typography.fontSizes.sm, fontWeight: '700', color: Colors.light.error },
-  input: { borderRadius: Radius.md, padding: Spacing.md, fontSize: Typography.fontSizes.md },
-  amountInput: { fontSize: Typography.fontSizes.xxl, fontWeight: Typography.fontWeights.bold },
+  closeBtnText: { fontSize: FONT_SIZE.sm, fontWeight: '600' },
+  labelRow: { alignItems: 'center', marginBottom: SPACING.xs },
+  label: { fontSize: FONT_SIZE.sm, fontWeight: Typography.fontWeights.medium },
+  requiredStar: { fontSize: FONT_SIZE.sm, fontWeight: '700', color: Colors.light.error },
+  input: { borderRadius: RADIUS.md, padding: SPACING.md, fontSize: FONT_SIZE.md },
+  amountInput: { fontSize: FONT_SIZE.xxl, fontWeight: Typography.fontWeights.bold },
   errorRow: { alignItems: 'center', marginTop: 5, gap: 4 },
-  errorIcon: { fontSize: 11, color: Colors.light.error },
-  errorText: { color: Colors.light.error, fontSize: Typography.fontSizes.xs, flex: 1 },
-  charCount: { fontSize: Typography.fontSizes.xs, textAlign: 'right', marginTop: 4 },
-  actions: { gap: Spacing.sm, marginTop: Spacing.lg },
-  cancelBtn: { flex: 1, padding: Spacing.md, borderRadius: Radius.md, alignItems: 'center' },
-  cancelText: { fontSize: Typography.fontSizes.md, fontWeight: Typography.fontWeights.semibold },
-  createBtn: { flex: 2, padding: Spacing.md, borderRadius: Radius.md, alignItems: 'center' },
-  createText: { color: '#fff', fontSize: Typography.fontSizes.md, fontWeight: Typography.fontWeights.bold },
+  errorIcon: { fontSize: FONT_SIZE.xs, color: Colors.light.error },
+  errorText: { color: Colors.light.error, fontSize: FONT_SIZE.xs, flex: 1 },
+  charCount: { fontSize: FONT_SIZE.xs, textAlign: 'right', marginTop: 4 },
+  actions: { gap: SPACING.sm, marginTop: SPACING.lg },
+  cancelBtn: { flex: 1, padding: SPACING.md, borderRadius: RADIUS.md, alignItems: 'center' },
+  cancelText: { fontSize: FONT_SIZE.md, fontWeight: Typography.fontWeights.semibold },
+  createBtn: { flex: 2, padding: SPACING.md, borderRadius: RADIUS.md, alignItems: 'center' },
+  createText: { color: '#fff', fontSize: FONT_SIZE.md, fontWeight: Typography.fontWeights.bold },
 });

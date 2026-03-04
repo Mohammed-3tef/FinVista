@@ -1,4 +1,4 @@
-import { Platform } from 'react-native';
+// import { Platform } from 'react-native';
 import { translations, Language } from '../constants/translations';
 
 // Note: In production, install @notifee/react-native or react-native-push-notification

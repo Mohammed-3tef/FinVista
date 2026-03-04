@@ -1,7 +1,7 @@
 import React from 'react';
-import { Modal, View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { Modal, View, Text, StyleSheet } from 'react-native';
 import { useTheme } from '../contexts/ThemeContext';
-import { COLORS, SPACING, RADIUS, FONT_SIZE } from '../constants/theme';
+import { SPACING, RADIUS, FONT_SIZE } from '../constants/theme';
 import Button from './Button';
 
 interface Props {

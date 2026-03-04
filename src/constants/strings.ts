@@ -1,6 +1,8 @@
 export type Language = 'en' | 'ar';
 
-const strings = {
+export const strings = {
+  versionNumber: '1.1.0',
+
   en: {
     // App
     appName: 'FinVista',
@@ -206,4 +208,46 @@ const strings = {
   },
 };
 
-export default strings;
+export interface Category {
+  label: string;
+  icons: string[];
+}
+
+export const CATEGORIES: Category[] = [
+  {
+    label: '👕 Clothes',
+    icons: ['👕', '👗', '👖', '🧥', '👔', '👟', '🎒', '⌚', '🕶️', '🧢'],
+  },
+  {
+    label: '🏠 Life',
+    icons: ['🏠', '🏡', '🛋️', '🔑', '🏗️', '🏢', '🏘️', '🛏️', '🚿', '🪴'],
+  },
+  {
+    label: '🚗 Travel',
+    icons: ['🚗', '✈️', '🏖️', '⛵', '🚀', '🏕️', '🗺️', '🧳', '🚢', '🚂'],
+  },
+  {
+    label: '💻 Tech',
+    icons: ['💻', '📱', '🎮', '📷', '🎧', '⌚', '🖥️', '📺', '🎙️', '🔋'],
+  },
+  {
+    label: '📚 Education',
+    icons: ['📚', '🎓', '✏️', '🏫', '🔬', '💡', '📖', '🎨', '🖌️', '🧪'],
+  },
+  {
+    label: '❤️ Health',
+    icons: ['❤️', '💪', '🏃', '🧘', '🍎', '🏋️', '⚽', '🚴', '🧠', '🏊'],
+  },
+  {
+    label: '💰 Finance',
+    icons: ['💰', '💎', '🏦', '📈', '💳', '🪙', '💵', '🏆', '🎯', '⭐'],
+  },
+  {
+    label: '🎉 Fun',
+    icons: ['🎉', '🎂', '🎁', '🎸', '🎬', '🎭', '🎪', '🛍️', '👗', '👟'],
+  },
+  {
+    label: '👨‍👩‍👧 Family',
+    icons: ['👨‍👩‍👧', '👶', '🐶', '🐱', '💍', '💒', '🤝', '🫂', '🧸', '🌸'],
+  },
+];

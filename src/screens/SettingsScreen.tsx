@@ -34,6 +34,7 @@ import {
 } from '../services/notifications';
 import Card from '../components/Card';
 import UserNameModal from '../components/UserNameModal';
+import {strings} from '../constants/strings';
 
 export const USER_NAME_KEY = '@finvista_user_name';
 
@@ -682,7 +683,7 @@ export default function SettingsScreen() {
           <Row
             label={t.version}
             noBorder
-            right={<Text style={{ color: theme.textMuted }}>1.0.0</Text>}
+            right={<Text style={{ color: theme.textMuted }}>{strings.versionNumber}</Text>}
           />
         </Section>
 
