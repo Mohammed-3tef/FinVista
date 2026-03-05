@@ -11,6 +11,9 @@ import {
 import { useTheme } from '../contexts/ThemeContext';
 import { COLORS, SPACING, RADIUS, FONT_SIZE } from '../constants/theme';
 import Button from './Button';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { resolveIcon } from '../constants/icons';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface Props {
   visible: boolean;
@@ -21,6 +24,7 @@ interface Props {
 
 export default function UserNameModal({ visible, currentName, onSave, onCancel }: Props) {
   const { theme } = useTheme();
+  const { t, isRTL } = useLanguage();
   const [name, setName] = useState(currentName);
 
   // Sync input when modal opens with an existing name
@@ -45,18 +49,20 @@ export default function UserNameModal({ visible, currentName, onSave, onCancel }
           ]}>
           {/* Icon */}
           <View style={[styles.iconWrap, { backgroundColor: COLORS.accent + '22' }]}>
-            <Text style={styles.icon}>👤</Text>
+            <FontAwesomeIcon icon={resolveIcon('faUser')} size={26} color={COLORS.accent} />
           </View>
 
-          <Text style={[styles.title, { color: theme.text }]}>What's your name?</Text>
+          <Text style={[styles.title, { color: theme.text }]}>
+            {isRTL ? 'ما اسمك؟' : 'What\'s your name?'}
+          </Text>
           <Text style={[styles.subtitle, { color: theme.textSecondary }]}>
-            We'll use it to personalise your dashboard greeting.
+            {!isRTL ? 'We\'ll use it to personalise your dashboard greeting.' : 'سنستخدمه لتخصيص تحية لوحة القيادة الخاصة بك.'}
           </Text>
 
           <TextInput
             value={name}
             onChangeText={setName}
-            placeholder="Enter your name"
+            placeholder={isRTL ? 'أدخل اسمك' : 'Enter your name'}
             placeholderTextColor={theme.textMuted}
             autoFocus
             maxLength={30}
@@ -70,12 +76,13 @@ export default function UserNameModal({ visible, currentName, onSave, onCancel }
                 borderColor: name.trim() ? COLORS.accent : theme.cardBorder,
               },
             ]}
+            textAlign={isRTL ? 'right' : 'left'}
           />
 
-          <View style={styles.actions}>
-            <Button label="Cancel" onPress={onCancel} variant="outline" style={styles.btn} />
+          <View style={[styles.actions, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+            <Button label={isRTL ? 'إلغاء' : 'Cancel'} onPress={onCancel} variant="outline" style={styles.btn} />
             <Button
-              label="Save"
+              label={isRTL ? 'حفظ' : 'Save'}
               onPress={handleSave}
               variant="primary"
               style={styles.btn}
@@ -132,6 +139,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     marginBottom: SPACING.lg,
   },
-  actions: { flexDirection: 'row', gap: SPACING.sm, width: '100%' },
+  actions: { gap: SPACING.sm, width: '100%' },
   btn: { flex: 1 },
 });

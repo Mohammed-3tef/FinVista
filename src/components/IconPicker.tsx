@@ -8,9 +8,12 @@ import {
   StyleSheet,
   FlatList,
 } from 'react-native';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { useTheme } from '../contexts/ThemeContext';
 import { COLORS, SPACING, RADIUS, FONT_SIZE } from '../constants/theme';
 import { CATEGORIES } from '../constants/strings';
+import { resolveIcon } from '../constants/icons';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface Props {
   value: string;
@@ -19,10 +22,12 @@ interface Props {
   isRTL?: boolean;
 }
 
-export default function IconPicker({ value, onChange, label = 'Icon', isRTL }: Props) {
+export default function IconPicker({ value, onChange, label = 'Icon' }: Props) {
   const { theme, isDark } = useTheme();
   const [visible, setVisible] = useState(false);
   const [activeCategory, setActiveCategory] = useState(0);
+  const { t, isRTL } = useLanguage();
+  
 
   const handleSelect = (icon: string) => {
     onChange(icon);
@@ -47,12 +52,14 @@ export default function IconPicker({ value, onChange, label = 'Icon', isRTL }: P
           },
         ]}>
         <View style={[styles.iconPreview, { backgroundColor: COLORS.accent + '22' }]}>
-          <Text style={styles.iconPreviewEmoji}>{value}</Text>
+          <FontAwesomeIcon icon={resolveIcon(value)} size={20} color={COLORS.accent} />
         </View>
         <Text style={[styles.triggerText, { color: theme.textSecondary }]}>
-          Tap to change icon
+          {t.tapToChangeIcon}
         </Text>
-        <Text style={[styles.chevron, { color: theme.textMuted }]}>›</Text>
+        <Text style={[styles.chevron, { color: theme.textMuted }]}>
+          <FontAwesomeIcon icon={isRTL ? resolveIcon('faChevronLeft') : resolveIcon('faChevronRight')} size={10} color={theme.textMuted} />
+        </Text>
       </TouchableOpacity>
 
       <Modal visible={visible} animationType="slide" transparent onRequestClose={() => setVisible(false)}>
@@ -73,7 +80,7 @@ export default function IconPicker({ value, onChange, label = 'Icon', isRTL }: P
 
             {/* Selected preview */}
             <View style={[styles.selectedPreview, { backgroundColor: COLORS.accent + '15' }]}>
-              <Text style={styles.selectedEmoji}>{value}</Text>
+              <FontAwesomeIcon icon={resolveIcon(value)} size={34} color={COLORS.accent} />
             </View>
 
             {/* Category tabs */}
@@ -90,6 +97,11 @@ export default function IconPicker({ value, onChange, label = 'Icon', isRTL }: P
                     styles.tab,
                     { backgroundColor: activeCategory === i ? COLORS.accent : theme.inputBg },
                   ]}>
+                  <FontAwesomeIcon
+                    icon={resolveIcon(cat.categoryIcon)}
+                    size={12}
+                    color={activeCategory === i ? COLORS.primary : theme.textSecondary}
+                  />
                   <Text style={[
                     styles.tabTxt,
                     { color: activeCategory === i ? COLORS.primary : theme.textSecondary },
@@ -116,7 +128,11 @@ export default function IconPicker({ value, onChange, label = 'Icon', isRTL }: P
                       borderColor: value === item ? COLORS.accent : 'transparent',
                     },
                   ]}>
-                  <Text style={styles.iconEmoji}>{item}</Text>
+                  <FontAwesomeIcon
+                    icon={resolveIcon(item)}
+                    size={24}
+                    color={value === item ? COLORS.accent : theme.textSecondary}
+                  />
                 </TouchableOpacity>
               )}
             />
@@ -145,7 +161,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  iconPreviewEmoji: { fontSize: 22 },
   triggerText: { flex: 1, fontSize: FONT_SIZE.md },
   chevron: { fontSize: 22, fontWeight: '300' },
   overlay: {
@@ -191,7 +206,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: SPACING.md,
   },
-  selectedEmoji: { fontSize: 36 },
   tabsScroll: { flexGrow: 0 },
   tabs: {
     paddingHorizontal: SPACING.lg,
@@ -199,6 +213,9 @@ const styles = StyleSheet.create({
     paddingBottom: SPACING.sm,
   },
   tab: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
     paddingHorizontal: SPACING.md,
     paddingVertical: 7,
     borderRadius: RADIUS.full,
@@ -218,5 +235,4 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  iconEmoji: { fontSize: 28 },
 });

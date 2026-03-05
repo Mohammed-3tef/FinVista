@@ -20,8 +20,7 @@ import { useSms } from '../contexts/SmsContext';
 import { SmsTransaction } from '../constants/types';
 import { COLORS, SPACING, RADIUS, FONT_SIZE } from '../constants/theme';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faBan, faTrashCan } from '@fortawesome/free-solid-svg-icons';
-import { faSearch } from '@fortawesome/free-solid-svg-icons/faSearch';
+import { resolveIcon } from '../constants/icons';
 
 type FilterType = 'all' | 'deposit' | 'withdrawal';
 
@@ -189,7 +188,7 @@ export default function SmsTransactionsScreen() {
             style={[styles.actionBtn, { borderColor: COLORS.danger + '66' }]}>
             <Text style={[styles.actionTxt, { color: COLORS.danger }]}>
               
-              <FontAwesomeIcon icon={faBan} size={8} color={COLORS.danger} />
+              <FontAwesomeIcon icon={resolveIcon('faBan')} size={8} color={COLORS.danger} />
               {' '}Block Sender
             </Text>
           </TouchableOpacity>
@@ -197,7 +196,7 @@ export default function SmsTransactionsScreen() {
             onPress={() => handleDelete(item)}
             style={[styles.actionBtn, { borderColor: theme.cardBorder }]}>
             <Text style={[styles.actionTxt, { color: theme.textMuted }]}>
-              <FontAwesomeIcon icon={faTrashCan} size={8} color={theme.textMuted} />
+              <FontAwesomeIcon icon={resolveIcon('faTrashCan')} size={8} color={theme.textMuted} />
               {' '}Delete
             </Text>
           </TouchableOpacity>
@@ -219,7 +218,7 @@ export default function SmsTransactionsScreen() {
       {/* Search */}
       <View style={[styles.searchWrap, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
         <Text style={{ color: theme.textMuted, marginRight: SPACING.xs }}>
-          <FontAwesomeIcon icon={faSearch} size={14} color={theme.textSecondary} style={{ marginRight: SPACING.sm }} />
+          <FontAwesomeIcon icon={resolveIcon('faSearch')} size={14} color={theme.textSecondary} style={{ marginRight: SPACING.sm }} />
         </Text>
         <TextInput
           value={search}
@@ -230,7 +229,9 @@ export default function SmsTransactionsScreen() {
         />
         {search.length > 0 && (
           <TouchableOpacity onPress={() => setSearch('')}>
-            <Text style={{ color: theme.textMuted }}>✕</Text>
+            <Text style={{ color: theme.textMuted }}>
+              <FontAwesomeIcon icon={resolveIcon('faXmark')} size={14} color={theme.textMuted} />
+            </Text>
           </TouchableOpacity>
         )}
       </View>
@@ -266,7 +267,9 @@ export default function SmsTransactionsScreen() {
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={
           <View style={styles.empty}>
-            <Text style={styles.emptyEmoji}>📭</Text>
+            <Text style={styles.emptyEmoji}>
+              <FontAwesomeIcon icon={resolveIcon('faInbox')} size={48} color={theme.textMuted} />
+            </Text>
             <Text style={[styles.emptyTitle, { color: theme.text }]}>
               No transactions yet
             </Text>

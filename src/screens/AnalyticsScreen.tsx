@@ -15,8 +15,8 @@ import {
   faFileCsv,
   faChartBar,
   faCalendarDays,
-  faArrowUpFromBracket,
 } from '@fortawesome/free-solid-svg-icons';
+import { resolveIcon } from '../constants/icons';
 import { exportAnalyticsPDF } from '../services/reports/pdfGenerator';
 import { exportAnalyticsExcel } from '../services/reports/excelGenerator';
 import { exportAnalyticsCsv } from '../services/reports/csvGenerator';
@@ -135,12 +135,12 @@ export default function AnalyticsScreen() {
   ];
 
   const statCards = [
-    { label: t.totalSaved, value: formatCurrency(totalSavedAll, t.currency), emoji: '💰', color: COLORS.success },
-    { label: t.totalGoals, value: goals.length.toString(), emoji: '🎯', color: COLORS.info },
-    { label: 'Total Deposits', value: formatCurrency(totalDeposits, t.currency), emoji: '📥', color: COLORS.success },
-    { label: 'Total Withdrawals', value: formatCurrency(totalWithdrawals, t.currency), emoji: '📤', color: COLORS.danger },
-    { label: 'Deposit Entries', value: depositCount.toString(), emoji: '📝', color: COLORS.accent },
-    { label: 'Avg per Deposit', value: formatCurrency(avgPerEntry, t.currency), emoji: '📊', color: COLORS.warning },
+    { label: t.totalSaved, value: formatCurrency(totalSavedAll, t.currency), icon: 'faMoneyBillWave', color: COLORS.success },
+    { label: t.totalGoals, value: goals.length.toString(), icon: 'faBullseye', color: COLORS.info },
+    { label: t.totalDeposits, value: formatCurrency(totalDeposits, t.currency), icon: 'faArrowDown', color: COLORS.success },
+    { label: t.totalWithdrawals, value: formatCurrency(totalWithdrawals, t.currency), icon: 'faArrowUp', color: COLORS.danger },
+    { label: t.depositEntries, value: depositCount.toString(), icon: 'faListCheck', color: COLORS.accent },
+    { label: t.avgPerDeposit, value: formatCurrency(avgPerEntry, t.currency), icon: 'faCalculator', color: COLORS.warning },
   ];
 
   return (
@@ -151,7 +151,7 @@ export default function AnalyticsScreen() {
           style={[styles.exportBtn, { backgroundColor: COLORS.accent }]}
           onPress={() => setShowExport(true)} activeOpacity={0.8}
         >
-          <FontAwesomeIcon icon={faArrowUpFromBracket} size={FONT_SIZE.md} color={COLORS.primary} />
+          <FontAwesomeIcon icon={resolveIcon('faArrowUpFromBracket')} size={FONT_SIZE.md} color={COLORS.primary} />
         </TouchableOpacity>
       </View>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
@@ -161,7 +161,7 @@ export default function AnalyticsScreen() {
           {statCards.map((s, i) => (
             <Card key={i} style={styles.statCard}>
               <View style={[styles.statIcon, { backgroundColor: s.color + '22' }]}>
-                <Text style={{ fontSize: 22 }}>{s.emoji}</Text>
+                <FontAwesomeIcon icon={resolveIcon(s.icon)} size={22} color={s.color} />
               </View>
               <Text style={[styles.statValue, { color: s.color }]}>{s.value}</Text>
               <Text style={[styles.statLabel, { color: theme.textSecondary }]}>{s.label}</Text>
@@ -172,13 +172,13 @@ export default function AnalyticsScreen() {
         {/* Most Progress */}
         {mostProgress && (
           <Card style={styles.highlightCard}>
-            <View style={[styles.row, isRTL && styles.rtl]}>
+            <View style={[styles.row, isRTL ? styles.rtl : styles.ltr ]}>
               <View style={[styles.highlightIconWrap, { backgroundColor: COLORS.accent + '22' }]}>
-                <Text style={{ fontSize: 22 }}>{mostProgress.goal.icon || '🎯'}</Text>
+                <FontAwesomeIcon icon={resolveIcon(mostProgress.goal.icon || 'faBullseye')} size={22} color={COLORS.accent} />
               </View>
-              <View style={[styles.highlightText, isRTL && { marginRight: SPACING.sm, marginLeft: 0 }]}>
-                <Text style={[styles.highlightLabel, { color: theme.textSecondary }]}>{t.mostProgress}</Text>
-                <Text style={[styles.highlightName, { color: theme.text }]}>{mostProgress.goal.name}</Text>
+              <View style={[styles.highlightText, isRTL ? { marginRight: SPACING.sm, marginLeft: 0 } : { marginRight: 0, marginLeft: SPACING.sm }]}>
+                <Text style={[styles.highlightLabel, { color: theme.textSecondary, textAlign: isRTL ? 'right' : 'left' }]}>{t.mostProgress}</Text>
+                <Text style={[styles.highlightName, { color: theme.text, textAlign: isRTL ? 'right' : 'left' }]}>{mostProgress.goal.name}</Text>
               </View>
               <Text style={[styles.highlightPct, { color: COLORS.accent }]}>{Math.round(mostProgress.progress)}%</Text>
             </View>
@@ -188,22 +188,29 @@ export default function AnalyticsScreen() {
         {/* Goal Breakdown */}
         {goalStats.length > 0 && (
           <>
-            <Text style={[styles.sectionTitle, { color: theme.text }]}>{t.goalBreakdown}</Text>
+            <Text style={[styles.sectionTitle, { color: theme.text, textAlign: isRTL ? 'right' : 'left' }]}>{t.goalBreakdown}</Text>
             {goalStats.map(({ goal, saved, progress, depositCount, withdrawalCount, depositsTotal, withdrawalsTotal }) => (
               <Card key={goal.id} style={styles.breakdownCard}>
-                <View style={[styles.row, isRTL && styles.rtl, { marginBottom: SPACING.sm }]}>
+                <View style={[styles.row, isRTL ? styles.rtl : styles.ltr, { marginBottom: SPACING.sm }]}>
                   <View style={[styles.breakdownIconWrap, { backgroundColor: COLORS.info + '18' }]}>
-                    <Text style={{ fontSize: 16 }}>{(goal as any).icon || '🎯'}</Text>
+                    <FontAwesomeIcon icon={resolveIcon((goal as any).icon || 'faBullseye')} size={16} color={COLORS.info} />
                   </View>
-                  <Text style={[styles.breakdownName, { color: theme.text }]} numberOfLines={1}>{goal.name}</Text>
+                  <Text style={[styles.breakdownName, { color: theme.text, textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={1}>
+                    {goal.name}
+                  </Text>
                   <Text style={[styles.breakdownSaved, { color: saved >= 0 ? COLORS.success : COLORS.danger }]}>
                     {saved >= 0 ? '+' : '-'}{formatCurrency(Math.abs(saved), t.currency)}
                   </Text>
                 </View>
                 <ProgressBar progress={progress} height={7} />
-                <View style={[styles.row, isRTL && styles.rtl, { marginTop: SPACING.sm }]}>
-                  <Text style={[styles.breakdownMeta, { color: COLORS.success }]}>📥 {depositCount} (+{formatCurrency(depositsTotal, t.currency)})</Text>
-                  <Text style={[styles.breakdownMeta, { color: COLORS.danger }]}>📤 {withdrawalCount} (-{formatCurrency(withdrawalsTotal, t.currency)})</Text>
+                <View style={[styles.row, isRTL ? styles.rtl : styles.ltr, { marginTop: SPACING.sm }]}>
+                  <Text style={[styles.breakdownMeta, { color: COLORS.success }]}>
+                    <FontAwesomeIcon icon={resolveIcon('faArrowDown')} size={8} color={COLORS.success} />
+                    { ' ' + depositCount } (+{formatCurrency(depositsTotal, t.currency)})</Text>
+                  <Text style={[styles.breakdownMeta, { color: COLORS.danger }]}>
+                    <FontAwesomeIcon icon={resolveIcon('faArrowUp')} size={8} color={COLORS.danger} />
+                    { ' ' + withdrawalCount } (-{formatCurrency(withdrawalsTotal, t.currency)})
+                  </Text>
                 </View>
               </Card>
             ))}
@@ -212,7 +219,9 @@ export default function AnalyticsScreen() {
 
         {goals.length === 0 && (
           <View style={styles.empty}>
-            <Text style={styles.emptyEmoji}>📊</Text>
+            <Text style={styles.emptyEmoji}>
+              <FontAwesomeIcon icon={resolveIcon('faFaceSadTear')} size={48} color={theme.textMuted} />
+            </Text>
             <Text style={[styles.emptyTitle, { color: theme.text }]}>{t.noData}</Text>
           </View>
         )}
@@ -235,6 +244,7 @@ const styles = StyleSheet.create({
   container: { flex: 1, paddingTop: StatusBar.currentHeight },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: SPACING.lg, paddingTop: SPACING.lg, paddingBottom: SPACING.md },
   rtlRow: { flexDirection: 'row-reverse' },
+  ltrRow: { flexDirection: 'row', textAlign: 'right' },
   title: { fontSize: FONT_SIZE.xxl, fontWeight: '800' },
   exportBtn: { width: 38, height: 38, borderRadius: RADIUS.md, alignItems: 'center', justifyContent: 'center', marginRight: SPACING.sm },
   content: { paddingHorizontal: SPACING.lg },
@@ -247,13 +257,14 @@ const styles = StyleSheet.create({
   highlightIconWrap: { width: 40, height: 40, borderRadius: RADIUS.md, alignItems: 'center', justifyContent: 'center' },
   row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   rtl: { flexDirection: 'row-reverse' },
+  ltr: { flexDirection: 'row', textAlign: 'right' },
   highlightText: { flex: 1, marginLeft: SPACING.sm },
   highlightLabel: { fontSize: FONT_SIZE.xs },
   highlightName: { fontSize: FONT_SIZE.md, fontWeight: '700' },
   highlightPct: { fontSize: FONT_SIZE.xl, fontWeight: '800' },
   sectionTitle: { fontSize: FONT_SIZE.lg, fontWeight: '800', marginBottom: SPACING.md },
   breakdownCard: { marginBottom: SPACING.sm },
-  breakdownIconWrap: { width: 32, height: 32, borderRadius: RADIUS.sm, alignItems: 'center', justifyContent: 'center', marginRight: SPACING.xs },
+  breakdownIconWrap: { width: 32, height: 32, borderRadius: RADIUS.sm, alignItems: 'center', justifyContent: 'center', marginHorizontal: SPACING.xs },
   breakdownName: { fontSize: FONT_SIZE.md, fontWeight: '700', flex: 1 },
   breakdownSaved: { fontSize: FONT_SIZE.md, fontWeight: '700' },
   breakdownMeta: { fontSize: FONT_SIZE.xs },

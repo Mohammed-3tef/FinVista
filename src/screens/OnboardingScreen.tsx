@@ -33,8 +33,8 @@ import Svg, {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { SPACING } from '../constants/theme';
+import { resolveIcon } from '../constants/icons';
 
 const { width: SW, height: SH } = Dimensions.get('window');
 
@@ -519,7 +519,7 @@ export default function OnboardingScreen() {
             <View style={styles.ctaInner}>
               <Text style={styles.ctaText}>Get Started</Text>
               <View style={styles.ctaArrow}>
-                <FontAwesomeIcon icon={faArrowRight} size={15} style={styles.ctaArrowText} />
+                <FontAwesomeIcon icon={resolveIcon('faArrowRight')} size={15} style={styles.ctaArrowText} />
               </View>
             </View>
           </TouchableOpacity>
@@ -533,7 +533,7 @@ export default function OnboardingScreen() {
             {/* Next button */}
             <TouchableOpacity style={styles.nextBtn} onPress={goNext} activeOpacity={0.85}>
               <View style={[styles.nextBtnInner, { borderColor: activeDotColor }]}>
-                <FontAwesomeIcon icon={faArrowRight} size={16} color={activeDotColor} />
+                <FontAwesomeIcon icon={resolveIcon('faArrowRight')} size={16} color={activeDotColor} />
               </View>
               <View style={[styles.nextBtnGlow, { backgroundColor: activeDotColor }]} />
             </TouchableOpacity>

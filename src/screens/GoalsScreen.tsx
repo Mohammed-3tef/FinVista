@@ -12,6 +12,7 @@ import { useGoals } from '../contexts/GoalsContext';
 import { COLORS, SPACING, FONT_SIZE, RADIUS } from '../constants/theme';
 import { getTotalSaved, getProgress, getDaysLeft } from '../utils/calculations';
 import GoalCard from '../components/GoalCard';
+import { resolveIcon } from '../constants/icons';
 
 type StatusFilter = 'all' | 'active' | 'completed';
 type SortOption = 'nameAZ' | 'nameZA' | 'progressHigh' | 'progressLow' | 'deadline' | 'amountHigh';
@@ -169,13 +170,17 @@ export default function GoalsScreen({ navigation }: any) {
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         {goals.length === 0 ? (
           <View style={styles.empty}>
-            <Text style={styles.emptyEmoji}>🎯</Text>
+            <Text style={styles.emptyEmoji}>
+              <FontAwesomeIcon icon={resolveIcon('faBullseye')} size={64} color={theme.textMuted} />
+            </Text>
             <Text style={[styles.emptyTitle, { color: theme.text }]}>{t.noGoals}</Text>
             <Text style={[styles.emptyDesc, { color: theme.textSecondary }]}>{t.noGoalsDesc}</Text>
           </View>
         ) : filteredGoals.length === 0 ? (
           <View style={styles.empty}>
-            <Text style={styles.emptyEmoji}>🔍</Text>
+            <Text style={styles.emptyEmoji}>
+              <FontAwesomeIcon icon={resolveIcon('faSearch')} size={64} color={COLORS.accent} />
+            </Text>
             <Text style={[styles.emptyTitle, { color: theme.text }]}>{t.noResults}</Text>
             <Text style={[styles.emptyDesc, { color: theme.textSecondary }]}>{t.noResultsDesc}</Text>
           </View>
@@ -205,7 +210,7 @@ export default function GoalsScreen({ navigation }: any) {
           <View style={[styles.modalHeader, isRTL && styles.rtl]}>
             <Text style={[styles.modalTitle, { color: theme.text }]}>{t.filterGoals}</Text>
             <TouchableOpacity onPress={() => setFilterVisible(false)}>
-              <FontAwesomeIcon icon={faTimes} size={18} color={theme.textSecondary} />
+              <FontAwesomeIcon icon={resolveIcon('faXmark')} size={20} color={theme.textSecondary} />
             </TouchableOpacity>
           </View>
 
@@ -250,7 +255,7 @@ export default function GoalsScreen({ navigation }: any) {
               ]}
             >
               <Text style={[styles.categoryChipTxt, { color: pendingCategory === null ? COLORS.accent : theme.textSecondary }]}>
-                🗂️ All
+                All
               </Text>
             </TouchableOpacity>
             {CATEGORIES.map(cat => (

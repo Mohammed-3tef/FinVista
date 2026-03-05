@@ -45,7 +45,7 @@ interface AppContextType {
 
 const AppContext = createContext<AppContextType | null>(null);
 
-const GOAL_EMOJIS = ['🏠', '🚗', '✈️', '💍', '📱', '🎓', '💰', '🏋️', '🌴', '🏦', '🎮', '💼'];
+const GOAL_ICONS = ['faHouse', 'faCar', 'faPlane', 'faRing', 'faMobile', 'faGraduationCap', 'faMoneyBill', 'faDumbbell', 'faUmbrellaBeach', 'faPiggyBank', 'faGamepad', 'faBriefcase'];
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [goals, setGoals] = useState<Goal[]>([]);
@@ -92,7 +92,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       id: Date.now().toString(),
       createdAt: new Date().toISOString(),
       savings: [],
-      emoji: GOAL_EMOJIS[Math.floor(Math.random() * GOAL_EMOJIS.length)],
+      emoji: GOAL_ICONS[Math.floor(Math.random() * GOAL_ICONS.length)],
     };
     setGoals(prev => {
       const updated = [newGoal, ...prev];

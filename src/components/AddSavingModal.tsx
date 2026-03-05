@@ -12,6 +12,9 @@ import {
 import { useApp } from '../context/AppContext';
 import { SPACING, RADIUS, FONT_SIZE, Colors } from '../constants/theme';
 import { getTodayString } from '../utils/goalUtils';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { resolveIcon } from '../constants/icons';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface AddSavingModalProps {
   visible: boolean;
@@ -36,7 +39,8 @@ const isFutureDate = (s: string) =>
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export const AddSavingModal: React.FC<AddSavingModalProps> = ({ visible, onClose, goalId }) => {
-  const { colors, t, addSaving, isRTL } = useApp();
+  const { colors, addSaving } = useApp();
+  const { t, isRTL } = useLanguage();
 
   const [amount, setAmount] = useState('');
   const [date, setDate] = useState(getTodayString());
@@ -120,16 +124,18 @@ export const AddSavingModal: React.FC<AddSavingModalProps> = ({ visible, onClose
 
             {/* Header */}
             <View style={[styles.header, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-              <Text style={[styles.title, { color: colors.text }]}>{t.addSavings}</Text>
+              <Text style={[styles.title, { color: colors.text, textAlign: isRTL ? 'right' : 'left' }]}>{t.addSavings}</Text>
               <TouchableOpacity onPress={handleClose} style={[styles.closeBtn, { backgroundColor: colors.border }]}>
-                <Text style={[styles.closeBtnText, { color: colors.textSecondary }]}>✕</Text>
+                <Text style={[styles.closeBtnText, { color: colors.textSecondary, textAlign: isRTL ? 'right' : 'left' }]}>
+                  <FontAwesomeIcon icon={resolveIcon('faXmark')} size={15} color={colors.textSecondary} />
+                </Text>
               </TouchableOpacity>
             </View>
 
             {/* Amount */}
             <View style={[styles.labelRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-              <Text style={[styles.label, { color: colors.textSecondary }]}>{t.amount}</Text>
-              <Text style={styles.requiredStar}> *</Text>
+              <Text style={[styles.label, { color: colors.textSecondary, textAlign: isRTL ? 'right' : 'left' }]}>{t.amount}</Text>
+              <Text style={[styles.requiredStar, { color: colors.textSecondary, textAlign: isRTL ? 'right' : 'left' }]}> *</Text>
             </View>
             <TextInput
               style={[styles.input, styles.amountInput, {
@@ -150,15 +156,17 @@ export const AddSavingModal: React.FC<AddSavingModalProps> = ({ visible, onClose
             />
             {err('amount') && (
               <View style={[styles.errorRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-                <Text style={styles.errorIcon}>⚠</Text>
-                <Text style={styles.errorText}>{err('amount')}</Text>
+                <Text style={[styles.errorIcon, { textAlign: isRTL ? 'right' : 'left' }]}>
+                  <FontAwesomeIcon icon={resolveIcon('faTriangleExclamation')} size={14} color={Colors.light.error} />
+                </Text>
+                <Text style={[styles.errorText, { textAlign: isRTL ? 'right' : 'left' }]}>{err('amount')}</Text>
               </View>
             )}
 
             {/* Date */}
             <View style={[styles.labelRow, { flexDirection: isRTL ? 'row-reverse' : 'row', marginTop: SPACING.md }]}>
-              <Text style={[styles.label, { color: colors.textSecondary }]}>{t.date}</Text>
-              <Text style={styles.requiredStar}> *</Text>
+              <Text style={[styles.label, { color: colors.textSecondary, textAlign: isRTL ? 'right' : 'left' }]}>{t.date}</Text>
+              <Text style={[styles.requiredStar, { color: colors.textSecondary, textAlign: isRTL ? 'right' : 'left' }]}> *</Text>
             </View>
             <TextInput
               style={[styles.input, {
@@ -177,15 +185,17 @@ export const AddSavingModal: React.FC<AddSavingModalProps> = ({ visible, onClose
             />
             {err('date') && (
               <View style={[styles.errorRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-                <Text style={styles.errorIcon}>⚠</Text>
-                <Text style={styles.errorText}>{err('date')}</Text>
+                <Text style={[styles.errorIcon, { textAlign: isRTL ? 'right' : 'left' }]}>
+                  <FontAwesomeIcon icon={resolveIcon('faTriangleExclamation')} size={14} color={Colors.light.error} />
+                </Text>
+                <Text style={[styles.errorText, { textAlign: isRTL ? 'right' : 'left' }]}>{err('date')}</Text>
               </View>
             )}
 
             {/* Note */}
             <View style={[styles.labelRow, { flexDirection: isRTL ? 'row-reverse' : 'row', marginTop: SPACING.md }]}>
-              <Text style={[styles.label, { color: colors.textSecondary }]}>{t.note}</Text>
-              <Text style={[styles.label, { color: colors.textTertiary, fontWeight: '400' }]}>
+              <Text style={[styles.label, { color: colors.textSecondary, textAlign: isRTL ? 'right' : 'left' }]}>{t.note}</Text>
+              <Text style={[styles.label, { color: colors.textTertiary, fontWeight: '400', textAlign: isRTL ? 'right' : 'left' }]}>
                 {' '}({t.optional ?? 'optional'})
               </Text>
             </View>
@@ -210,11 +220,13 @@ export const AddSavingModal: React.FC<AddSavingModalProps> = ({ visible, onClose
             />
             {err('note') ? (
               <View style={[styles.errorRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-                <Text style={styles.errorIcon}>⚠</Text>
-                <Text style={styles.errorText}>{err('note')}</Text>
+                <Text style={[styles.errorIcon, { textAlign: isRTL ? 'right' : 'left' }]}>
+                  <FontAwesomeIcon icon={resolveIcon('faTriangleExclamation')} size={14} color={Colors.light.error} />
+                </Text>
+                <Text style={[styles.errorText, { textAlign: isRTL ? 'right' : 'left' }]}>{err('note')}</Text>
               </View>
             ) : note.length > 150 ? (
-              <Text style={[styles.charCount, { color: note.length >= 200 ? Colors.light.error : colors.textTertiary }]}>
+              <Text style={[styles.charCount, { color: note.length >= 200 ? Colors.light.error : colors.textTertiary, textAlign: isRTL ? 'right' : 'left' }]}>
                 {note.length}/200
               </Text>
             ) : null}
@@ -222,10 +234,10 @@ export const AddSavingModal: React.FC<AddSavingModalProps> = ({ visible, onClose
             {/* Actions */}
             <View style={[styles.actions, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
               <TouchableOpacity onPress={handleClose} style={[styles.cancelBtn, { backgroundColor: colors.border }]}>
-                <Text style={[styles.cancelText, { color: colors.textSecondary }]}>{t.cancel}</Text>
+                <Text style={[styles.cancelText, { color: colors.textSecondary, textAlign: isRTL ? 'right' : 'left' }]}>{t.cancel}</Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={handleAdd} style={[styles.createBtn, { backgroundColor: Colors.primary }]}>
-                <Text style={styles.createText}>{t.addEntry}</Text>
+                <Text style={[styles.createText, { textAlign: isRTL ? 'right' : 'left' }]}>{t.save}</Text>
               </TouchableOpacity>
             </View>
 
@@ -246,21 +258,21 @@ const styles = StyleSheet.create({
     paddingBottom: SPACING.xxl,
   },
   header: { justifyContent: 'space-between', alignItems: 'center', marginBottom: SPACING.lg },
-  title: { fontSize: FONT_SIZE.xxl, fontWeight: Typography.fontWeights.bold },
+  title: { fontSize: FONT_SIZE.xxl, fontWeight: '800' },
   closeBtn: { width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
   closeBtnText: { fontSize: FONT_SIZE.sm, fontWeight: '600' },
   labelRow: { alignItems: 'center', marginBottom: SPACING.xs },
-  label: { fontSize: FONT_SIZE.sm, fontWeight: Typography.fontWeights.medium },
+  label: { fontSize: FONT_SIZE.sm, fontWeight: '500' },
   requiredStar: { fontSize: FONT_SIZE.sm, fontWeight: '700', color: Colors.light.error },
   input: { borderRadius: RADIUS.md, padding: SPACING.md, fontSize: FONT_SIZE.md },
-  amountInput: { fontSize: FONT_SIZE.xxl, fontWeight: Typography.fontWeights.bold },
+  amountInput: { fontSize: FONT_SIZE.xxl, fontWeight: '700' },
   errorRow: { alignItems: 'center', marginTop: 5, gap: 4 },
   errorIcon: { fontSize: FONT_SIZE.xs, color: Colors.light.error },
   errorText: { color: Colors.light.error, fontSize: FONT_SIZE.xs, flex: 1 },
   charCount: { fontSize: FONT_SIZE.xs, textAlign: 'right', marginTop: 4 },
   actions: { gap: SPACING.sm, marginTop: SPACING.lg },
   cancelBtn: { flex: 1, padding: SPACING.md, borderRadius: RADIUS.md, alignItems: 'center' },
-  cancelText: { fontSize: FONT_SIZE.md, fontWeight: Typography.fontWeights.semibold },
+  cancelText: { fontSize: FONT_SIZE.md, fontWeight: '600' },
   createBtn: { flex: 2, padding: SPACING.md, borderRadius: RADIUS.md, alignItems: 'center' },
-  createText: { color: '#fff', fontSize: FONT_SIZE.md, fontWeight: Typography.fontWeights.bold },
+  createText: { color: '#fff', fontSize: FONT_SIZE.md, fontWeight: '700' },
 });

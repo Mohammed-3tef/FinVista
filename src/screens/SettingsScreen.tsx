@@ -35,6 +35,8 @@ import {
 import Card from '../components/Card';
 import UserNameModal from '../components/UserNameModal';
 import {strings} from '../constants/strings';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { resolveIcon } from '../constants/icons';
 
 export const USER_NAME_KEY = '@finvista_user_name';
 
@@ -294,7 +296,7 @@ export default function SettingsScreen() {
 
   const Section = ({ title, children }: { title: string; children: React.ReactNode }) => (
     <View style={styles.section}>
-      <Text style={[styles.sectionTitle, { color: theme.textSecondary }]}>
+      <Text style={[styles.sectionTitle, { color: theme.textSecondary, textAlign: isRTL ? 'right' : 'left' }]}>
         {title.toUpperCase()}
       </Text>
       <Card noPadding>{children}</Card>
@@ -320,7 +322,7 @@ export default function SettingsScreen() {
         isRTL && styles.rtl,
         !noBorder && { borderBottomWidth: 1, borderBottomColor: theme.cardBorder },
       ]}>
-      <Text style={[styles.rowLabel, { color: theme.text }]}>{label}</Text>
+      <Text style={[styles.rowLabel, { color: theme.text, textAlign: isRTL ? 'right' : 'left' }]}>{label}</Text>
       {right}
     </TouchableOpacity>
   );
@@ -334,23 +336,25 @@ export default function SettingsScreen() {
   return (
     <View style={[styles.container, { backgroundColor: theme.bg }]}>
       <View style={styles.header}>
-        <Text style={[styles.title, { color: theme.text }]}>{t.settingsTitle}</Text>
+        <Text style={[styles.title, { color: theme.text, textAlign: isRTL ? 'right' : 'left' }]}>{t.settingsTitle}</Text>
       </View>
 
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
 
         {/* Profile */}
-        <Section title="Profile">
+        <Section title={isRTL ? 'الملف الشخصي' : 'Profile'}>
           <Row
-            label="Your Name"
+            label={isRTL ? 'اسم المستخدم' : 'User Name'}
             noBorder
             onPress={() => setNameModalVisible(true)}
             right={
               <View style={[styles.nameRight, isRTL && styles.rtl]}>
                 <Text style={[styles.nameValue, { color: theme.textMuted }]} numberOfLines={1}>
-                  {userName || 'Tap to set'}
+                  {userName || (isRTL ? 'اضغط للتعيين' : 'Tap to set')}
                 </Text>
-                <Text style={{ color: theme.textMuted, marginLeft: 4 }}>›</Text>
+                <Text style={{ color: theme.textMuted, marginHorizontal: 4 }}>
+                  <FontAwesomeIcon icon={resolveIcon(isRTL ? 'faChevronLeft' : 'faChevronRight')} size={8} color={theme.textMuted} />
+                </Text>
               </View>
             }
           />
@@ -472,16 +476,20 @@ export default function SettingsScreen() {
         </Section>
 
         {/* ── Bank SMS Detection ─────────────────────────────────────── */}
-        <Section title="Bank SMS Detection">
+        <Section title={isRTL ? 'كشف رسائل البنك' : 'Bank SMS Detection'}>
           {/* Permission Row */}
           <Row
-            label={hasPermission ? 'SMS Permission Granted' : 'SMS Permission Required'}
+            label={hasPermission && !isRTL ? 'SMS Permission Granted' : !hasPermission && !isRTL ? 'SMS Permission Required' : hasPermission && isRTL ? 'تم منح إذن الرسائل' : 'مطلوب إذن الرسائل'}
             onPress={hasPermission ? undefined : handleSmsPermissionPress}
             right={
               hasPermission ? (
-                <Text style={{ color: COLORS.success, fontSize: FONT_SIZE.sm }}>Granted</Text>
+                <Text style={{ color: COLORS.success, fontSize: FONT_SIZE.sm }}>
+                  {isRTL ? 'تم منح الإذن' : 'Granted'}
+                </Text>
               ) : (
-                <Text style={{ color: COLORS.accent, fontSize: FONT_SIZE.sm }}>Tap to Allow</Text>
+                <Text style={{ color: COLORS.accent, fontSize: FONT_SIZE.sm }}>
+                  {isRTL ? 'اضغط للسماح' : 'Tap to Allow'}
+                </Text>
               )
             }
           />
@@ -502,7 +510,7 @@ export default function SettingsScreen() {
               <ActivityIndicator color={COLORS.info} />
             ) : (
               <Text style={[styles.testBtnTxt, { color: COLORS.info }]}>
-                Scan Inbox for Bank SMS
+                {isRTL ? 'مسح صندوق الوارد' : 'Scan Inbox for Bank SMS'}
               </Text>
             )}
           </TouchableOpacity>
@@ -513,8 +521,8 @@ export default function SettingsScreen() {
               { borderTopWidth: 1, borderTopColor: theme.cardBorder },
               isRTL && styles.rtl,
             ]}>
-            <Text style={[styles.rowLabel, { color: theme.text }]}>
-              Processed Transactions
+            <Text style={[styles.rowLabel, { color: theme.text, textAlign: isRTL ? 'right' : 'left' }]}>
+              {isRTL ? 'المعاملات المعالجة' : 'Processed Transactions'}
             </Text>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: SPACING.sm }}>
               <Text style={{ color: theme.textMuted, fontSize: FONT_SIZE.md }}>
@@ -523,7 +531,7 @@ export default function SettingsScreen() {
               {transactions.length > 0 && (
                 <TouchableOpacity onPress={handleClearHistory}>
                   <Text style={{ color: COLORS.danger, fontSize: FONT_SIZE.sm, fontWeight: '700' }}>
-                    Clear
+                    {isRTL ? 'مسح' : 'Clear'}
                   </Text>
                 </TouchableOpacity>
               )}
@@ -536,22 +544,24 @@ export default function SettingsScreen() {
               { borderTopWidth: 1, borderTopColor: theme.cardBorder },
               isRTL && styles.rtl,
             ]}>
-            <Text style={[styles.rowLabel, { color: theme.text }]}>Last Checked</Text>
+            <Text style={[styles.rowLabel, { color: theme.text, textAlign: isRTL ? 'right' : 'left' }]}>
+              {isRTL ? 'آخر فحص' : 'Last Checked'}
+            </Text>
             <Text style={{ color: theme.textMuted, fontSize: FONT_SIZE.sm }}>
               {lastCheckedAt
                 ? new Date(lastCheckedAt).toLocaleString(undefined, {
                     month: 'short', day: 'numeric', year: 'numeric',
                     hour: '2-digit', minute: '2-digit', second: '2-digit',
                   })
-                : 'Not checked yet'}
+                : isRTL ? 'لم يتم الفحص بعد' : 'Not checked yet'}
             </Text>
           </View>
         </Section>
 
         {/* ── Auto-Check Interval ───────────────────────────────── */}
-        <Section title="Auto-Check Interval">
+        <Section title={isRTL ? 'الفترة التلقائية للتحقق' : 'Auto-Check Interval'}>
           <Row
-            label="Check Frequency"
+            label={isRTL ? 'فترة الفحص التلقائي' : 'Check Frequency'}
             noBorder
             onPress={() => setPollModalVisible(true)}
             right={
@@ -559,42 +569,48 @@ export default function SettingsScreen() {
                 <Text style={[styles.nameValue, { color: theme.textMuted }]}>
                   {POLL_INTERVAL_OPTIONS.find(o => o.value === pollInterval)?.label ?? ''}
                 </Text>
-                <Text style={{ color: theme.textMuted, marginLeft: 4 }}>›</Text>
+                <Text style={{ color: theme.textMuted, marginHorizontal: 4 }}>
+                  <FontAwesomeIcon icon={resolveIcon(isRTL ? 'faChevronLeft' : 'faChevronRight')} size={8} color={theme.textMuted} />
+                </Text>
               </View>
             }
           />
         </Section>
 
         {/* ── Keyword Settings ───────────────────────────────── */}
-        <Section title="Keyword Settings">
+        <Section title={isRTL ? 'إعدادات الكلمات الرئيسية' : 'Keyword Settings'}>
           <Row
-            label="Deposit Keywords"
+            label={isRTL ? 'كلمات الوديعة' : 'Deposit Keywords'}
             onPress={() => { setEditingKw(null); setKwModalKind('deposit'); }}
             right={
               <View style={[styles.nameRight, isRTL && styles.rtl]}>
-                <Text style={[styles.nameValue, { color: theme.textMuted }]}>{keywords.deposit.length} words</Text>
-                <Text style={{ color: theme.textMuted, marginLeft: 4 }}>›</Text>
+                <Text style={[styles.nameValue, { color: theme.textMuted }]}>{keywords.deposit.length} {isRTL ? 'كلمات' : 'words'}</Text>
+                <Text style={{ color: theme.textMuted, marginHorizontal: 4 }}>
+                  <FontAwesomeIcon icon={resolveIcon(isRTL ? 'faChevronLeft' : 'faChevronRight')} size={8} color={theme.textMuted} />
+                </Text>
               </View>
             }
           />
           <Row
-            label="Withdrawal Keywords"
+            label={isRTL ? 'كلمات السحب' : 'Withdrawal Keywords'}
             noBorder
             onPress={() => { setEditingKw(null); setKwModalKind('withdrawal'); }}
             right={
               <View style={[styles.nameRight, isRTL && styles.rtl]}>
-                <Text style={[styles.nameValue, { color: theme.textMuted }]}>{keywords.withdrawal.length} words</Text>
-                <Text style={{ color: theme.textMuted, marginLeft: 4 }}>›</Text>
+                <Text style={[styles.nameValue, { color: theme.textMuted }]}>{keywords.withdrawal.length} {isRTL ? 'كلمات' : 'words'}</Text>
+                <Text style={{ color: theme.textMuted, marginHorizontal: 4 }}>
+                  <FontAwesomeIcon icon={resolveIcon(isRTL ? 'faChevronLeft' : 'faChevronRight')} size={8} color={theme.textMuted} />
+                </Text>
               </View>
             }
           />
         </Section>
 
         {/* ── Auto Allocation Priority ───────────────────────────────── */}
-        <Section title="Auto Allocation Priority">
+        <Section title={isRTL ? 'أولوية التوزيع التلقائي' : 'Auto Allocation Priority'}>
           <View style={{ paddingHorizontal: SPACING.md, paddingTop: SPACING.sm, paddingBottom: SPACING.xs }}>
             <Text style={{ color: theme.textSecondary, fontSize: FONT_SIZE.sm, marginBottom: SPACING.sm }}>
-              Choose how detected deposits & withdrawals are distributed to your goals.
+              {isRTL ? 'اختر كيف يتم توزيع المعاملات المكتشفة على أهدافك.' : 'Choose how detected deposits & withdrawals are distributed to your goals.'}
             </Text>
           </View>
           {ALLOCATION_PRIORITY_OPTIONS.map((opt, idx) => {
@@ -629,7 +645,9 @@ export default function SettingsScreen() {
                   </Text>
                 </View>
                 {isSelected && (
-                  <Text style={{ color: COLORS.accent, fontSize: FONT_SIZE.sm, fontWeight: '700' }}>✓</Text>
+                  <Text style={{ color: COLORS.accent, fontSize: FONT_SIZE.sm, fontWeight: '700' }}>
+                    <FontAwesomeIcon icon={resolveIcon('faCheck')} size={18} color={COLORS.accent} />
+                  </Text>
                 )}
               </TouchableOpacity>
             );
@@ -637,11 +655,11 @@ export default function SettingsScreen() {
         </Section>
 
         {/* ── Blocked Senders ────────────────────────────────── */}
-        <Section title="Blocked Senders">
+        <Section title={isRTL ? 'المرسلون المحظورون' : 'Blocked Senders'}>
           {blockList.length === 0 ? (
             <View style={{ paddingHorizontal: SPACING.md, paddingVertical: SPACING.md }}>
               <Text style={{ color: theme.textMuted, fontSize: FONT_SIZE.sm }}>
-                No senders blocked yet. Tap “Block Sender” on any SMS transaction.
+                {isRTL ? 'لا يوجد مرسلون محظورون بعد. اضغط على "حظر المرسل" في أي معاملة SMS.' : 'No senders blocked yet. Tap “Block Sender” on any SMS transaction.'}
               </Text>
             </View>
           ) : (
@@ -653,23 +671,23 @@ export default function SettingsScreen() {
                   isRTL && styles.rtl,
                   { borderBottomWidth: idx < blockList.length - 1 ? 1 : 0, borderBottomColor: theme.cardBorder },
                 ]}>
-                <Text style={[styles.rowLabel, { color: theme.text, flex: 1 }]} numberOfLines={1}>
+                <Text style={[styles.rowLabel, { color: theme.text, flex: 1, textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={1}>
                   {sender}
                 </Text>
                 <TouchableOpacity
                   onPress={() =>
                     Alert.alert(
-                      'Unblock Sender',
-                      `Remove "${sender}" from block list?`,
+                      isRTL ? 'إلغاء حظر المرسل' : 'Unblock Sender',
+                      isRTL ? `إزالة "${sender}" من قائمة الحظر؟` : `Remove "${sender}" from block list?`,
                       [
-                        { text: 'Cancel', style: 'cancel' },
-                        { text: 'Unblock', onPress: () => removeFromBlockList(sender) },
+                        { text: isRTL ? 'إلغاء' : 'Cancel', style: 'cancel' },
+                        { text: isRTL ? 'إلغاء الحظر' : 'Unblock', onPress: () => removeFromBlockList(sender) },
                       ],
                     )
                   }
                   style={{ paddingHorizontal: SPACING.sm, paddingVertical: 4 }}>
                   <Text style={{ color: COLORS.success, fontSize: FONT_SIZE.sm, fontWeight: '700' }}>
-                    Unblock
+                    {isRTL ? 'إلغاء الحظر' : 'Unblock'}
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -720,13 +738,17 @@ export default function SettingsScreen() {
           </TouchableWithoutFeedback>
           <View style={[styles.modalSheet, { backgroundColor: theme.card }]}>
             <View style={[styles.modalHeader, isRTL && styles.rtl]}>
-              <Text style={[styles.modalTitle, { color: theme.text }]}>Auto-Check Interval</Text>
+              <Text style={[styles.modalTitle, { color: theme.text }]}>
+                {isRTL ? 'فترة الفحص التلقائي' : 'Auto-Check Interval'}
+              </Text>
               <TouchableOpacity onPress={() => setPollModalVisible(false)}>
-                <Text style={{ color: theme.textSecondary, fontSize: 20, lineHeight: 22 }}>✕</Text>
+                <Text style={{ color: theme.textSecondary, fontSize: 20, lineHeight: 22 }}>
+                  <FontAwesomeIcon icon={resolveIcon('faXmark')} size={18} color={theme.textSecondary} />
+                </Text>
               </TouchableOpacity>
             </View>
-            <Text style={{ color: theme.textSecondary, fontSize: FONT_SIZE.sm, marginBottom: SPACING.md }}>
-              How often the app automatically checks for new bank SMS messages.
+            <Text style={{ color: theme.textSecondary, fontSize: FONT_SIZE.sm, marginBottom: SPACING.md, textAlign: isRTL ? 'right' : 'left' }}>
+              {isRTL ? ' اختر فترة أطول إذا كنت لا تتلقى رسائل بنكية بشكل متكرر.' : ' Choose a longer interval if you don\'t receive bank messages frequently.'}
             </Text>
             {POLL_INTERVAL_OPTIONS.map((opt, idx) => {
               const isSelected = pollInterval === opt.value;
@@ -778,10 +800,12 @@ export default function SettingsScreen() {
               {/* Header */}
               <View style={[styles.modalHeader, isRTL && styles.rtl]}>
                 <Text style={[styles.modalTitle, { color: theme.text }]}>
-                  {kwModalKind === 'deposit' ? 'Deposit' : 'Withdrawal'} Keywords
+                  {isRTL && kwModalKind === 'deposit' ? 'كلمات الوديعة' : isRTL && kwModalKind === 'withdrawal' ? 'كلمات السحب' : !isRTL && kwModalKind === 'deposit' ? 'Deposit Keywords' : 'Withdrawal Keywords'} 
                 </Text>
                 <TouchableOpacity onPress={() => { setEditingKw(null); setKwModalKind(null); }}>
-                  <Text style={{ color: theme.textSecondary, fontSize: 20, lineHeight: 22 }}>✕</Text>
+                  <Text style={{ color: theme.textSecondary, fontSize: 20, lineHeight: 22 }}>
+                    <FontAwesomeIcon icon={resolveIcon('faXmark')} size={18} color={theme.textSecondary} />
+                  </Text>
                 </TouchableOpacity>
               </View>
 
@@ -812,14 +836,16 @@ export default function SettingsScreen() {
                     ) : (
                       <Text style={[styles.kwChip, { color: theme.text }]}>{word}</Text>
                     )}
-                    <View style={{ flexDirection: 'row', gap: SPACING.xs }}>
+                    <View style={{ flexDirection: isRTL ? 'row-reverse' : 'row', gap: SPACING.xs }}>
                       {editingKw?.kind === kwModalKind && editingKw?.oldWord === word ? (
                         <>
                           <TouchableOpacity onPress={handleSaveEdit} style={[styles.kwBtn, { backgroundColor: COLORS.success }]}>
-                            <Text style={styles.kwBtnTxt}>Save</Text>
+                            <Text style={styles.kwBtnTxt}>{t.save}</Text>
                           </TouchableOpacity>
                           <TouchableOpacity onPress={() => setEditingKw(null)} style={[styles.kwBtn, { backgroundColor: theme.cardBorder }]}>
-                            <Text style={[styles.kwBtnTxt, { color: theme.textSecondary }]}>✕</Text>
+                            <Text style={[styles.kwBtnTxt, { color: theme.textSecondary }]}>
+                              <FontAwesomeIcon icon={resolveIcon('faXmark')} size={14} color={theme.textSecondary} />
+                            </Text>
                           </TouchableOpacity>
                         </>
                       ) : (
@@ -832,7 +858,9 @@ export default function SettingsScreen() {
                           <TouchableOpacity
                             onPress={() => handleDeleteKeyword(kwModalKind!, word)}
                             style={[styles.kwBtn, { backgroundColor: COLORS.danger + '22' }]}>
-                            <Text style={[styles.kwBtnTxt, { color: COLORS.danger }]}>✕</Text>
+                            <Text style={[styles.kwBtnTxt, { color: COLORS.danger }]}>
+                              <FontAwesomeIcon icon={resolveIcon('faXmark')} size={14} color={theme.textSecondary} />
+                            </Text>
                           </TouchableOpacity>
                         </>
                       )}
@@ -848,7 +876,7 @@ export default function SettingsScreen() {
                   onChangeText={v =>
                     kwModalKind === 'deposit' ? setNewDepositKw(v) : setNewWithdrawalKw(v)
                   }
-                  placeholder="Add keyword…"
+                  placeholder={isRTL ? 'أدخل كلمة جديدة' : 'Enter new keyword'}
                   placeholderTextColor={theme.textMuted}
                   style={[styles.kwInput, { color: theme.text, borderColor: theme.cardBorder, flex: 1 }]}
                   autoCapitalize="none"
@@ -858,7 +886,9 @@ export default function SettingsScreen() {
                 <TouchableOpacity
                   onPress={() => kwModalKind && handleAddKeyword(kwModalKind)}
                   style={[styles.kwBtn, { backgroundColor: COLORS.accent }]}>
-                  <Text style={[styles.kwBtnTxt, { color: COLORS.primary }]}>+ Add</Text>
+                  <Text style={[styles.kwBtnTxt, { color: COLORS.primary }]}>
+                    {isRTL ? 'إضافة' : 'Add'}
+                  </Text>
                 </TouchableOpacity>
               </View>
 
@@ -866,7 +896,9 @@ export default function SettingsScreen() {
               <TouchableOpacity
                 onPress={() => kwModalKind && handleResetKeywords(kwModalKind)}
                 style={[styles.resetBtn, { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: theme.cardBorder }]}>
-                <Text style={[styles.resetBtnTxt, { color: theme.textMuted }]}>↺ Reset to Defaults</Text>
+                <Text style={[styles.resetBtnTxt, { color: theme.textMuted }]}>
+                  {isRTL ? 'إعادة تعيين إلى الافتراضي' : 'Reset to Default'}
+                </Text>
               </TouchableOpacity>
             </View>
           </View>

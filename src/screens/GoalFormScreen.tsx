@@ -9,7 +9,7 @@ import Button from '../components/Button';
 import IconPicker from '../components/IconPicker';
 
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import { resolveIcon } from '../constants/icons';
 
 interface Props {
   navigation: any;
@@ -27,7 +27,7 @@ export default function GoalFormScreen({ navigation, route }: Props) {
   const [target, setTarget] = useState(editGoal?.targetAmount?.toString() || '');
   const [startDate, setStartDate] = useState(editGoal?.startDate ? editGoal.startDate.substring(0, 10) : new Date().toISOString().substring(0, 10));
   const [deadline, setDeadline] = useState(editGoal?.deadline ? editGoal.deadline.substring(0, 10) : '');
-  const [icon, setIcon] = useState(editGoal?.icon || '🎯');
+  const [icon, setIcon] = useState(editGoal?.icon || 'faBullseye');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
 
@@ -129,7 +129,7 @@ export default function GoalFormScreen({ navigation, route }: Props) {
         {/* Header */}
         <View style={[styles.header, isRTL && styles.rtl]}>
           <TouchableOpacity onPress={() => navigation.goBack()} style={[styles.backBtn, { backgroundColor: theme.card }]}>
-            <FontAwesomeIcon icon={isRTL ? faArrowRight : faArrowLeft} size={15} color={theme.text} />
+            <FontAwesomeIcon icon={isRTL ? resolveIcon('faArrowRight') : resolveIcon('faArrowLeft')} size={15} color={theme.text} />
           </TouchableOpacity>
           <Text style={[styles.title, { color: theme.text }]}>{editGoal ? t.editGoal : t.addGoal}</Text>
           <View style={{ width: 40 }} />
@@ -138,18 +138,19 @@ export default function GoalFormScreen({ navigation, route }: Props) {
         <ScrollView contentContainerStyle={styles.form} showsVerticalScrollIndicator={false}>
 
           {/* Icon preview banner */}
-          <View style={[styles.iconBanner, { backgroundColor: COLORS.accent + '15' }]}>
-            <Text style={styles.iconBannerEmoji}>{icon}</Text>
-            <Text style={[styles.iconBannerName, { color: theme.text }]} numberOfLines={1}>
+          <View style={[styles.iconBanner, { flexDirection: isRTL ? 'row-reverse' : 'row', backgroundColor: COLORS.accent + '15' }]}>
+            <View style={styles.iconBannerPreview}>
+              <FontAwesomeIcon icon={resolveIcon(icon)} size={40} color={COLORS.accent} />
+            </View>
+            <Text style={[styles.iconBannerName, { color: theme.text, textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={1}>
               {name || 'New Goal'}
             </Text>
           </View>
 
           <IconPicker
-            label="Goal Icon"
+            label={t.goalIcon}
             value={icon}
             onChange={setIcon}
-            isRTL={isRTL}
           />
 
           <TextInput
@@ -218,13 +219,19 @@ const styles = StyleSheet.create({
   title: { fontSize: FONT_SIZE.xl, fontWeight: '800' },
   form: { padding: SPACING.lg },
   iconBanner: {
-    flexDirection: 'row',
     alignItems: 'center',
     borderRadius: RADIUS.xl,
     padding: SPACING.lg,
     marginBottom: SPACING.lg,
     gap: SPACING.md,
   },
-  iconBannerEmoji: { fontSize: 48 },
+  iconBannerPreview: {
+    width: 64,
+    height: 64,
+    borderRadius: RADIUS.md,
+    backgroundColor: COLORS.accent + '22',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   iconBannerName: { flex: 1, fontSize: FONT_SIZE.xl, fontWeight: '800' },
 });

@@ -5,6 +5,7 @@ export interface Goal {
   startDate: string; // ISO string
   deadline: string; // ISO string
   createdAt: string;
+  icon?: string; // FontAwesome icon name, e.g. 'faBullseye'
 }
 
 export interface SavingsEntry {

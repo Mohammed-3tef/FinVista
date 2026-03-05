@@ -11,7 +11,8 @@ import Button from '../components/Button';
 import ConfirmModal from '../components/ConfirmModal';
 import ExportBottomSheet, { ExportOption } from '../components/ExportBottomSheet';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faArrowLeft, faArrowRight, faTrashCan, faPenToSquare, faEllipsisVertical, faFilePdf, faFileExcel } from '@fortawesome/free-solid-svg-icons';
+import { faFilePdf, faFileExcel } from '@fortawesome/free-solid-svg-icons';
+import { resolveIcon } from '../constants/icons';
 import { exportGoalProgressPDF } from '../services/reports/pdfGenerator';
 import { exportGoalSavingsHistoryExcel } from '../services/reports/excelGenerator';
 import { GoalProgressReportData, GoalSavingsHistoryReportData } from '../services/reports/types';
@@ -194,26 +195,26 @@ export default function GoalDetailScreen({ navigation, route }: any) {
   ];
 
   const color = progress >= 100 ? COLORS.success : progress >= 60 ? COLORS.accent : COLORS.info;
-  const icon = goal.icon || '🎯';
+  const iconName = goal.icon || 'faBullseye';
 
   return (
     <View style={[styles.container, { backgroundColor: theme.bg }]}>
       <View style={[styles.header, isRTL && styles.rtl]}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={[styles.backBtn, { backgroundColor: theme.card }]}>
-            <FontAwesomeIcon icon={isRTL ? faArrowRight : faArrowLeft} size={15} color={theme.text} />
+            <FontAwesomeIcon icon={isRTL ? resolveIcon('faArrowRight') : resolveIcon('faArrowLeft')} size={15} color={theme.text} />
         </TouchableOpacity>
         <View style={[styles.headerCenter, isRTL && styles.rtl]}>
-          <Text style={[styles.goalName, { color: theme.text }]} numberOfLines={1}>{goal.name}</Text>
+          <Text style={[styles.goalName, { color: theme.text, textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={1}>{goal.name}</Text>
         </View>
         <View style={[styles.headerActions, isRTL && styles.rtl]}>
           <TouchableOpacity onPress={() => navigation.navigate('GoalForm', { goalId: goal.id })} style={[styles.iconBtn, { backgroundColor: COLORS.info + '22' }]}>
-            <FontAwesomeIcon icon={faPenToSquare} size={16} color={theme.text} />
+            <FontAwesomeIcon icon={resolveIcon('faPenToSquare')} size={16} color={theme.text} />
           </TouchableOpacity>
           <TouchableOpacity onPress={() => setShowDeleteGoal(true)} style={[styles.iconBtn, { backgroundColor: COLORS.danger + '22' }]}>
-            <FontAwesomeIcon icon={faTrashCan} size={16} color={theme.text} />
+            <FontAwesomeIcon icon={resolveIcon('faTrashCan')} size={16} color={theme.text} />
           </TouchableOpacity>
           <TouchableOpacity onPress={() => setShowGoalExport(true)} style={[styles.iconBtn, { backgroundColor: COLORS.warning + '22' }]}>
-            <FontAwesomeIcon icon={faEllipsisVertical} size={16} color={theme.text} />
+            <FontAwesomeIcon icon={resolveIcon('faEllipsisVertical')} size={16} color={theme.text} />
           </TouchableOpacity>
         </View>
       </View>
@@ -224,17 +225,17 @@ export default function GoalDetailScreen({ navigation, route }: any) {
         <Card style={[styles.summaryCard, { borderColor: color + '44' }]}>
           <View style={[styles.summaryIconRow, isRTL && styles.rtl]}>
             <View style={[styles.summaryIconWrap, { backgroundColor: color + '18' }]}>
-              <Text style={styles.summaryIcon}>{icon}</Text>
+              <FontAwesomeIcon icon={resolveIcon(iconName)} size={24} color={color} />
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={[styles.summaryGoalName, { color: theme.text }]} numberOfLines={1}>{goal.name}</Text>
-              <Text style={[styles.targetLabel, { color: theme.textSecondary }]}>{t.of} {formatCurrency(goal.targetAmount, t.currency)}</Text>
+              <Text style={[styles.summaryGoalName, { color: theme.text, textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={1}>{goal.name}</Text>
+              <Text style={[styles.targetLabel, { color: theme.textSecondary, textAlign: isRTL ? 'right' : 'left' }]}>{t.of} {formatCurrency(goal.targetAmount, t.currency)}</Text>
             </View>
             <View style={[styles.progressCircle, { borderColor: color + '44', backgroundColor: color + '11' }]}>
               <Text style={[styles.progressPct, { color }]}>{Math.round(progress)}%</Text>
             </View>
           </View>
-          <Text style={[styles.savedAmount, { color: totalSaved < 0 ? COLORS.danger : color, marginBottom: SPACING.sm }]}>
+          <Text style={[styles.savedAmount, { color: totalSaved < 0 ? COLORS.danger : color, marginBottom: SPACING.sm, textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={1}>
             {totalSaved < 0 ? '-' : ''}{formatCurrency(Math.abs(totalSaved), t.currency)}
           </Text>
           <ProgressBar progress={progress} height={10} showLabel={false} />
@@ -244,8 +245,8 @@ export default function GoalDetailScreen({ navigation, route }: any) {
               { label: t.daysLeft, value: daysLeft.toString(), color: daysLeft < 7 ? COLORS.danger : theme.text },
             ].map((s, i) => (
               <View key={i} style={styles.gridItem}>
-                <Text style={[styles.gridLabel, { color: theme.textSecondary }]}>{s.label}</Text>
-                <Text style={[styles.gridValue, { color: s.color }]}>{s.value}</Text>
+                <Text style={[styles.gridLabel, { color: theme.textSecondary, textAlign: isRTL ? 'right' : 'left' }]}>{s.label}</Text>
+                <Text style={[styles.gridValue, { color: s.color, textAlign: isRTL ? 'right' : 'left' }]}>{s.value}</Text>
               </View>
             ))}
           </View>
@@ -254,7 +255,7 @@ export default function GoalDetailScreen({ navigation, route }: any) {
         {/* Savings Needed */}
         {remaining > 0 && daysLeft > 0 && (
           <Card style={styles.neededCard}>
-            <Text style={[styles.neededTitle, { color: theme.text }]}>📊 Savings Needed</Text>
+            <Text style={[styles.neededTitle, { color: theme.text, textAlign: isRTL ? 'right' : 'left' }]}>{t.savingsNeeded}</Text>
             <View style={[styles.neededGrid, isRTL && styles.rtl]}>
               {[
                 { label: t.dailySavings, value: getDailySavingsNeeded(remaining, goal.deadline) },
@@ -280,7 +281,7 @@ export default function GoalDetailScreen({ navigation, route }: any) {
 
         {goalEntries.length === 0 ? (
           <Card style={styles.emptyCard}>
-            <Text style={styles.emptyEmoji}>💳</Text>
+            <FontAwesomeIcon icon={resolveIcon('faWallet')} size={40} color={theme.textMuted} style={ styles.emptyEmoji } />
             <Text style={[styles.emptyTitle, { color: theme.text }]}>{t.noSavings}</Text>
             <Text style={[styles.emptyDesc, { color: theme.textSecondary }]}>{t.addFirstSaving}</Text>
           </Card>
@@ -289,24 +290,24 @@ export default function GoalDetailScreen({ navigation, route }: any) {
             {goalEntries.map((entry, idx) => {
               const isWithdrawal = entry.amount < 0;
               const entryColor = isWithdrawal ? COLORS.danger : COLORS.success;
-              const entryEmoji = isWithdrawal ? '📤' : '💵';
+              const entryEmoji = isWithdrawal ? 'faArrowTrendDown' : 'faArrowTrendUp';
               return (
                 <View key={entry.id} style={[styles.entryRow, isRTL && styles.rtl, idx < goalEntries.length - 1 && { borderBottomWidth: 1, borderBottomColor: theme.cardBorder }]}>
-                  <View style={[styles.entryDot, { backgroundColor: entryColor + '22' }]}>
-                    <Text style={{ fontSize: 14 }}>{entryEmoji}</Text>
+                  <View style={[styles.entryDot, { backgroundColor: entryColor + '22', marginRight: isRTL ? 0 : SPACING.sm, marginLeft: isRTL ? SPACING.sm : 0 }]}>
+                    <FontAwesomeIcon icon={resolveIcon(entryEmoji)} size={18} color={theme.text} />
                   </View>
                   <View style={styles.entryInfo}>
-                    <Text style={[styles.entryAmount, { color: entryColor }]}>
+                    <Text style={[styles.entryAmount, { color: entryColor, textAlign: isRTL ? 'right' : 'left' }]}>
                       {isWithdrawal ? '-' : '+'}{formatCurrency(Math.abs(entry.amount), t.currency)}
                     </Text>
-                    <Text style={[styles.entryDate, { color: theme.textSecondary }]}>{formatDate(entry.date)}</Text>
+                    <Text style={[styles.entryDate, { color: theme.textSecondary, textAlign: isRTL ? 'right' : 'left' }]}>{formatDate(entry.date)}</Text>
                   </View>
                   <View style={[styles.entryActions, isRTL && styles.rtl]}>
                     <TouchableOpacity onPress={() => openEdit(entry)} style={[styles.entryBtn, { backgroundColor: COLORS.info + '22' }]}>
-                      <FontAwesomeIcon icon={faPenToSquare} size={12} color={theme.text} />
+                      <FontAwesomeIcon icon={resolveIcon('faPenToSquare')} size={14} color={theme.text} />
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => setDeleteEntryId(entry.id)} style={[styles.entryBtn, { backgroundColor: COLORS.danger + '22' }]}>
-                      <FontAwesomeIcon icon={faTrashCan} size={12} color={theme.text} />
+                      <FontAwesomeIcon icon={resolveIcon('faTrashCan')} size={14} color={theme.text} />
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -322,13 +323,13 @@ export default function GoalDetailScreen({ navigation, route }: any) {
       <Modal visible={showAddModal} transparent animationType="slide">
         <KeyboardAvoidingView style={styles.modalOuter} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
           <View style={[styles.bottomSheet, { backgroundColor: theme.card }]}>
-            <Text style={[styles.sheetTitle, { color: theme.text }]}>{editingEntry ? t.edit : t.addSavings}</Text>
+            <Text style={[styles.sheetTitle, { color: theme.text, textAlign: isRTL ? 'right' : 'left' }]}>{editingEntry ? t.edit : t.addSavings}</Text>
 
             {/* Amount */}
             <View style={styles.inputGroup}>
-              <View style={styles.labelRow}>
-                <Text style={[styles.inputLabel, { color: theme.textSecondary }]}>{t.amount}</Text>
-                <Text style={styles.requiredStar}> *</Text>
+              <View style={[styles.labelRow, {flexDirection: isRTL ? 'row-reverse' : 'row'}]}>
+                <Text style={[styles.inputLabel, { color: theme.textSecondary, textAlign: isRTL ? 'right' : 'left' }]}>{t.amount}</Text>
+                <Text style={styles.requiredStar}> * </Text>
               </View>
               <View style={[styles.inputRow, {
                 backgroundColor: theme.inputBg,
@@ -350,20 +351,20 @@ export default function GoalDetailScreen({ navigation, route }: any) {
               </View>
               {entryErrors.amount && entryTouched.amount && (
                 <View style={[styles.errorRow, isRTL && styles.rtl]}>
-                  <Text style={styles.errorIcon}>⚠</Text>
+                  <FontAwesomeIcon icon={resolveIcon('faTriangleExclamation')} size={12} color={COLORS.danger} />
                   <Text style={styles.errorText}>{entryErrors.amount}</Text>
                 </View>
               )}
               {!entryErrors.amount && (
-                <Text style={[styles.inputHint, { color: theme.textMuted }]}>Use a negative value to record a withdrawal</Text>
+                <Text style={[styles.inputHint, { color: theme.textMuted, textAlign: isRTL ? 'right' : 'left' }]}>Use a negative value to record a withdrawal</Text>
               )}
             </View>
 
             {/* Date */}
             <View style={styles.inputGroup}>
-              <View style={styles.labelRow}>
-                <Text style={[styles.inputLabel, { color: theme.textSecondary }]}>{t.date}</Text>
-                <Text style={styles.requiredStar}> *</Text>
+              <View style={[styles.labelRow, {flexDirection: isRTL ? 'row-reverse' : 'row'}]}>
+                <Text style={[styles.inputLabel, { color: theme.textSecondary, textAlign: isRTL ? 'right' : 'left' }]}>{t.date}</Text>
+                <Text style={styles.requiredStar }> * </Text>
               </View>
               <View style={[styles.inputRow, {
                 backgroundColor: theme.inputBg,
@@ -382,11 +383,11 @@ export default function GoalDetailScreen({ navigation, route }: any) {
               </View>
               {entryErrors.date && entryTouched.date ? (
                 <View style={[styles.errorRow, isRTL && styles.rtl]}>
-                  <Text style={styles.errorIcon}>⚠</Text>
+                  <FontAwesomeIcon icon={resolveIcon('faTriangleExclamation')} size={12} color={COLORS.danger} />
                   <Text style={styles.errorText}>{entryErrors.date}</Text>
                 </View>
               ) : (
-                <Text style={[styles.inputHint, { color: theme.textMuted }]}>Format: YYYY-MM-DD</Text>
+                <Text style={[styles.inputHint, { color: theme.textMuted, textAlign: isRTL ? 'right' : 'left' }]}>Format: YYYY-MM-DD</Text>
               )}
             </View>
 
@@ -441,7 +442,6 @@ const styles = StyleSheet.create({
   summaryCard: { marginBottom: SPACING.md },
   summaryIconRow: { flexDirection: 'row', alignItems: 'center', gap: SPACING.sm, marginBottom: SPACING.xs },
   summaryIconWrap: { width: 52, height: 52, borderRadius: RADIUS.lg, alignItems: 'center', justifyContent: 'center' },
-  summaryIcon: { fontSize: 28 },
   summaryGoalName: { fontSize: FONT_SIZE.md, fontWeight: '700' },
   summaryHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: SPACING.md },
   savedAmount: { fontSize: FONT_SIZE.xxxl, fontWeight: '800' },
@@ -467,7 +467,7 @@ const styles = StyleSheet.create({
   emptyTitle: { fontSize: FONT_SIZE.lg, fontWeight: '700', marginBottom: SPACING.xs },
   emptyDesc: { fontSize: FONT_SIZE.md, textAlign: 'center' },
   entryRow: { flexDirection: 'row', alignItems: 'center', padding: SPACING.md },
-  entryDot: { width: 38, height: 38, borderRadius: RADIUS.md, alignItems: 'center', justifyContent: 'center', marginRight: SPACING.sm },
+  entryDot: { width: 38, height: 38, borderRadius: RADIUS.md, alignItems: 'center', justifyContent: 'center' },
   entryInfo: { flex: 1 },
   entryAmount: { fontSize: FONT_SIZE.md, fontWeight: '700' },
   entryDate: { fontSize: FONT_SIZE.xs, marginTop: 2 },
@@ -477,7 +477,7 @@ const styles = StyleSheet.create({
   bottomSheet: { borderTopLeftRadius: RADIUS.xl, borderTopRightRadius: RADIUS.xl, padding: SPACING.lg, paddingBottom: SPACING.xl },
   sheetTitle: { fontSize: FONT_SIZE.xl, fontWeight: '800', marginBottom: SPACING.lg },
   inputGroup: { marginBottom: SPACING.md },
-  labelRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 6 },
+  labelRow: { alignItems: 'center', marginBottom: 6 },
   inputLabel: { fontSize: FONT_SIZE.sm, fontWeight: '600' },
   requiredStar: { fontSize: FONT_SIZE.sm, fontWeight: '700', color: COLORS.danger },
   inputRow: { flexDirection: 'row', alignItems: 'center', borderRadius: RADIUS.md, borderWidth: 1.5, paddingHorizontal: SPACING.md },

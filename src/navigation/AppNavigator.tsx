@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { Text, View, BackHandler } from 'react-native';
+import { BackHandler } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTheme } from '../contexts/ThemeContext';
@@ -18,21 +18,15 @@ import AnalyticsScreen from '../screens/AnalyticsScreen';
 import SmsTransactionsScreen from '../screens/SmsTransactionsScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import OnboardingScreen from '../screens/OnboardingScreen';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { resolveIcon } from '../constants/icons';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
-function TabIcon({ emoji, focused }: { emoji: string; focused: boolean }) {
-  return (
-    <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-      <Text style={{ fontSize: focused ? 22 : 20, opacity: focused ? 1 : 0.6 }}>{emoji}</Text>
-    </View>
-  );
-}
-
 function TabNavigator() {
   const { theme } = useTheme();
-  const { t } = useLanguage();
+  const { t, isRTL } = useLanguage();
   const [exitModalVisible, setExitModalVisible] = useState(false);
 
   // Intercept Android hardware back button when tabs are focused
@@ -70,7 +64,7 @@ function TabNavigator() {
           component={DashboardScreen}
           options={{
             title: t.dashboard,
-            tabBarIcon: ({ focused }) => <TabIcon emoji="🏠" focused={focused} />,
+            tabBarIcon: ({ focused }) => <FontAwesomeIcon icon={resolveIcon('faHouse')} size={focused ? 22 : 20} color={focused ? COLORS.accent : theme.textMuted} />  ,
           }}
         />
         <Tab.Screen
@@ -78,7 +72,7 @@ function TabNavigator() {
           component={GoalsScreen}
           options={{
             title: t.goals,
-            tabBarIcon: ({ focused }) => <TabIcon emoji="🎯" focused={focused} />,
+            tabBarIcon: ({ focused }) => <FontAwesomeIcon icon={resolveIcon('faBullseye')} size={focused ? 22 : 20} color={focused ? COLORS.accent : theme.textMuted} />  ,
           }}
         />
         <Tab.Screen
@@ -86,15 +80,15 @@ function TabNavigator() {
           component={AnalyticsScreen}
           options={{
             title: t.analytics,
-            tabBarIcon: ({ focused }) => <TabIcon emoji="📊" focused={focused} />,
+            tabBarIcon: ({ focused }) => <FontAwesomeIcon icon={resolveIcon('faChartLine')} size={focused ? 22 : 20} color={focused ? COLORS.accent : theme.textMuted} />  ,
           }}
         />
         <Tab.Screen
           name="Transactions"
           component={SmsTransactionsScreen}
           options={{
-            title: 'SMS',
-            tabBarIcon: ({ focused }) => <TabIcon emoji="📩" focused={focused} />,
+            title: isRTL ? 'رسائل SMS' : 'SMS',
+            tabBarIcon: ({ focused }) => <FontAwesomeIcon icon={resolveIcon('faEnvelope')} size={focused ? 22 : 20} color={focused ? COLORS.accent : theme.textMuted} />  ,
           }}
         />
         <Tab.Screen
@@ -102,17 +96,17 @@ function TabNavigator() {
           component={SettingsScreen}
           options={{
             title: t.settings,
-            tabBarIcon: ({ focused }) => <TabIcon emoji="⚙️" focused={focused} />,
+            tabBarIcon: ({ focused }) => <FontAwesomeIcon icon={resolveIcon('faCog')} size={focused ? 22 : 20} color={focused ? COLORS.accent : theme.textMuted} />  ,
           }}
         />
       </Tab.Navigator>
 
       <ConfirmModal
         visible={exitModalVisible}
-        title="Exit App"
-        message="Are you sure you want to exit FinVista?"
-        confirmLabel="Exit"
-        cancelLabel="Stay"
+        title={isRTL ? 'خروج من التطبيق' : 'Exit App'}
+        message={isRTL ? 'هل أنت متأكد أنك تريد الخروج من FinVista؟' : 'Are you sure you want to exit FinVista?'}
+        confirmLabel={isRTL ? 'خروج' : 'Exit'}
+        cancelLabel={isRTL ? 'البقاء' : 'Stay'}
         danger={false}
         onConfirm={() => BackHandler.exitApp()}
         onCancel={() => setExitModalVisible(false)}

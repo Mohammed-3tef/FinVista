@@ -1,7 +1,7 @@
 export const COLORS = {
   primary: '#1A2744',
   primaryLight: '#243460',
-  accent: '#F0B429',
+  accent: '#dfa727',
   accentLight: '#F7D070',
   success: '#10B981',
   error: '#EF4444',
@@ -14,7 +14,7 @@ export const COLORS = {
     cardBorder: '#E8EDF8',
     text: '#1A2744',
     textSecondary: '#6B7A99',
-    textMuted: '#A0AABF',
+    textMuted: '#4A5A7A',
     inputBg: '#F5F7FF',
     tabBar: '#FFFFFF',
     shadow: 'rgba(26,39,68,0.10)',

@@ -29,6 +29,7 @@ export const strings = {
     targetAmount: 'Target Amount',
     startDate: 'Start Date',
     deadline: 'Deadline',
+    savingsNeeded: 'Savings Needed',
     saved: 'Saved',
     remaining: 'Remaining',
     progress: 'Progress',
@@ -41,6 +42,8 @@ export const strings = {
     savingsHistory: 'Savings History',
     editGoal: 'Edit Goal',
     deleteGoal: 'Delete Goal',
+    goalIcon: 'Goal Icon',
+    tapToChangeIcon: 'Tap to change icon',
     confirmDelete: 'Confirm Delete',
     confirmDeleteMsg: 'Are you sure you want to delete this goal? All savings data will be lost.',
     confirmDeleteEntry: 'Are you sure you want to delete this savings entry?',
@@ -55,9 +58,11 @@ export const strings = {
 
     // Analytics
     analyticsTitle: 'Analytics',
+    totalDeposits: 'Total Deposits',
+    totalWithdrawals: 'Total Withdrawals',
     totalGoals: 'Total Goals',
-    totalEntries: 'Total Entries',
-    avgSavingPerEntry: 'Avg. per Entry',
+    depositEntries: 'Deposit Entries',
+    avgPerDeposit: 'Avg. per Deposit',
     mostProgress: 'Most Progress',
     goalBreakdown: 'Goal Breakdown',
 
@@ -118,7 +123,6 @@ export const strings = {
     analytics: 'التحليلات',
     settings: 'الإعدادات',
 
-    totalSaved: 'إجمالي المدخرات',
     activeGoals: 'الأهداف النشطة',
     overallProgress: 'التقدم الكلي',
     recentActivity: 'النشاط الأخير',
@@ -131,6 +135,7 @@ export const strings = {
     targetAmount: 'المبلغ المستهدف',
     startDate: 'تاريخ البداية',
     deadline: 'الموعد النهائي',
+    savingsNeeded: 'المطلوب للتوفير',
     saved: 'تم توفيره',
     remaining: 'المتبقي',
     progress: 'التقدم',
@@ -143,6 +148,8 @@ export const strings = {
     savingsHistory: 'سجل المدخرات',
     editGoal: 'تعديل الهدف',
     deleteGoal: 'حذف الهدف',
+    goalIcon: 'أيقونة الهدف',
+    tapToChangeIcon: 'اضغط لتغيير الأيقونة',
     confirmDelete: 'تأكيد الحذف',
     confirmDeleteMsg: 'هل أنت متأكد من حذف هذا الهدف؟ ستُفقد جميع بيانات المدخرات.',
     confirmDeleteEntry: 'هل أنت متأكد من حذف هذا الإدخال؟',
@@ -156,9 +163,12 @@ export const strings = {
     addFirstSaving: 'أضف أول مدخراتك لتتبع التقدم',
 
     analyticsTitle: 'التحليلات',
+    totalSaved: 'الإجمالي الان',
+    totalDeposits: 'إجمالي الودائع',
+    totalWithdrawals: 'إجمالي السحوبات',
     totalGoals: 'إجمالي الأهداف',
-    totalEntries: 'إجمالي الإدخالات',
-    avgSavingPerEntry: 'متوسط كل إدخال',
+    depositEntries: 'إدخالات الودائع',
+    avgPerDeposit: 'متوسط كل ودائع',
     mostProgress: 'أكثر تقدماً',
     goalBreakdown: 'تفاصيل الأهداف',
 
@@ -210,44 +220,125 @@ export const strings = {
 
 export interface Category {
   label: string;
-  icons: string[];
+  categoryIcon: string; // FA icon name shown in the category tab
+  icons: string[];      // FA icon name strings shown in the picker grid
 }
 
 export const CATEGORIES: Category[] = [
   {
-    label: '👕 Clothes',
-    icons: ['👕', '👗', '👖', '🧥', '👔', '👟', '🎒', '⌚', '🕶️', '🧢'],
+    label: 'Bills',
+    categoryIcon: 'faReceipt',
+    icons: ['faLightbulb', 'faDroplet', 'faFire', 'faMobile', 'faGlobe', 'faHouse', 'faReceipt', 'faCreditCard', 'faEnvelope', 'faFile'],
   },
   {
-    label: '🏠 Life',
-    icons: ['🏠', '🏡', '🛋️', '🔑', '🏗️', '🏢', '🏘️', '🛏️', '🚿', '🪴'],
+    label: 'Debts',
+    categoryIcon: 'faMoneyBillTransfer',
+    icons: ['faMoneyBillTransfer', 'faArrowTrendDown', 'faReceipt', 'faCreditCard', 'faBuilding', 'faCalendar', 'faTriangleExclamation', 'faFile', 'faArrowsRotate', 'faMoneyBillWave'],
   },
   {
-    label: '🚗 Travel',
-    icons: ['🚗', '✈️', '🏖️', '⛵', '🚀', '🏕️', '🗺️', '🧳', '🚢', '🚂'],
+    label: 'Education',
+    categoryIcon: 'faGraduationCap',
+    icons: ['faBook', 'faGraduationCap', 'faPencil', 'faSchool', 'faMicroscope', 'faLightbulb', 'faBookOpen', 'faPaintbrush', 'faFlask', 'faCalculator'],
   },
   {
-    label: '💻 Tech',
-    icons: ['💻', '📱', '🎮', '📷', '🎧', '⌚', '🖥️', '📺', '🎙️', '🔋'],
+    label: 'Entertainment',
+    categoryIcon: 'faFilm',
+    icons: ['faFilm', 'faGamepad', 'faMusic', 'faMasksTheater', 'faGuitar', 'faCakeCandles', 'faTv', 'faHeadphones', 'faCamera', 'faGift'],
   },
   {
-    label: '📚 Education',
-    icons: ['📚', '🎓', '✏️', '🏫', '🔬', '💡', '📖', '🎨', '🖌️', '🧪'],
+    label: 'Family',
+    categoryIcon: 'faPeopleRoof',
+    icons: ['faPeopleRoof', 'faBaby', 'faDog', 'faCat', 'faRing', 'faChurch', 'faHandshake', 'faPeopleGroup', 'faHeartPulse', 'faHouseChimney'],
   },
   {
-    label: '❤️ Health',
-    icons: ['❤️', '💪', '🏃', '🧘', '🍎', '🏋️', '⚽', '🚴', '🧠', '🏊'],
+    label: 'Food',
+    categoryIcon: 'faUtensils',
+    icons: ['faBurger', 'faPizzaSlice', 'faDrumstickBite', 'faUtensils', 'faBowlFood', 'faMugHot', 'faLeaf', 'faCarrot', 'faCookie', 'faAppleWhole'],
   },
   {
-    label: '💰 Finance',
-    icons: ['💰', '💎', '🏦', '📈', '💳', '🪙', '💵', '🏆', '🎯', '⭐'],
+    label: 'Goals',
+    categoryIcon: 'faBullseye',
+    icons: ['faBullseye', 'faTrophy', 'faStar', 'faRocket', 'faCalendarDays', 'faMoneyBill', 'faChartBar', 'faFire', 'faLightbulb', 'faWandMagicSparkles'],
   },
   {
-    label: '🎉 Fun',
-    icons: ['🎉', '🎂', '🎁', '🎸', '🎬', '🎭', '🎪', '🛍️', '👗', '👟'],
+    label: 'Health',
+    categoryIcon: 'faHeart',
+    icons: ['faHeart', 'faPills', 'faHospital', 'faDumbbell', 'faPersonRunning', 'faAppleWhole', 'faSpa', 'faHandSparkles', 'faStethoscope', 'faSyringe'],
   },
   {
-    label: '👨‍👩‍👧 Family',
-    icons: ['👨‍👩‍👧', '👶', '🐶', '🐱', '💍', '💒', '🤝', '🫂', '🧸', '🌸'],
+    label: 'Income',
+    categoryIcon: 'faMoneyBillWave',
+    icons: ['faMoneyBillWave', 'faMoneyBill', 'faBuilding', 'faArrowTrendUp', 'faBriefcase', 'faReceipt', 'faChartBar', 'faCoins', 'faCreditCard', 'faTrophy'],
+  },
+  {
+    label: 'Investment',
+    categoryIcon: 'faArrowTrendUp',
+    icons: ['faArrowTrendUp', 'faChartBar', 'faChartLine', 'faBuilding', 'faCoins', 'faGem', 'faArrowTrendDown', 'faMobile', 'faMoneyBill', 'faNewspaper'],
+  },
+  {
+    label: 'Personal Care',
+    categoryIcon: 'faSpa',
+    icons: ['faSpa', 'faHandSparkles', 'faPumpSoap', 'faScissors', 'faShower', 'faEye', 'faFaceSmile', 'faHeart', 'faGem', 'faStar'],
+  },
+  {
+    label: 'Pets',
+    categoryIcon: 'faPaw',
+    icons: ['faDog', 'faCat', 'faPaw', 'faBone', 'faSyringe', 'faHospital', 'faHeart', 'faFishFins', 'faOtter', 'faLeaf'],
+  },
+  {
+    label: 'Rent',
+    categoryIcon: 'faHouse',
+    icons: ['faHouse', 'faKey', 'faMoneyBillWave', 'faFile', 'faBuilding', 'faReceipt', 'faCalendar', 'faCreditCard', 'faHouseChimney', 'faFileLines'],
+  },
+  {
+    label: 'Savings',
+    categoryIcon: 'faPiggyBank',
+    icons: ['faBuilding', 'faPiggyBank', 'faCoins', 'faArrowTrendUp', 'faChartBar', 'faBullseye', 'faGem', 'faLock', 'faStar', 'faCalendarDays'],
+  },
+  {
+    label: 'Shopping',
+    categoryIcon: 'faCartShopping',
+    icons: ['faCartShopping', 'faBagShopping', 'faStore', 'faBox', 'faTag', 'faGift', 'faCreditCard', 'faReceipt', 'faShirt', 'faPersonWalking'],
+  },
+  {
+    label: 'Subscriptions',
+    categoryIcon: 'faArrowsRotate',
+    icons: [
+      'faArrowsRotate',
+      'faGamepad',
+      'faSpotify',
+      'faYoutube',
+      'faAmazon',
+      'faApple',
+      'faTiktok',
+      'faFacebook',
+      'faTwitter',
+      'faInstagram',
+      "faLinkedin",
+      "faSnapchat",
+      "faPinterest",
+      "faMicrosoft",
+      "faDiscord"
+    ],
+  },
+  {
+    label: 'Tech',
+    categoryIcon: 'faLaptop',
+    icons: ['faLaptop', 'faMobile', 'faGamepad', 'faCamera', 'faHeadphones', 'faDesktop', 'faTv', 'faMicrophone', 'faBatteryFull', 'faClock'],
+  },
+  {
+    label: 'Transport',
+    categoryIcon: 'faCar',
+    icons: ['faCar', 'faBus', 'faTrainSubway', 'faGasPump', 'faMotorcycle', 'faBicycle', 'faPlane', 'faShip', 'faTruck', 'faPersonWalking'],
+  },
+  {
+    label: 'Travel',
+    categoryIcon: 'faPlane',
+    icons: ['faPlane', 'faUmbrellaBeach', 'faSailboat', 'faTent', 'faMap', 'faSuitcaseRolling', 'faShip', 'faTrain', 'faHotel', 'faCompass'],
+  },
+  {
+    label: 'Transfers',
+    categoryIcon: 'faArrowRightArrowLeft',
+    icons: ['faArrowsRotate', 'faBuilding', 'faCreditCard', 'faMobile', 'faMoneyBillWave', 'faMoneyBill', 'faCoins', 'faArrowRightArrowLeft', 'faPercent', 'faShieldHalved'],
   },
 ];

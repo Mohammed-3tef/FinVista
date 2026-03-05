@@ -3,6 +3,7 @@ import { Modal, View, Text, StyleSheet } from 'react-native';
 import { useTheme } from '../contexts/ThemeContext';
 import { SPACING, RADIUS, FONT_SIZE } from '../constants/theme';
 import Button from './Button';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface Props {
   visible: boolean;
@@ -17,13 +18,15 @@ interface Props {
 
 export default function ConfirmModal({ visible, title, message, confirmLabel = 'Delete', cancelLabel = 'Cancel', onConfirm, onCancel, danger = true }: Props) {
   const { theme, isDark } = useTheme();
+  const { t, isRTL } = useLanguage();
+  
   return (
     <Modal visible={visible} transparent animationType="fade">
       <View style={styles.overlay}>
         <View style={[styles.modal, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
-          <Text style={[styles.title, { color: theme.text }]}>{title}</Text>
-          <Text style={[styles.message, { color: theme.textSecondary }]}>{message}</Text>
-          <View style={styles.actions}>
+          <Text style={[styles.title, { color: theme.text, textAlign: isRTL ? 'right' : 'left' }]}>{title}</Text>
+          <Text style={[styles.message, { color: theme.textSecondary, textAlign: isRTL ? 'right' : 'left' }]}>{message}</Text>
+          <View style={[styles.actions, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
             <Button label={cancelLabel} onPress={onCancel} variant="outline" style={styles.btn} />
             <Button label={confirmLabel} onPress={onConfirm} variant={danger ? 'danger' : 'primary'} style={styles.btn} />
           </View>

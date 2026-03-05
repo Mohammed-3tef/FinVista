@@ -13,6 +13,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { useTheme } from '../contexts/ThemeContext';
 import { SPACING, RADIUS, FONT_SIZE } from '../constants/theme';
+import { resolveIcon } from '../constants/icons';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -154,7 +155,9 @@ export default function ExportBottomSheet({
                 {/* Arrow hint */}
                 {!isLoading && (
                   <View style={[styles.arrowDot, { backgroundColor: theme.cardBorder }]}>
-                    <Text style={[styles.arrowText, { color: theme.textMuted }]}>›</Text>
+                    <Text style={[styles.arrowText, { color: theme.textMuted }]}>
+                      <FontAwesomeIcon icon={resolveIcon('faChevronRight')} size={8} color={theme.textMuted} />
+                    </Text>
                   </View>
                 )}
               </TouchableOpacity>

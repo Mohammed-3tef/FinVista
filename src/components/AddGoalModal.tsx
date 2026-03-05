@@ -13,6 +13,8 @@ import {
 import { useApp } from '../context/AppContext';
 import { SPACING, RADIUS, FONT_SIZE, COLORS } from '../constants/theme';
 import { getTodayString } from '../utils/goalUtils';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { resolveIcon } from '../constants/icons';
 
 interface AddGoalModalProps {
   visible: boolean;
@@ -143,9 +145,11 @@ export const AddGoalModal: React.FC<AddGoalModalProps> = ({ visible, onClose }) 
           style={styles.keyboardView}>
           <View style={[styles.sheet, { backgroundColor: colors.surface }]}>
             <View style={[styles.header, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-              <Text style={[styles.title, { color: colors.text }]}>{t.addGoal}</Text>
+              <Text style={[styles.title, { color: colors.text, textAlign: isRTL ? 'right' : 'left' }]}>{t.addGoal}</Text>
               <TouchableOpacity onPress={resetAndClose} style={[styles.closeBtn, { backgroundColor: colors.border }]}>
-                <Text style={[styles.closeBtnText, { color: colors.textSecondary }]}>✕</Text>
+                <Text style={[styles.closeBtnText, { color: colors.textSecondary, textAlign: isRTL ? 'right' : 'left' }]}>
+                  <FontAwesomeIcon icon={resolveIcon('faXmark')} size={15} color={colors.textSecondary} />
+                </Text>
               </TouchableOpacity>
             </View>
 
@@ -158,8 +162,8 @@ export const AddGoalModal: React.FC<AddGoalModalProps> = ({ visible, onClose }) 
                     color: colors.text,
                     backgroundColor: colors.surfaceSecondary,
                     borderColor: err('name') ? COLORS.error : colors.border,
-                    textAlign: isRTL ? 'right' : 'left',
                   }]}
+                  textAlign={isRTL ? 'right' : 'left'}
                   placeholder={t.goalNamePlaceholder}
                   placeholderTextColor={colors.textTertiary}
                   value={name}
@@ -182,8 +186,8 @@ export const AddGoalModal: React.FC<AddGoalModalProps> = ({ visible, onClose }) 
                     color: colors.text,
                     backgroundColor: colors.surfaceSecondary,
                     borderColor: err('targetAmount') ? COLORS.error : colors.border,
-                    textAlign: isRTL ? 'right' : 'left',
                   }]}
+                  textAlign={isRTL ? 'right' : 'left'}
                   placeholder={t.amountPlaceholder}
                   placeholderTextColor={colors.textTertiary}
                   value={targetAmount}
@@ -201,8 +205,8 @@ export const AddGoalModal: React.FC<AddGoalModalProps> = ({ visible, onClose }) 
                     color: colors.text,
                     backgroundColor: colors.surfaceSecondary,
                     borderColor: err('startDate') ? COLORS.error : colors.border,
-                    textAlign: isRTL ? 'right' : 'left',
                   }]}
+                  textAlign={isRTL ? 'right' : 'left'}
                   placeholder="YYYY-MM-DD"
                   placeholderTextColor={colors.textTertiary}
                   value={startDate}
@@ -219,8 +223,8 @@ export const AddGoalModal: React.FC<AddGoalModalProps> = ({ visible, onClose }) 
                     color: colors.text,
                     backgroundColor: colors.surfaceSecondary,
                     borderColor: err('targetDate') ? COLORS.error : colors.border,
-                    textAlign: isRTL ? 'right' : 'left',
                   }]}
+                  textAlign={isRTL ? 'right' : 'left'}
                   placeholder="YYYY-MM-DD"
                   placeholderTextColor={colors.textTertiary}
                   value={targetDate}
