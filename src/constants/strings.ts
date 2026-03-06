@@ -113,6 +113,16 @@ export const strings = {
     resetFilter: 'Reset',
     noResults: 'No goals match your search',
     noResultsDesc: 'Try a different search term or reset filters',
+
+    // Recent Activity Screen
+    seeMore: 'See More',
+    allActivity: 'All Activity',
+    filterByDate: 'Filter by Date',
+    fromDate: 'From',
+    toDate: 'To',
+    noActivity: 'No activity yet',
+    noActivityInRange: 'No activity in this date range',
+    allGoalsFilter: 'All Goals',
   },
 
   ar: {
@@ -217,6 +227,16 @@ export const strings = {
     resetFilter: 'إعادة تعيين',
     noResults: 'لا توجد أهداف تطابق بحثك',
     noResultsDesc: 'جرب كلمة بحث مختلفة أو أعد تعيين الفلتر',
+
+    // Recent Activity Screen
+    seeMore: 'عرض المزيد',
+    allActivity: 'كل الأنشطة',
+    filterByDate: 'تصفية بالتاريخ',
+    fromDate: 'من',
+    toDate: 'إلى',
+    noActivity: 'لا يوجد نشاط بعد',
+    noActivityInRange: 'لا يوجد نشاط في هذا النطاق الزمني',
+    allGoalsFilter: 'كل الأهداف',
   },
 };
 

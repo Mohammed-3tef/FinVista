@@ -283,16 +283,26 @@ export default function DashboardScreen({ navigation }: any) {
         {/* Recent Activity */}
         {recentEntries.length > 0 && (
           <>
-            <Text
-              style={[
-                styles.sectionTitle,
-                { color: theme.text, marginBottom: SPACING.md, textAlign: isRTL ? 'right' : 'left' },
-              ]}>
-              {t.recentActivity}
-            </Text>
+            <View style={[styles.sectionHeader, isRTL ? styles.rtl : styles.ltr]}>
+              <Text
+                style={[
+                  styles.sectionTitle,
+                  { color: theme.text },
+                ]}>
+                {t.recentActivity}
+              </Text>
+              <TouchableOpacity onPress={() => navigation.navigate('RecentActivity')}>
+                <View style={[styles.addBtn, { backgroundColor: theme.card, borderWidth: 1, borderColor: theme.cardBorder }]}>
+                  <Text style={[styles.addBtnTxt, { color: theme.textSecondary }]}>{t.seeMore}</Text>
+                </View>
+              </TouchableOpacity>
+            </View>
             <Card noPadding>
               {recentEntries.map((entry, idx) => {
                 const goal = goals.find(g => g.id === entry.goalId);
+                const isWithdrawal = entry.amount < 0;
+                const entryColor = isWithdrawal ? COLORS.danger : COLORS.success;
+                const entryIcon  = isWithdrawal ? 'faArrowTrendDown' : 'faArrowTrendUp';
                 return (
                   <View
                     key={entry.id}
@@ -307,9 +317,9 @@ export default function DashboardScreen({ navigation }: any) {
                     <View
                       style={[
                         styles.activityDot,
-                        { backgroundColor: COLORS.success + '22', marginRight: isRTL ? 0 : SPACING.sm, marginLeft: isRTL ? SPACING.sm : 0 },
+                        { backgroundColor: entryColor + '22', marginRight: isRTL ? 0 : SPACING.sm, marginLeft: isRTL ? SPACING.sm : 0 },
                       ]}>
-                      <FontAwesomeIcon icon={resolveIcon(goal?.icon || 'faBullseye')} size={18} color={COLORS.success} />
+                      <FontAwesomeIcon icon={resolveIcon(entryIcon)} size={18} color={entryColor} />
                     </View>
                     <View style={styles.activityInfo}>
                       <Text style={[styles.activityGoal, { color: theme.text, textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={1}>

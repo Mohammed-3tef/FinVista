@@ -294,7 +294,7 @@ export default function GoalDetailScreen({ navigation, route }: any) {
               return (
                 <View key={entry.id} style={[styles.entryRow, isRTL && styles.rtl, idx < goalEntries.length - 1 && { borderBottomWidth: 1, borderBottomColor: theme.cardBorder }]}>
                   <View style={[styles.entryDot, { backgroundColor: entryColor + '22', marginRight: isRTL ? 0 : SPACING.sm, marginLeft: isRTL ? SPACING.sm : 0 }]}>
-                    <FontAwesomeIcon icon={resolveIcon(entryEmoji)} size={18} color={theme.text} />
+                    <FontAwesomeIcon icon={resolveIcon(entryEmoji)} size={18} color={ entryColor } />
                   </View>
                   <View style={styles.entryInfo}>
                     <Text style={[styles.entryAmount, { color: entryColor, textAlign: isRTL ? 'right' : 'left' }]}>

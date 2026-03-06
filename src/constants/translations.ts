@@ -81,12 +81,14 @@ export const translations = {
     // Notifications
     reminderTitle: 'FinVista Reminder 💰',
     notifMessages: [
-      'A small step brings you closer to [Goal]',
-      'Save today, relax tomorrow ☀️',
-      "Don't forget to save for [Goal]",
-      "You're getting closer to your goal 💰",
-      'Every penny counts towards [Goal]!',
-      'Keep going! [Goal] is within reach 🎯',
+      'Save today, relax tomorrow ✨ Every small effort counts towards your bigger dreams.',
+      "You're getting closer to your goal 💪 Keep going and don't let anything stop you.",
+      'Small steps lead to big wins 🏆 Every bit you save brings you closer to success.',
+      'Consistency is key 🔑 Stick to your plan even when it feels hard.',
+      'Every penny counts 💰 What you save today builds your future tomorrow.',
+      'Keep pushing, you got this 🚀 Remember, slow progress is still progress.',
+      'Your future self will thank you 🙏 Every effort you make now is worth it later.',
+      'Stay focused, stay strong 💼 Challenges come and go, but your dedication lasts.'
     ],
 
     // Misc
@@ -98,6 +100,13 @@ export const translations = {
     amountPlaceholder: '0.00',
     noActivity: 'No recent activity',
     viewAll: 'View All',
+    seeMore: 'See More',
+    allActivity: 'All Activity',
+    filterByDate: 'Filter by Date',
+    fromDate: 'From',
+    toDate: 'To',
+    noActivityInRange: 'No activity in this date range',
+    allGoalsFilter: 'All Goals',
     back: 'Back',
     goalDetails: 'Goal Details',
     addEntry: 'Add Entry',
@@ -207,12 +216,14 @@ export const translations = {
     // Notifications
     reminderTitle: 'تذكير فين فيستا 💰',
     notifMessages: [
-      'خطوة صغيرة تقربك من [Goal]',
-      'حوّش النهارده وارتاح بكرة ☀️',
-      'متنساش تحوش علشان [Goal]',
-      'قربت توصل لهدفك 💰',
-      'كل قرش بيفرق في [Goal]!',
-      'استمر! [Goal] في متناول يدك 🎯',
+      'حوش النهارده وارتاح بكرة ✨ كل جنيه تحوشه النهارده هيفرق معاك بكرة.',
+      'قربت توصل لهدفك 💪 خلي عزيمتك قوية ومتسيبش حاجة توقفك.',
+      'خطوات صغيرة بتعمل فرق كبير 🏆 كل مرة تحوش فيها حاجة صغيرة بتقربك من حلمك.',
+      'الاستمرار هو السر 🔑 حتى لو حاسس بصعوبة، كمّل على الخطة بتاعتك.',
+      'كل جنيه ليه قيمته 💰 اللي بتحوشه النهارده هو اللي هيخليك مرتاح بكرة.',
+      'كمّل، انت قدها 🚀 حتى لو التقدم بطيء، كل خطوة محسوبة.',
+      'مستقبلك هيشكرك 🙏 كل مجهود بتعمله دلوقتي هينفعك بعدين.',
+      'ركز وكون ثابت 💼 المشاكل بتيجي وتروح، لكن عزيمتك بتفضل.'
     ],
 
     // Misc
@@ -224,6 +235,13 @@ export const translations = {
     amountPlaceholder: '0.00',
     noActivity: 'لا يوجد نشاط حديث',
     viewAll: 'عرض الكل',
+    seeMore: 'عرض المزيد',
+    allActivity: 'كل الأنشطة',
+    filterByDate: 'تصفية بالتاريخ',
+    fromDate: 'من',
+    toDate: 'إلى',
+    noActivityInRange: 'لا يوجد نشاط في هذا النطاق الزمني',
+    allGoalsFilter: 'كل الأهداف',
     back: 'رجوع',
     goalDetails: 'تفاصيل الهدف',
     addEntry: 'إضافة',

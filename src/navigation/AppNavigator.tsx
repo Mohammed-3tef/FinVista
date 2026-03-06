@@ -14,6 +14,7 @@ import DashboardScreen from '../screens/DashboardScreen';
 import GoalsScreen from '../screens/GoalsScreen';
 import GoalDetailScreen from '../screens/GoalDetailScreen';
 import GoalFormScreen from '../screens/GoalFormScreen';
+import RecentActivityScreen from '../screens/RecentActivityScreen';
 import AnalyticsScreen from '../screens/AnalyticsScreen';
 import SmsTransactionsScreen from '../screens/SmsTransactionsScreen';
 import SettingsScreen from '../screens/SettingsScreen';
@@ -149,6 +150,11 @@ export default function AppNavigator() {
           name="GoalForm"
           component={GoalFormScreen}
           options={{ presentation: 'modal' }}
+        />
+        <Stack.Screen
+          name="RecentActivity"
+          component={RecentActivityScreen}
+          options={{ presentation: 'card' }}
         />
       </Stack.Navigator>
     </NavigationContainer>
