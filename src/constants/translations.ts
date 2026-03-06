@@ -20,6 +20,7 @@ export const translations = {
     noGoals: 'No goals yet',
     noGoalsDesc: 'Create your first financial goal to get started',
     createFirstGoal: 'Create First Goal',
+    favoriteGoals: 'Favorite Goals',
 
     // Goals
     myGoals: 'My Goals',
@@ -145,6 +146,7 @@ export const translations = {
     noGoals: 'لا توجد أهداف بعد',
     noGoalsDesc: 'أنشئ هدفك المالي الأول للبدء',
     createFirstGoal: 'أنشئ هدفك الأول',
+    favoriteGoals: 'الأهداف المفضلة',
 
     // Goals
     myGoals: 'أهدافي',

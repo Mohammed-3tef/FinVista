@@ -9,6 +9,7 @@ interface GoalsContextType {
   addGoal: (goal: Omit<Goal, 'id' | 'createdAt'>) => void;
   updateGoal: (id: string, updates: Partial<Goal>) => void;
   deleteGoal: (id: string) => void;
+  toggleFavorite: (id: string) => void;
   addEntry: (entry: Omit<SavingsEntry, 'id' | 'createdAt'>) => void;
   updateEntry: (id: string, updates: Partial<SavingsEntry>) => void;
   deleteEntry: (id: string) => void;
@@ -50,6 +51,9 @@ export function GoalsProvider({ children }: { children: ReactNode }) {
     saveEntries(entries.filter(e => e.goalId !== id));
     clearGoalMilestones(id); // fire-and-forget: clean up persisted milestone state
   };
+  const toggleFavorite = (id: string) => {
+    saveGoals(goals.map(g => g.id === id ? { ...g, isFavorite: !g.isFavorite } : g));
+  };
   const addEntry = (entry: Omit<SavingsEntry, 'id' | 'createdAt'>) => {
     const newEntry: SavingsEntry = { ...entry, id: generateId(), createdAt: new Date().toISOString() };
     // Use functional updater so concurrent calls within the same render cycle
@@ -87,7 +91,7 @@ export function GoalsProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <GoalsContext.Provider value={{ goals, entries, addGoal, updateGoal, deleteGoal, addEntry, updateEntry, deleteEntry, deleteEntriesByTransactionId }}>
+    <GoalsContext.Provider value={{ goals, entries, addGoal, updateGoal, deleteGoal, toggleFavorite, addEntry, updateEntry, deleteEntry, deleteEntriesByTransactionId }}>
       {children}
     </GoalsContext.Provider>
   );

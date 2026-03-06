@@ -6,6 +6,7 @@ import {
   StyleSheet,
   StatusBar,
   TouchableOpacity,
+  useWindowDimensions,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
@@ -25,6 +26,8 @@ export default function DashboardScreen({ navigation }: any) {
   const { theme, isDark } = useTheme();
   const { t, isRTL } = useLanguage();
   const { goals, entries } = useGoals();
+  const { width } = useWindowDimensions();
+  const CARD_WIDTH = width * 0.8;
   const [userName, setUserName] = useState('');
 
   // Re-read name every time this tab comes into focus so it's always fresh
@@ -168,15 +171,114 @@ export default function DashboardScreen({ navigation }: any) {
               {t.noGoalsDesc}
             </Text>
           </Card>
+        ) : goals.length === 1 ? (
+          <GoalCard
+            goal={goals[0]}
+            onPress={() => navigation.navigate('GoalDetail', { goalId: goals[0].id })}
+          />
         ) : (
-          goals.map(goal => (
-            <GoalCard
-              key={goal.id}
-              goal={goal}
-              onPress={() => navigation.navigate('GoalDetail', { goalId: goal.id })}
-            />
-          ))
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={[styles.goalsSlider, isRTL && { flexDirection: 'row-reverse' }]}
+            decelerationRate="fast"
+            snapToInterval={CARD_WIDTH + SPACING.sm}
+            snapToAlignment="start"
+          >
+            {goals.map(goal => (
+              <View key={goal.id} style={[styles.goalSlideWrap, { width: CARD_WIDTH }]}>
+                <GoalCard
+                  goal={goal}
+                  onPress={() => navigation.navigate('GoalDetail', { goalId: goal.id })}
+                />
+              </View>
+            ))}
+          </ScrollView>
         )}
+
+        {/* ── Favorite Goals ── */}
+        {(() => {
+          const favoriteGoals = goals.filter(g => g.isFavorite);
+          return (
+            <>
+              <Text style={[styles.sectionTitle, { color: theme.text, marginBottom: SPACING.md, textAlign: isRTL ? 'right' : 'left' }]}>{t.favoriteGoals}</Text>
+              {favoriteGoals.length === 0 ? (
+                <Card style={styles.emptyCard}>
+                  <Text style={[styles.emptyDesc, { color: theme.textSecondary, textAlign: 'center' }]}>
+                    {!isRTL ? 'No favorite goals yet. Tap the' : 'لا توجد أهداف مفضلة بعد. اضغط على'}
+                    <FontAwesomeIcon icon={resolveIcon('faStar')} size={14} color={COLORS.accent} style={{ paddingHorizontal: 14 }} />
+                    {!isRTL ? 'icon on a goal to add it.' : 'لإضافة هدف مفضل.'}
+                  </Text>
+                </Card>
+              ) : favoriteGoals.length === 1 ? (() => {
+                const goal = favoriteGoals[0];
+                const saved = getTotalSaved(entries, goal.id);
+                const progress = getProgress(saved, goal.targetAmount);
+                const color = progress >= 100 ? COLORS.success : progress >= 60 ? COLORS.accent : COLORS.info;
+                return (
+                  <TouchableOpacity
+                    onPress={() => navigation.navigate('GoalDetail', { goalId: goal.id })}
+                    activeOpacity={0.85}
+                    style={[styles.favSlideCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}
+                  >
+                    <View style={[styles.favSlideHeader, isRTL && { flexDirection: 'row-reverse' }]}>
+                      <View style={[styles.favStarBadge, { backgroundColor: COLORS.accent + '22' }]}>
+                        <FontAwesomeIcon icon={resolveIcon('faStar')} size={14} color={COLORS.accent} />
+                      </View>
+                      <Text style={[styles.favGoalName, { color: theme.text, textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={1}>
+                        {goal.name}
+                      </Text>
+                      <Text style={[styles.favPct, { color }]}>{Math.round(progress)}%</Text>
+                    </View>
+                    <ProgressBar progress={progress} height={6} />
+                    <View style={[styles.favAmountRow, isRTL && { flexDirection: 'row-reverse' }]}>
+                      <Text style={[styles.favSaved, { color }]}>{formatCurrency(saved, t.currency)}</Text>
+                      <Text style={[styles.favTarget, { color: theme.textSecondary }]}>/ {formatCurrency(goal.targetAmount, t.currency)}</Text>
+                    </View>
+                  </TouchableOpacity>
+                );
+              })() : (
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={[styles.favSlider, isRTL && { flexDirection: 'row-reverse' }]}
+                  decelerationRate="fast"
+                  snapToInterval={CARD_WIDTH + SPACING.sm}
+                  snapToAlignment="start"
+                >
+                  {favoriteGoals.map(goal => {
+                    const saved = getTotalSaved(entries, goal.id);
+                    const progress = getProgress(saved, goal.targetAmount);
+                    const color = progress >= 100 ? COLORS.success : progress >= 60 ? COLORS.accent : COLORS.info;
+                    return (
+                      <TouchableOpacity
+                        key={goal.id}
+                        onPress={() => navigation.navigate('GoalDetail', { goalId: goal.id })}
+                        activeOpacity={0.85}
+                        style={[styles.favSlideCard, { width: CARD_WIDTH, backgroundColor: theme.card, borderColor: theme.cardBorder, boxShadow: '0 3px 6px rgba(0,0,0,0.2)' }]}
+                      >
+                        <View style={[styles.favSlideHeader, isRTL && { flexDirection: 'row-reverse' }]}>
+                          <View style={[styles.favStarBadge, { backgroundColor: COLORS.accent + '22' }]}>
+                            <FontAwesomeIcon icon={resolveIcon('faStar')} size={14} color={COLORS.accent} />
+                          </View>
+                          <Text style={[styles.favGoalName, { color: theme.text, textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={1}>
+                            {goal.name}
+                          </Text>
+                          <Text style={[styles.favPct, { color }]}>{Math.round(progress)}%</Text>
+                        </View>
+                        <ProgressBar progress={progress} height={6} />
+                        <View style={[styles.favAmountRow, isRTL && { flexDirection: 'row-reverse' }]}>
+                          <Text style={[styles.favSaved, { color }]}>{formatCurrency(saved, t.currency)}</Text>
+                          <Text style={[styles.favTarget, { color: theme.textSecondary }]}>/ {formatCurrency(goal.targetAmount, t.currency)}</Text>
+                        </View>
+                      </TouchableOpacity>
+                    );
+                  })}
+                </ScrollView>
+              )}
+            </>
+          );
+        })()}
 
         {/* Recent Activity */}
         {recentEntries.length > 0 && (
@@ -309,7 +411,7 @@ const styles = StyleSheet.create({
   sectionTitle: { fontSize: FONT_SIZE.lg, fontWeight: '800' },
   addBtn: { paddingHorizontal: SPACING.md, paddingVertical: 8, borderRadius: RADIUS.full },
   addBtnTxt: { color: COLORS.primary, fontSize: FONT_SIZE.sm, fontWeight: '700' },
-  emptyCard: { alignItems: 'center', paddingVertical: SPACING.xl },
+  emptyCard: { alignItems: 'center', paddingVertical: SPACING.xl, marginBottom: SPACING.md },
   emptyEmoji: { fontSize: 48, marginBottom: SPACING.md },
   emptyTitle: { fontSize: FONT_SIZE.lg, fontWeight: '700', marginBottom: SPACING.sm },
   emptyDesc: { fontSize: FONT_SIZE.md, textAlign: 'center', lineHeight: 22 },
@@ -325,4 +427,21 @@ const styles = StyleSheet.create({
   activityGoal: { fontSize: FONT_SIZE.md, fontWeight: '600' },
   activityDate: { fontSize: FONT_SIZE.xs, marginTop: 2 },
   activityAmount: { fontSize: FONT_SIZE.sm, fontWeight: '700' },
+  favSlider: { gap: SPACING.sm },
+  favSlideCard: {
+    // width: 250,
+    borderRadius: RADIUS.lg,
+    borderWidth: 1,
+    padding: SPACING.md,
+    marginBottom: SPACING.md,
+  },
+  favSlideHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: SPACING.sm, gap: SPACING.xs },
+  favStarBadge: { width: 26, height: 26, borderRadius: RADIUS.full, alignItems: 'center', justifyContent: 'center' },
+  favGoalName: { flex: 1, fontSize: FONT_SIZE.sm, fontWeight: '700' },
+  favAmountRow: { flexDirection: 'row', alignItems: 'baseline', flexWrap: 'wrap', marginTop: SPACING.sm, gap: 2 },
+  favSaved: { fontSize: FONT_SIZE.sm, fontWeight: '700' },
+  favTarget: { fontSize: FONT_SIZE.xs },
+  favPct: { fontSize: FONT_SIZE.lg, fontWeight: '800' },
+  goalsSlider: { paddingBottom: SPACING.xs },
+  goalSlideWrap: { marginRight: SPACING.sm },
 });

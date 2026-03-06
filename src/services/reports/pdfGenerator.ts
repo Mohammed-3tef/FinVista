@@ -96,6 +96,7 @@ function buildAnalyticsHtml(data: AnalyticsReportData): string {
         <div class="stat-card"><div class="stat-label">Total Withdrawals</div><div class="stat-value red">${fmt(data.totalWithdrawals, data.currency)}</div></div>
         <div class="stat-card"><div class="stat-label">Deposit Entries</div><div class="stat-value accent">${data.depositCount}</div></div>
         <div class="stat-card"><div class="stat-label">Avg per Deposit</div><div class="stat-value">${fmt(data.avgPerDeposit, data.currency)}</div></div>
+        <div class="stat-card"><div class="stat-label">Favourite Goals</div><div class="stat-value accent">${data.favoriteCount}</div></div>
       </div>
 
       <h2>Goal Breakdown</h2>

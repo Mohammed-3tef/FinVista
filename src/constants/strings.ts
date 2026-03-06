@@ -1,7 +1,7 @@
 export type Language = 'en' | 'ar';
 
 export const strings = {
-  versionNumber: '1.1.0',
+  versionNumber: '1.2.0',
 
   en: {
     // App
@@ -23,6 +23,7 @@ export const strings = {
     noGoalsDesc: 'Create your first financial goal to get started',
     createGoal: 'Create Goal',
     addGoal: 'Add Goal',
+    favoriteGoals: 'Favorite Goals',
 
     // Goals
     goalName: 'Goal Name',
@@ -130,6 +131,7 @@ export const strings = {
     noGoalsDesc: 'أنشئ هدفك المالي الأول للبدء',
     createGoal: 'إنشاء هدف',
     addGoal: 'إضافة هدف',
+    favoriteGoals: 'الأهداف المفضلة',
 
     goalName: 'اسم الهدف',
     targetAmount: 'المبلغ المستهدف',

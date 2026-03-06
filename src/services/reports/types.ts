@@ -24,6 +24,7 @@ export interface AnalyticsReportData {
   totalWithdrawals: number;
   depositCount: number;
   avgPerDeposit: number;
+  favoriteCount: number;
   currency: string;
   goals: GoalReportRow[];
 }

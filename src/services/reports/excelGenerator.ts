@@ -41,6 +41,7 @@ export async function exportAnalyticsExcel(data: AnalyticsReportData): Promise<v
     ['Deposit Entries', data.depositCount],
     ['Avg per Deposit', fmt(data.avgPerDeposit, data.currency)],
     ['Total Goals', data.goals.length],
+    ['Favourite Goals', data.favoriteCount],
   ];
   const wsSummary = XLSX.utils.aoa_to_sheet(summaryRows);
 

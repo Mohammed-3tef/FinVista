@@ -59,6 +59,7 @@ export async function exportAnalyticsCsv(data: AnalyticsReportData): Promise<voi
     `Total Withdrawals,${fmt(data.totalWithdrawals, data.currency)}`,
     `Deposit Entries,${data.depositCount}`,
     `Avg per Deposit,${fmt(data.avgPerDeposit, data.currency)}`,
+    `Favourite Goals,${data.favoriteCount}`,
     '',
     'Goal Breakdown',
     buildCsv(headers, rows),

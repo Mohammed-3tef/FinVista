@@ -13,9 +13,10 @@ import ProgressBar from './ProgressBar';
 interface Props {
   goal: Goal;
   onPress: () => void;
+  onToggleFavorite?: () => void;
 }
 
-export default function GoalCard({ goal, onPress }: Props) {
+export default function GoalCard({ goal, onPress, onToggleFavorite }: Props) {
   const { theme } = useTheme();
   const { t, isRTL } = useLanguage();
   const { entries } = useGoals();
@@ -46,6 +47,15 @@ export default function GoalCard({ goal, onPress }: Props) {
           <View style={[styles.badge, { backgroundColor: color + '22' }]}>
             <Text style={[styles.badgeTxt, { color }]}>{Math.round(progress)}%</Text>
           </View>
+          {onToggleFavorite !== undefined && (
+            <TouchableOpacity
+              onPress={onToggleFavorite}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+              style={{ marginLeft: isRTL ? 0 : SPACING.sm, marginRight: isRTL ? SPACING.sm : 0 }}
+            >
+              <FontAwesomeIcon icon={resolveIcon('faStar')} size={18} color={goal.isFavorite ? COLORS.accent : theme.textMuted} />
+            </TouchableOpacity>
+          )}
         </View>
 
         <View style={styles.progressSection}>
@@ -55,19 +65,19 @@ export default function GoalCard({ goal, onPress }: Props) {
         <View style={[styles.statsRow, isRTL ? styles.rtl : styles.ltr]}>
           <View style={styles.stat}>
             <Text style={[styles.statLabel, { color: theme.textSecondary }]}>{t.saved}</Text>
-            <Text style={[styles.statValue, { color: totalSaved < 0 ? COLORS.danger : COLORS.success, textAlign: isRTL ? 'right' : 'left' }]}>
+            <Text style={[styles.statValue, { color: totalSaved < 0 ? COLORS.danger : COLORS.success }]}>
               {totalSaved < 0 ? '-' : ''}{formatCurrency(Math.abs(totalSaved), t.currency)}
             </Text>
           </View>
           <View style={styles.divider} />
           <View style={styles.stat}>
             <Text style={[styles.statLabel, { color: theme.textSecondary }]}>{t.remaining}</Text>
-            <Text style={[styles.statValue, { color: theme.text, textAlign: isRTL ? 'right' : 'left' }]}>{formatCurrency(remaining, t.currency)}</Text>
+            <Text style={[styles.statValue, { color: theme.text }]}>{formatCurrency(remaining, t.currency)}</Text>
           </View>
           <View style={styles.divider} />
           <View style={styles.stat}>
             <Text style={[styles.statLabel, { color: theme.textSecondary }]}>{t.daysLeft}</Text>
-            <Text style={[styles.statValue, { color: daysLeft < 7 ? COLORS.danger : theme.text, textAlign: isRTL ? 'right' : 'left' }]}>{daysLeft}</Text>
+            <Text style={[styles.statValue, { color: daysLeft < 7 ? COLORS.danger : theme.text }]}>{daysLeft}</Text>
           </View>
         </View>
       </Card>

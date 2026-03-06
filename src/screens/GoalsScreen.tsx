@@ -20,7 +20,7 @@ type SortOption = 'nameAZ' | 'nameZA' | 'progressHigh' | 'progressLow' | 'deadli
 export default function GoalsScreen({ navigation }: any) {
   const { theme } = useTheme();
   const { t, isRTL } = useLanguage();
-  const { goals, entries } = useGoals();
+  const { goals, entries, toggleFavorite } = useGoals();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [filterVisible, setFilterVisible] = useState(false);
@@ -190,6 +190,7 @@ export default function GoalsScreen({ navigation }: any) {
               key={goal.id}
               goal={goal}
               onPress={() => navigation.navigate('GoalDetail', { goalId: goal.id })}
+              onToggleFavorite={() => toggleFavorite(goal.id)}
             />
           ))
         )}

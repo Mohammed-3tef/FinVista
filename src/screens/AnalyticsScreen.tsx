@@ -35,6 +35,7 @@ export default function AnalyticsScreen() {
   const totalWithdrawals = entries.filter(e => e.amount < 0).reduce((sum, e) => sum + Math.abs(e.amount), 0);
   const depositCount = entries.filter(e => e.amount > 0).length;
   const avgPerEntry = depositCount > 0 ? totalDeposits / depositCount : 0;
+  const favoriteCount = goals.filter(g => g.isFavorite).length;
 
   const goalStats = goals.map(g => {
     const goalEntries = entries.filter(e => e.goalId === g.id);
@@ -63,6 +64,7 @@ export default function AnalyticsScreen() {
     totalWithdrawals,
     depositCount,
     avgPerDeposit: avgPerEntry,
+    favoriteCount,
     currency: t.currency,
     goals: goalStats.map(s => ({
       name: s.goal.name,
@@ -72,7 +74,7 @@ export default function AnalyticsScreen() {
       deadline: (s.goal as any).deadline ?? '',
       currency: t.currency,
     })),
-  }), [totalSavedAll, totalDeposits, totalWithdrawals, depositCount, avgPerEntry, t.currency, goalStats]);
+  }), [totalSavedAll, totalDeposits, totalWithdrawals, depositCount, avgPerEntry, favoriteCount, t.currency, goalStats]);
 
   const runExport = useCallback(
     async (id: string, fn: (data: AnalyticsReportData) => Promise<void>) => {
@@ -141,6 +143,7 @@ export default function AnalyticsScreen() {
     { label: t.totalWithdrawals, value: formatCurrency(totalWithdrawals, t.currency), icon: 'faArrowUp', color: COLORS.danger },
     { label: t.depositEntries, value: depositCount.toString(), icon: 'faListCheck', color: COLORS.accent },
     { label: t.avgPerDeposit, value: formatCurrency(avgPerEntry, t.currency), icon: 'faCalculator', color: COLORS.warning },
+    { label: t.favoriteGoals, value: favoriteCount.toString(), icon: 'faStar', color: COLORS.accent },
   ];
 
   return (
@@ -167,23 +170,18 @@ export default function AnalyticsScreen() {
               <Text style={[styles.statLabel, { color: theme.textSecondary }]}>{s.label}</Text>
             </Card>
           ))}
-        </View>
 
-        {/* Most Progress */}
-        {mostProgress && (
-          <Card style={styles.highlightCard}>
-            <View style={[styles.row, isRTL ? styles.rtl : styles.ltr ]}>
-              <View style={[styles.highlightIconWrap, { backgroundColor: COLORS.accent + '22' }]}>
-                <FontAwesomeIcon icon={resolveIcon(mostProgress.goal.icon || 'faBullseye')} size={22} color={COLORS.accent} />
+          {/* Most Progress */}
+          {mostProgress && (
+            <Card style={styles.statCard}>
+              <View style={[styles.statIcon, { backgroundColor: COLORS.accent + '22' }]}>
+                <Text style={[styles.highlightPct, { color: COLORS.accent }]}>{Math.round(mostProgress.progress)}%</Text>
               </View>
-              <View style={[styles.highlightText, isRTL ? { marginRight: SPACING.sm, marginLeft: 0 } : { marginRight: 0, marginLeft: SPACING.sm }]}>
-                <Text style={[styles.highlightLabel, { color: theme.textSecondary, textAlign: isRTL ? 'right' : 'left' }]}>{t.mostProgress}</Text>
-                <Text style={[styles.highlightName, { color: theme.text, textAlign: isRTL ? 'right' : 'left' }]}>{mostProgress.goal.name}</Text>
-              </View>
-              <Text style={[styles.highlightPct, { color: COLORS.accent }]}>{Math.round(mostProgress.progress)}%</Text>
-            </View>
-          </Card>
-        )}
+              <Text style={[styles.statValue, { color: theme.text }]}>{mostProgress.goal.name}</Text>
+              <Text style={[styles.statLabel, { color: theme.textSecondary }]}>{t.mostProgress}</Text>
+            </Card>
+          )}
+        </View>
 
         {/* Goal Breakdown */}
         {goalStats.length > 0 && (
@@ -261,7 +259,7 @@ const styles = StyleSheet.create({
   highlightText: { flex: 1, marginLeft: SPACING.sm },
   highlightLabel: { fontSize: FONT_SIZE.xs },
   highlightName: { fontSize: FONT_SIZE.md, fontWeight: '700' },
-  highlightPct: { fontSize: FONT_SIZE.xl, fontWeight: '800' },
+  highlightPct: { fontSize: FONT_SIZE.md, fontWeight: '800', padding: 8 },
   sectionTitle: { fontSize: FONT_SIZE.lg, fontWeight: '800', marginBottom: SPACING.md },
   breakdownCard: { marginBottom: SPACING.sm },
   breakdownIconWrap: { width: 32, height: 32, borderRadius: RADIUS.sm, alignItems: 'center', justifyContent: 'center', marginHorizontal: SPACING.xs },
