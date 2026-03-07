@@ -7,6 +7,7 @@ import {
   StatusBar,
   TouchableOpacity,
   useWindowDimensions,
+  RefreshControl,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
@@ -21,23 +22,34 @@ import ProgressBar from '../components/ProgressBar';
 import { USER_NAME_KEY } from './SettingsScreen';
 import { resolveIcon } from '../constants/icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { usePullToRefresh } from '../hooks/usePullToRefresh';
 
 export default function DashboardScreen({ navigation }: any) {
   const { theme, isDark } = useTheme();
   const { t, isRTL } = useLanguage();
-  const { goals, entries } = useGoals();
+  const { goals, entries, reload } = useGoals();
   const { width } = useWindowDimensions();
   const CARD_WIDTH = width * 0.8;
   const [userName, setUserName] = useState('');
 
+  const loadUserName = useCallback(async () => {
+    const val = await AsyncStorage.getItem(USER_NAME_KEY);
+    setUserName(val ?? '');
+  }, []);
+
   // Re-read name every time this tab comes into focus so it's always fresh
   useFocusEffect(
     useCallback(() => {
-      AsyncStorage.getItem(USER_NAME_KEY).then(val => {
-        if (val) setUserName(val);
-        else setUserName('');
-      });
-    }, []),
+      loadUserName();
+    }, [loadUserName]),
+  );
+
+  const { refreshProps } = usePullToRefresh(
+    useCallback(async () => {
+      await Promise.all([reload(), loadUserName()]);
+    }, [reload, loadUserName]),
+    COLORS.accent,
+    theme.card,
   );
 
   const overallSaved = goals.reduce((sum, g) => sum + getTotalSaved(entries, g.id), 0);
@@ -70,7 +82,9 @@ export default function DashboardScreen({ navigation }: any) {
         </View>
       </View>
 
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.content}>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.content}
+        refreshControl={<RefreshControl {...refreshProps} />}
+      >
 
         {/* Hero Summary Card */}
         <View

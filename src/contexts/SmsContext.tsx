@@ -139,6 +139,8 @@ export interface SmsContextType {
   isScanning: boolean;
   /** Unix-ms timestamp of the last automatic or manual inbox check, null if never checked */
   lastCheckedAt: number | null;
+  /** Re-read transactions from storage (used by pull-to-refresh) */
+  reloadTransactions: () => Promise<void>;
 }
 
 const SmsContext = createContext<SmsContextType>({} as SmsContextType);
@@ -444,6 +446,11 @@ export function SmsProvider({ children }: { children: ReactNode }) {
     setTransactions([]);
   }, []);
 
+  const reloadTransactions = useCallback(async () => {
+    const freshTxs = await loadSmsTransactions();
+    setTransactions(freshTxs);
+  }, []);
+
   // ── Block List CRUD ───────────────────────────────────────────────────────
   const addToBlockList = useCallback(async (sender: string) => {
     const trimmed = sender.trim();
@@ -568,6 +575,7 @@ export function SmsProvider({ children }: { children: ReactNode }) {
         transactions,
         deleteTransaction,
         clearHistory,
+        reloadTransactions,
         blockList,
         addToBlockList,
         removeFromBlockList,

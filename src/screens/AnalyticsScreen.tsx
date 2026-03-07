@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, ScrollView, StyleSheet, StatusBar, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, StatusBar, TouchableOpacity, Alert, RefreshControl } from 'react-native';
 import { useTheme } from '../contexts/ThemeContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useGoals } from '../contexts/GoalsContext';
@@ -21,11 +21,18 @@ import { exportAnalyticsPDF } from '../services/reports/pdfGenerator';
 import { exportAnalyticsExcel } from '../services/reports/excelGenerator';
 import { exportAnalyticsCsv } from '../services/reports/csvGenerator';
 import { AnalyticsReportData } from '../services/reports/types';
+import { usePullToRefresh } from '../hooks/usePullToRefresh';
 
 export default function AnalyticsScreen() {
   const { theme } = useTheme();
   const { t, isRTL } = useLanguage();
-  const { goals, entries } = useGoals();
+  const { goals, entries, reload } = useGoals();
+
+  const { refreshProps } = usePullToRefresh(
+    useCallback(async () => { await reload(); }, [reload]),
+    COLORS.accent,
+    theme.card,
+  );
 
   const [showExport, setShowExport] = useState(false);
   const [loadingExportId, setLoadingExportId] = useState<string | null>(null);
@@ -157,7 +164,9 @@ export default function AnalyticsScreen() {
           <FontAwesomeIcon icon={resolveIcon('faArrowUpFromBracket')} size={FONT_SIZE.md} color={COLORS.primary} />
         </TouchableOpacity>
       </View>
-      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}
+        refreshControl={<RefreshControl {...refreshProps} />}
+      >
 
         {/* Stat Grid */}
         <View style={styles.grid}>

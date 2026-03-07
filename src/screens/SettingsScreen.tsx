@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -16,6 +16,7 @@ import {
   TouchableWithoutFeedback,
   KeyboardAvoidingView,
   Platform,
+  RefreshControl,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import notifee, { AndroidImportance } from '@notifee/react-native';
@@ -37,6 +38,7 @@ import UserNameModal from '../components/UserNameModal';
 import {strings} from '../constants/strings';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { resolveIcon } from '../constants/icons';
+import { usePullToRefresh } from '../hooks/usePullToRefresh';
 
 export const USER_NAME_KEY = '@finvista_user_name';
 
@@ -73,6 +75,30 @@ export default function SettingsScreen() {
   const [userName, setUserName] = useState('');
   const [nameModalVisible, setNameModalVisible] = useState(false);
 
+  const loadSettings = useCallback(async () => {
+    const [s, ns, nameVal] = await Promise.all([
+      getReminderSettings(),
+      notifee.getNotificationSettings(),
+      AsyncStorage.getItem(USER_NAME_KEY),
+    ]);
+    setReminders(s);
+    const granted = ns.authorizationStatus >= 1;
+    setNotifPermission(granted);
+    if (granted && s.enabled) scheduleReminder(s, language);
+    if (nameVal) setUserName(nameVal);
+  }, [language]);
+
+  useEffect(() => {
+    loadSettings();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const { refreshProps } = usePullToRefresh(
+    useCallback(async () => { await loadSettings(); }, [loadSettings]),
+    COLORS.accent,
+    theme.card,
+  );
+
   // Keyword editor state
   const [newDepositKw, setNewDepositKw] = useState('');
   const [newWithdrawalKw, setNewWithdrawalKw] = useState('');
@@ -85,26 +111,6 @@ export default function SettingsScreen() {
   // Modal visibility
   const [pollModalVisible, setPollModalVisible] = useState(false);
   const [kwModalKind, setKwModalKind] = useState<'deposit' | 'withdrawal' | null>(null);
-
-  useEffect(() => {
-    getReminderSettings().then(s => {
-      setReminders(s);
-      // Reschedule on mount in case a previous trigger expired (e.g. monthly)
-      notifee.getNotificationSettings().then(ns => {
-        const granted = ns.authorizationStatus >= 1;
-        setNotifPermission(granted);
-        if (granted && s.enabled) scheduleReminder(s, language);
-      });
-    });
-    AsyncStorage.getItem(USER_NAME_KEY).then(val => {
-      if (val) setUserName(val);
-    });
-    // Check current notification permission state
-    notifee.getNotificationSettings().then(s => {
-      setNotifPermission(s.authorizationStatus >= 1);
-    });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const handleSaveName = async (name: string) => {
     setUserName(name);
@@ -339,7 +345,9 @@ export default function SettingsScreen() {
         <Text style={[styles.title, { color: theme.text, textAlign: isRTL ? 'right' : 'left' }]}>{t.settingsTitle}</Text>
       </View>
 
-      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}
+        refreshControl={<RefreshControl {...refreshProps} />}
+      >
 
         {/* Profile */}
         <Section title={isRTL ? 'الملف الشخصي' : 'Profile'}>

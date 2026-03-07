@@ -4,7 +4,7 @@
  * Supports: delete, block sender, filter by type.
  */
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import {
   View,
   Text,
@@ -14,6 +14,7 @@ import {
   Alert,
   TextInput,
   StatusBar,
+  RefreshControl,
 } from 'react-native';
 import { useTheme } from '../contexts/ThemeContext';
 import { useSms } from '../contexts/SmsContext';
@@ -21,12 +22,25 @@ import { SmsTransaction } from '../constants/types';
 import { COLORS, SPACING, RADIUS, FONT_SIZE } from '../constants/theme';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { resolveIcon } from '../constants/icons';
+import { usePullToRefresh } from '../hooks/usePullToRefresh';
 
 type FilterType = 'all' | 'deposit' | 'withdrawal';
 
 export default function SmsTransactionsScreen() {
   const { theme } = useTheme();
-  const { transactions, deleteTransaction, addToBlockList, blockList } = useSms();
+  const { transactions, deleteTransaction, addToBlockList, blockList, scanInbox, reloadTransactions, hasPermission } = useSms();
+
+  const { refreshProps } = usePullToRefresh(
+    useCallback(async () => {
+      if (hasPermission) {
+        await scanInbox();
+      } else {
+        await reloadTransactions();
+      }
+    }, [hasPermission, scanInbox, reloadTransactions]),
+    COLORS.accent,
+    theme.card,
+  );
 
   const [filter, setFilter] = useState<FilterType>('all');
   const [search, setSearch] = useState('');
@@ -265,6 +279,7 @@ export default function SmsTransactionsScreen() {
         renderItem={renderItem}
         contentContainerStyle={styles.list}
         showsVerticalScrollIndicator={false}
+        refreshControl={<RefreshControl {...refreshProps} />}
         ListEmptyComponent={
           <View style={styles.empty}>
             <Text style={styles.emptyEmoji}>

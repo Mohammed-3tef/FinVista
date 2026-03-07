@@ -1,7 +1,7 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import {
   View, Text, ScrollView, StyleSheet, TouchableOpacity, StatusBar,
-  TextInput, Modal, TouchableWithoutFeedback, Pressable,
+  TextInput, Modal, TouchableWithoutFeedback, Pressable, RefreshControl,
 } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faSearch, faSlidersH, faTimes, faCheck } from '@fortawesome/free-solid-svg-icons';
@@ -13,6 +13,7 @@ import { COLORS, SPACING, FONT_SIZE, RADIUS } from '../constants/theme';
 import { getTotalSaved, getProgress, getDaysLeft } from '../utils/calculations';
 import GoalCard from '../components/GoalCard';
 import { resolveIcon } from '../constants/icons';
+import { usePullToRefresh } from '../hooks/usePullToRefresh';
 
 type StatusFilter = 'all' | 'active' | 'completed';
 type SortOption = 'nameAZ' | 'nameZA' | 'progressHigh' | 'progressLow' | 'deadline' | 'amountHigh';
@@ -20,7 +21,13 @@ type SortOption = 'nameAZ' | 'nameZA' | 'progressHigh' | 'progressLow' | 'deadli
 export default function GoalsScreen({ navigation }: any) {
   const { theme } = useTheme();
   const { t, isRTL } = useLanguage();
-  const { goals, entries, toggleFavorite } = useGoals();
+  const { goals, entries, toggleFavorite, reload } = useGoals();
+
+  const { refreshProps } = usePullToRefresh(
+    useCallback(async () => { await reload(); }, [reload]),
+    COLORS.accent,
+    theme.card,
+  );
 
   const [searchQuery, setSearchQuery] = useState('');
   const [filterVisible, setFilterVisible] = useState(false);
@@ -167,7 +174,9 @@ export default function GoalsScreen({ navigation }: any) {
       </View>
 
       {/* ── Goals List ── */}
-      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}
+        refreshControl={<RefreshControl {...refreshProps} />}
+      >
         {goals.length === 0 ? (
           <View style={styles.empty}>
             <Text style={styles.emptyEmoji}>

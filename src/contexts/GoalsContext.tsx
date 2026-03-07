@@ -15,6 +15,8 @@ interface GoalsContextType {
   deleteEntry: (id: string) => void;
   /** Remove all savings entries that were created by the given SMS transaction */
   deleteEntriesByTransactionId: (smsTransactionId: string) => void;
+  /** Re-read goals and entries from AsyncStorage (used by pull-to-refresh) */
+  reload: () => Promise<void>;
 }
 const GoalsContext = createContext<GoalsContextType>({} as GoalsContextType);
 
@@ -90,8 +92,17 @@ export function GoalsProvider({ children }: { children: ReactNode }) {
     saveEntries(entries.filter(e => e.smsTransactionId !== smsTransactionId));
   };
 
+  const reload = async () => {
+    const [goalsVal, entriesVal] = await Promise.all([
+      AsyncStorage.getItem(GOALS_KEY),
+      AsyncStorage.getItem(ENTRIES_KEY),
+    ]);
+    if (goalsVal) setGoals(JSON.parse(goalsVal));
+    if (entriesVal) setEntries(JSON.parse(entriesVal));
+  };
+
   return (
-    <GoalsContext.Provider value={{ goals, entries, addGoal, updateGoal, deleteGoal, toggleFavorite, addEntry, updateEntry, deleteEntry, deleteEntriesByTransactionId }}>
+    <GoalsContext.Provider value={{ goals, entries, addGoal, updateGoal, deleteGoal, toggleFavorite, addEntry, updateEntry, deleteEntry, deleteEntriesByTransactionId, reload }}>
       {children}
     </GoalsContext.Provider>
   );

@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Modal, KeyboardAvoidingView, Platform, TextInput as RNTextInput, StatusBar, Alert } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Modal, KeyboardAvoidingView, Platform, TextInput as RNTextInput, StatusBar, Alert, RefreshControl } from 'react-native';
 import { useTheme } from '../contexts/ThemeContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useGoals } from '../contexts/GoalsContext';
@@ -16,11 +16,18 @@ import { resolveIcon } from '../constants/icons';
 import { exportGoalProgressPDF } from '../services/reports/pdfGenerator';
 import { exportGoalSavingsHistoryExcel } from '../services/reports/excelGenerator';
 import { GoalProgressReportData, GoalSavingsHistoryReportData } from '../services/reports/types';
+import { usePullToRefresh } from '../hooks/usePullToRefresh';
 
 export default function GoalDetailScreen({ navigation, route }: any) {
   const { theme } = useTheme();
   const { t, isRTL } = useLanguage();
-  const { goals, entries, addEntry, updateEntry, deleteEntry, deleteGoal } = useGoals();
+  const { goals, entries, addEntry, updateEntry, deleteEntry, deleteGoal, reload } = useGoals();
+
+  const { refreshProps } = usePullToRefresh(
+    useCallback(async () => { await reload(); }, [reload]),
+    COLORS.accent,
+    theme.card,
+  );
 
   const goal = goals.find(g => g.id === route.params.goalId);
   if (!goal) { navigation.goBack(); return null; }
@@ -219,7 +226,9 @@ export default function GoalDetailScreen({ navigation, route }: any) {
         </View>
       </View>
 
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.content}>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.content}
+        refreshControl={<RefreshControl {...refreshProps} />}
+      >
 
         {/* Summary Card */}
         <Card style={[styles.summaryCard, { borderColor: color + '44' }]}>

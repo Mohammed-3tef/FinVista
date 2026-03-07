@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   StatusBar,
+  RefreshControl,
 } from 'react-native';
 import { useTheme } from '../contexts/ThemeContext';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -16,6 +17,7 @@ import { COLORS, SPACING, RADIUS, FONT_SIZE } from '../constants/theme';
 import Card from '../components/Card';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { resolveIcon } from '../constants/icons';
+import { usePullToRefresh } from '../hooks/usePullToRefresh';
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
 
@@ -42,7 +44,13 @@ function toEndOfDay(s: string): Date {
 export default function RecentActivityScreen({ navigation }: any) {
   const { theme, isDark } = useTheme();
   const { t, isRTL } = useLanguage();
-  const { goals, entries } = useGoals();
+  const { goals, entries, reload } = useGoals();
+
+  const { refreshProps } = usePullToRefresh(
+    useCallback(async () => { await reload(); }, [reload]),
+    COLORS.accent,
+    theme.card,
+  );
 
   // ── Filter state ────────────────────────────────────────────────────────
   const [fromDate, setFromDate] = useState('');
@@ -296,6 +304,7 @@ export default function RecentActivityScreen({ navigation }: any) {
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.listContent}
+        refreshControl={<RefreshControl {...refreshProps} />}
       >
         {filteredEntries.length === 0 ? (
           <Card style={styles.emptyCard}>
