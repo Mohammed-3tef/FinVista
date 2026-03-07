@@ -1,8 +1,20 @@
+<div align="center">
+    <img src="./docs/icon.png" width="125px" style="border-radius: 15%;">
+</div>
+
+<br>
+
 # FinVista – Financial Goals & Savings Tracker
 
 A premium fintech-style React Native app for tracking financial goals and savings.
 
----
+![React Native](https://img.shields.io/badge/React%20Native-0.84-blue?logo=react)
+![React](https://img.shields.io/badge/React-19.2.3-blue?logo=react)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.8-blue?logo=typescript)
+![Node](https://img.shields.io/badge/Node-%3E%3D22.11-green?logo=node.js)
+![Platform](https://img.shields.io/badge/Platform-Android%20%7C%20iOS-lightgrey)
+![License](https://img.shields.io/badge/License-MPL-yellow)
+![GitHub repo size](https://img.shields.io/github/repo-size/Mohammed-3tef/https%3A%2F%2Fgithub.com%2FMohammed-3tef%2FFinVista)
 
 ## Features
 
