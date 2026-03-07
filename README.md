@@ -1,5 +1,5 @@
 <div align="center">
-    <img src="./docs/icon.png" width="125px" style="border-radius: 15%;">
+    <img src="./docs/icon-rounded.png" width="150px">
 </div>
 
 <br>
