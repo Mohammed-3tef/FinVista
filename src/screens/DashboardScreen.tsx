@@ -219,7 +219,7 @@ export default function DashboardScreen({ navigation }: any) {
                   <TouchableOpacity
                     onPress={() => navigation.navigate('GoalDetail', { goalId: goal.id })}
                     activeOpacity={0.85}
-                    style={[styles.favSlideCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}
+                    style={[styles.favSlideCard, { backgroundColor: theme.card, borderColor: theme.cardBorder, boxShadow: '0 3px 6px rgba(0,0,0,0.2)' }]}
                   >
                     <View style={[styles.favSlideHeader, isRTL && { flexDirection: 'row-reverse' }]}>
                       <View style={[styles.favStarBadge, { backgroundColor: COLORS.accent + '22' }]}>

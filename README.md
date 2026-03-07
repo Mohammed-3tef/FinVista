@@ -4,7 +4,7 @@ A premium fintech-style React Native app for tracking financial goals and saving
 
 ---
 
-## ✨ Features
+## Features
 
 - **Financial Goals Management** – Create, edit, delete goals with name, target amount, start date, and deadline
 - **Savings Tracking** – Add, edit, delete savings entries with full history per goal
@@ -18,47 +18,23 @@ A premium fintech-style React Native app for tracking financial goals and saving
 
 ---
 
-## 📁 Project Structure
+## Screenshots
 
-```
-FinVista/
-├── App.tsx                      # Root component with providers
-├── index.js                     # Entry point
-├── app.json                     # App config
-├── package.json                 # Dependencies
-└── src/
-    ├── constants/
-    │   ├── theme.ts             # Colors, spacing, radii, font sizes
-    │   └── strings.ts           # EN + AR localization strings
-    ├── contexts/
-    │   ├── ThemeContext.tsx      # Dark/light mode context
-    │   ├── LanguageContext.tsx   # Language & RTL context
-    │   └── GoalsContext.tsx      # Goals & entries state + AsyncStorage
-    ├── services/
-    │   └── notifications.ts     # Reminder settings & motivational messages
-    ├── utils/
-    │   └── calculations.ts      # Financial math utilities + types
-    ├── components/
-    │   ├── Card.tsx             # Themed card container
-    │   ├── Button.tsx           # Multi-variant button
-    │   ├── TextInput.tsx        # Themed labeled input
-    │   ├── ProgressBar.tsx      # Animated spring progress bar
-    │   ├── GoalCard.tsx         # Goal summary card
-    │   └── ConfirmModal.tsx     # Delete confirmation modal
-    ├── screens/
-    │   ├── DashboardScreen.tsx  # Overview: total saved, goals list, activity
-    │   ├── GoalsScreen.tsx      # Goals list tab
-    │   ├── GoalDetailScreen.tsx # Goal detail + savings history
-    │   ├── GoalFormScreen.tsx   # Create/edit goal form
-    │   ├── AnalyticsScreen.tsx  # Analytics & breakdown
-    │   └── SettingsScreen.tsx   # Theme, language, reminder settings
-    └── navigation/
-        └── AppNavigator.tsx     # Bottom tabs + stack navigator
-```
+### Demos Screenshots
 
----
+| Screenshot 1 | Screenshot 2 | Screenshot 3 | Screenshot 4 | Screenshot 5 |
+|--------------|--------------|--------------|--------------|--------------|
+| ![Home](./docs/ui/home1.png) | ![Home](./docs/ui/home2.png) | ![All Activities](./docs/ui/all_activities.png) | ![Add Goal](./docs/ui/add_goal.png) | ![Goals](./docs/ui/goals.png) | 
+| ![Goal Filteration](./docs/ui/goal_filteration.png) | ![Goal Details](./docs/ui/goal_details.png) | ![Analytics](./docs/ui/analytics.png) | ![SMS](./docs/ui/sms.png) | ![Settings](./docs/ui/settings1.png) |
+| ![Settings](./docs/ui/settings2.png) | ![Settings](./docs/ui/settings3.png) | ![Light Mode](./docs/ui/light_mode.png)
 
-## 🚀 Setup
+### PDF Documents
+
+| PDF 1 | PDF 2 |
+|-------|-------|
+|![FinVista Analytics](./docs/pdf/FinVista_Analytics.jpg) | ![FinVista Goal](./docs/pdf/FinVista_Goal.jpg) |
+
+## Setup
 
 ### Prerequisites
 - Node.js >= 22.11.0
@@ -81,42 +57,34 @@ npx react-native run-android
 ### Dependencies added vs template
 
 ```json
+"@fortawesome/fontawesome-svg-core": "^6.7.2",
+"@fortawesome/free-brands-svg-icons": "6.7.2",
+"@fortawesome/free-solid-svg-icons": "^6.7.2",
+"@fortawesome/react-native-fontawesome": "^0.3.2",
+"@notifee/react-native": "^9.1.8",
 "@react-native-async-storage/async-storage": "^2.1.2",
-"@react-navigation/native": "^7.0.14",
+"@react-native-community/datetimepicker": "^8.6.0",
 "@react-navigation/bottom-tabs": "^7.3.10",
+"@react-navigation/native": "^7.0.14",
 "@react-navigation/native-stack": "^7.3.10",
+"react": "19.2.3",
+"react-native": "0.84.0",
+"react-native-background-fetch": "^4.3.0",
+"react-native-fs": "^2.20.0",
+"react-native-get-sms-android": "^2.1.0",
+"react-native-html-to-pdf": "^1.3.0",
+"react-native-immersive-mode": "^2.0.2",
+"react-native-safe-area-context": "^5.5.2",
 "react-native-screens": "^4.4.0",
-"react-native-safe-area-context": "^5.5.2"
+"react-native-share": "^12.2.5",
+"react-native-sms-listener": "^0.0.1",
+"react-native-svg": "^15.15.3",
+"xlsx": "^0.18.5"
 ```
 
 ---
 
-## 🎨 Design System
-
-| Token | Value |
-|-------|-------|
-| Primary | `#1A2744` (Deep Navy) |
-| Accent | `#F0B429` (Gold) |
-| Success | `#10B981` (Green) |
-| Danger | `#EF4444` (Red) |
-| Info | `#3B82F6` (Blue) |
-
----
-
-## 📱 Screens
-
-| Screen | Description |
-|--------|-------------|
-| Dashboard | Hero total saved card, goals list, recent savings activity |
-| Goals | All goals with progress cards |
-| Goal Detail | Full goal view: progress, savings needed, savings history with edit/delete |
-| Goal Form | Create or edit a goal (modal presentation) |
-| Analytics | Stats grid, most-progress highlight, per-goal breakdown |
-| Settings | Dark mode toggle, EN/AR language switch, reminder frequency |
-
----
-
-## 🔔 Notifications / Reminders
+## Notifications / Reminders
 
 Reminders are configurable in Settings. The notification messages rotate randomly from 5 templates per language and dynamically include the goal name.
 
