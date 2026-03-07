@@ -1,4 +1,4 @@
-# 💎 FinVista – Financial Goals & Savings Tracker
+# FinVista – Financial Goals & Savings Tracker
 
 A premium fintech-style React Native app for tracking financial goals and savings.
 
