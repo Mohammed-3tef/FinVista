@@ -7,6 +7,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTheme } from '../contexts/ThemeContext';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useAuth } from '../contexts/AuthContext';
 import { COLORS } from '../constants/theme';
 import ConfirmModal from '../components/ConfirmModal';
 
@@ -28,6 +29,7 @@ const Stack = createNativeStackNavigator();
 function TabNavigator() {
   const { theme } = useTheme();
   const { t, isRTL } = useLanguage();
+  const { lock } = useAuth();
   const [exitModalVisible, setExitModalVisible] = useState(false);
 
   // Intercept Android hardware back button when tabs are focused
@@ -109,7 +111,7 @@ function TabNavigator() {
         confirmLabel={isRTL ? 'خروج' : 'Exit'}
         cancelLabel={isRTL ? 'البقاء' : 'Stay'}
         danger={false}
-        onConfirm={() => BackHandler.exitApp()}
+        onConfirm={() => { setExitModalVisible(false); lock(); BackHandler.exitApp(); }}
         onCancel={() => setExitModalVisible(false)}
       />
     </>

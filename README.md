@@ -10,11 +10,12 @@ A premium fintech-style React Native app for tracking financial goals and saving
 
 ![React Native](https://img.shields.io/badge/React%20Native-0.84-blue?logo=react)
 ![React](https://img.shields.io/badge/React-19.2.3-blue?logo=react)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.8-blue?logo=typescript)
 ![Node](https://img.shields.io/badge/Node-%3E%3D22.11-green?logo=node.js)
 ![Platform](https://img.shields.io/badge/Platform-Android%20%7C%20iOS-lightgrey)
 ![License](https://img.shields.io/badge/License-MPL-yellow)
-![GitHub repo size](https://img.shields.io/github/repo-size/Mohammed-3tef/https%3A%2F%2Fgithub.com%2FMohammed-3tef%2FFinVista)
+![GitHub repo size](https://img.shields.io/github/repo-size/Mohammed-3tef/FinVista)
+![GitHub Release](https://img.shields.io/github/v/release/Mohammed-3tef/FinVista)
+![GitHub Downloads (specific asset, latest release)](https://img.shields.io/github/downloads/Mohammed-3tef/FinVista/latest/app-release.apk)
 
 ## Features
 
@@ -38,7 +39,7 @@ A premium fintech-style React Native app for tracking financial goals and saving
 |--------------|--------------|--------------|--------------|--------------|
 | ![Home](./docs/ui/home1.png) | ![Home](./docs/ui/home2.png) | ![All Activities](./docs/ui/all_activities.png) | ![Add Goal](./docs/ui/add_goal.png) | ![Goals](./docs/ui/goals.png) | 
 | ![Goal Filteration](./docs/ui/goal_filteration.png) | ![Goal Details](./docs/ui/goal_details.png) | ![Analytics](./docs/ui/analytics.png) | ![SMS](./docs/ui/sms.png) | ![Settings](./docs/ui/settings1.png) |
-| ![Settings](./docs/ui/settings2.png) | ![Settings](./docs/ui/settings3.png) | ![Light Mode](./docs/ui/light_mode.png)
+| ![Settings](./docs/ui/settings2.png) | ![Settings](./docs/ui/settings3.png) | ![Lock](./docs/ui/lock.png) | ![Light Mode](./docs/ui/light_mode.png)
 
 ### PDF Documents
 
@@ -82,10 +83,12 @@ npx react-native run-android
 "react": "19.2.3",
 "react-native": "0.84.0",
 "react-native-background-fetch": "^4.3.0",
+"react-native-biometrics": "^3.0.1",
 "react-native-fs": "^2.20.0",
 "react-native-get-sms-android": "^2.1.0",
 "react-native-html-to-pdf": "^1.3.0",
 "react-native-immersive-mode": "^2.0.2",
+"react-native-keychain": "^10.0.0",
 "react-native-safe-area-context": "^5.5.2",
 "react-native-screens": "^4.4.0",
 "react-native-share": "^12.2.5",

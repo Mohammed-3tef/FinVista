@@ -163,7 +163,9 @@ import {
   faChevronLeft,
   faArrowUpFromBracket,
   faExclamationTriangle,
-  faCheck
+  faCheck,
+  faCircleExclamation,
+  faFingerprint
 } from '@fortawesome/free-solid-svg-icons';
 
 import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
@@ -344,6 +346,8 @@ export const ICON_MAP: Record<string, IconDefinition> = {
   faArrowUpFromBracket,
   faExclamationTriangle,
   faCheck,
+  faCircleExclamation,
+  faFingerprint,
 
   faSpotify,
   faYoutube,

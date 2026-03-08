@@ -38,9 +38,89 @@ import UserNameModal from '../components/UserNameModal';
 import {strings} from '../constants/strings';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { resolveIcon } from '../constants/icons';
+import { useAuth } from '../contexts/AuthContext';
 import { usePullToRefresh } from '../hooks/usePullToRefresh';
+import { useBiometricAuth } from '../hooks/useBiometricAuth';
+import PinPad from '../components/PinPad';
 
 export const USER_NAME_KEY = '@finvista_user_name';
+
+// ─── Biometric PIN Verification Modal ────────────────────────────────────────
+// Defined at module level so digit presses re-render ONLY this small component,
+// not the entire SettingsScreen.
+interface BiometricPinModalProps {
+  visible: boolean;
+  isRTL: boolean;
+  biometricType: 'TouchID' | 'FaceID' | 'Biometrics' | null;
+  onClose: () => void;
+  /** Returns true if PIN was correct and biometric was enabled. */
+  onVerify: (pin: string) => Promise<boolean>;
+  theme: { card: string; cardBorder: string; text: string; textSecondary: string };
+}
+
+function BiometricPinModal({ visible, isRTL, biometricType, onClose, onVerify, theme }: BiometricPinModalProps) {
+  const [pin, setPin] = useState('');
+  const [error, setError] = useState('');
+
+  // Reset state each time the modal opens.
+  useEffect(() => {
+    if (visible) { setPin(''); setError(''); }
+  }, [visible]);
+
+  // Auto-submit once 6 digits are entered.
+  useEffect(() => {
+    if (pin.length !== 6) return;
+    let cancelled = false;
+    (async () => {
+      const ok = await onVerify(pin);
+      if (cancelled) return;
+      if (!ok) {
+        setPin('');
+        setError(isRTL ? '\u0631\u0645\u0632 PIN \u063a\u064a\u0631 \u0635\u062d\u064a\u062d. \u062d\u0627\u0648\u0644 \u0645\u062c\u062f\u062f\u064b\u0627.' : 'Incorrect PIN. Try again.');
+      }
+    })();
+    return () => { cancelled = true; };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pin]);
+
+  // Stable setter — PinPad never gets a new function reference per digit.
+  const handleChange = useCallback((v: string) => setPin(v), []);
+
+  return (
+    <Modal
+      visible={visible}
+      transparent
+      animationType="slide"
+      onRequestClose={onClose}>
+      <View style={styles.modalRoot}>
+        <TouchableWithoutFeedback onPress={onClose}>
+          <View style={StyleSheet.absoluteFill} />
+        </TouchableWithoutFeedback>
+        <View style={[styles.modalSheet, { backgroundColor: theme.card }]}>
+          <View style={[styles.modalHeader, isRTL && styles.rtl]}>
+            <Text style={[styles.modalTitle, { color: theme.text }]}>
+              {isRTL ? '\u062a\u0623\u0643\u064a\u062f \u0631\u0645\u0632 PIN' : 'Verify PIN'}
+            </Text>
+            <TouchableOpacity onPress={onClose}>
+              <FontAwesomeIcon icon={resolveIcon('faXmark')} size={18} color={theme.textSecondary} />
+            </TouchableOpacity>
+          </View>
+          <Text style={{ color: theme.textSecondary, fontSize: FONT_SIZE.sm, marginBottom: SPACING.md, textAlign: isRTL ? 'right' : 'left' }}>
+            {isRTL
+              ? `\u0623\u062f\u062e\u0644 \u0631\u0645\u0632 PIN \u0627\u0644\u062e\u0627\u0635 \u0628\u0643 \u0644\u062a\u0641\u0639\u064a\u0644 \u062a\u0633\u062c\u064a\u0644 \u0627\u0644\u062f\u062e\u0648\u0644 \u0628\u0640${biometricType === 'FaceID' ? '\u0627\u0644\u062a\u0639\u0631\u0641 \u0639\u0644\u0649 \u0627\u0644\u0648\u062c\u0647' : '\u0628\u0635\u0645\u0629 \u0627\u0644\u0625\u0635\u0628\u0639'}.`
+              : `Enter your PIN to enable ${biometricType === 'FaceID' ? 'Face ID' : 'Fingerprint'} login.`}
+          </Text>
+          {!!error && (
+            <Text style={{ color: COLORS.error, fontSize: FONT_SIZE.sm, textAlign: 'center', marginBottom: SPACING.sm }}>
+              {error}
+            </Text>
+          )}
+          <PinPad value={pin} onChange={handleChange} theme={theme} />
+        </View>
+      </View>
+    </Modal>
+  );
+}
 
 export default function SettingsScreen() {
   const { theme, isDark, toggleTheme } = useTheme();
@@ -66,6 +146,9 @@ export default function SettingsScreen() {
     lastCheckedAt,
   } = useSms();
 
+  const { lock, hasPinSet, isBiometricEnabled, enableBiometric, disableBiometric } = useAuth();
+  const { isAvailable: isBioAvailable, biometricType } = useBiometricAuth();
+
   const [reminders, setReminders] = useState<ReminderSettings>({
     enabled: true,
     frequency: 'daily',
@@ -74,6 +157,7 @@ export default function SettingsScreen() {
   const [isTesting, setIsTesting] = useState(false);
   const [userName, setUserName] = useState('');
   const [nameModalVisible, setNameModalVisible] = useState(false);
+  const [bioPinModalVisible, setBioPinModalVisible] = useState(false);
 
   const loadSettings = useCallback(async () => {
     const [s, ns, nameVal] = await Promise.all([
@@ -117,6 +201,20 @@ export default function SettingsScreen() {
     await AsyncStorage.setItem(USER_NAME_KEY, name);
     setNameModalVisible(false);
   };
+
+  const handleBiometricToggle = (value: boolean) => {
+    if (value) {
+      setBioPinModalVisible(true);
+    } else {
+      disableBiometric();
+    }
+  };
+
+  const handleBioPinVerify = useCallback(async (pin: string): Promise<boolean> => {
+    const ok = await enableBiometric(pin);
+    if (ok) setBioPinModalVisible(false);
+    return ok;
+  }, [enableBiometric]);
 
   // ── Keyword helpers ────────────────────────────────────────────────────────
   const handleAddKeyword = async (kind: 'deposit' | 'withdrawal') => {
@@ -704,6 +802,54 @@ export default function SettingsScreen() {
         </Section>
 
         {/* About */}
+        <Section title={isRTL ? 'الأمان' : 'Security'}>
+          {isBioAvailable && hasPinSet && (
+            <Row
+              label={
+                isRTL
+                  ? (biometricType === 'FaceID' ? 'تسجيل الدخول بالتعرف على الوجه' : 'تسجيل الدخول ببصمة الإصبع')
+                  : (biometricType === 'FaceID' ? 'Face ID Login' : 'Fingerprint Login')
+              }
+              right={
+                <Switch
+                  value={isBiometricEnabled}
+                  onValueChange={handleBiometricToggle}
+                  trackColor={{ true: COLORS.accent, false: theme.cardBorder }}
+                  thumbColor="#fff"
+                />
+              }
+            />
+          )}
+          <Row
+            label={isRTL ? 'قفل التطبيق' : 'Lock App'}
+            noBorder
+            onPress={() =>
+              Alert.alert(
+                isRTL ? 'قفل التطبيق' : 'Lock App',
+                isRTL
+                  ? 'هل تريد قفل FinVista الآن؟'
+                  : 'Lock FinVista now? You will need to re-authenticate to access your data.',
+                [
+                  { text: isRTL ? 'إلغاء' : 'Cancel', style: 'cancel' },
+                  {
+                    text: isRTL ? 'قفل' : 'Lock',
+                    style: 'destructive',
+                    onPress: lock,
+                  },
+                ],
+              )
+            }
+            right={
+              <FontAwesomeIcon
+                icon={resolveIcon('faLock')}
+                size={16}
+                color={COLORS.accent}
+              />
+            }
+          />
+        </Section>
+
+        {/* About */}
         <Section title={t.about}>
           <Row label={t.appName} right={<Text style={{ color: theme.textMuted }}>FinVista</Text>} />
           <Row
@@ -732,6 +878,16 @@ export default function SettingsScreen() {
         currentName={userName}
         onSave={handleSaveName}
         onCancel={() => setNameModalVisible(false)}
+      />
+
+      {/* ── Biometric PIN Verification Modal ── */}
+      <BiometricPinModal
+        visible={bioPinModalVisible}
+        isRTL={isRTL}
+        biometricType={biometricType}
+        onClose={() => setBioPinModalVisible(false)}
+        onVerify={handleBioPinVerify}
+        theme={theme}
       />
 
       {/* ── Poll Interval Modal ── */}

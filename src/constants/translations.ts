@@ -2,6 +2,22 @@ export type Language = 'en' | 'ar';
 
 export const translations = {
   en: {
+    // Lock
+    createPIN: 'Create a PIN',
+    confirmPIN: 'Confirm PIN',
+    enterPIN: 'Enter PIN',
+    welcomeBack: 'Welcome back!',
+    createPINSubtitle: 'Set a 6-digit PIN to secure your FinVista data.',
+    confirmPINSubtitle: 'Re-enter your PIN to confirm.',
+    enterPINSubtitle: 'Enter your 6-digit PIN to access FinVista.',
+    unlockWithFingerprint: 'Use fingerprint to unlock.',
+    unlockWithFaceID: 'Use Face ID to unlock.',
+    usePINInstead: 'Use PIN instead',
+    useFingerprintInstead: 'Use Fingerprint instead',
+    useFaceIDInstead: 'Use Face ID instead',
+    pinMismatch: "PINs don't match. Please start over.",
+    incorrectPIN: 'Incorrect PIN. Try again.',
+
     // App
     appName: 'FinVista',
     tagline: 'Your Financial Future',
@@ -137,6 +153,22 @@ export const translations = {
     noResultsDesc: 'Try a different search term or reset filters',
   },
   ar: {
+    // Lock
+    createPIN: 'إنشاء رمز PIN',
+    confirmPIN: 'تأكيد رمز PIN',
+    enterPIN: 'أدخل رمز PIN',
+    welcomeBack: 'مرحباً بعودتك!',
+    createPINSubtitle: 'عيّن رمز PIN مكوناً من 6 أرقام لتأمين بياناتك.',
+    confirmPINSubtitle: 'أعد إدخال رمز PIN للتأكيد.',
+    enterPINSubtitle: 'أدخل رمز PIN المكون من 6 أرقام للوصول إلى FinVista.',
+    unlockWithFingerprint: 'استخدم بصمة الإصبع للفتح.',
+    unlockWithFaceID: 'استخدم Face ID للفتح.',
+    usePINInstead: 'استخدم رمز PIN بدلاً من ذلك',
+    useFingerprintInstead: 'استخدم بصمة الإصبع بدلاً من ذلك',
+    useFaceIDInstead: 'استخدم Face ID بدلاً من ذلك',
+    pinMismatch: 'رمزا PIN غير متطابقَين. يرجى البدء من جديد.',
+    incorrectPIN: 'رمز PIN غير صحيح. حاول مجدداً.',
+
     // App
     appName: 'FinVista',
     tagline: 'مستقبلك المالي',

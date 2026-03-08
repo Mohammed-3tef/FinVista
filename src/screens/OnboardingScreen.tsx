@@ -35,6 +35,7 @@ import { useNavigation } from '@react-navigation/native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { SPACING } from '../constants/theme';
 import { resolveIcon } from '../constants/icons';
+import { useAuth } from '../contexts/AuthContext';
 
 const { width: SW, height: SH } = Dimensions.get('window');
 
@@ -364,6 +365,7 @@ function AnimatedDot({ active, color }: { active: boolean; color: string }) {
 // ─── Main Screen ──────────────────────────────────────────────────────────────
 export default function OnboardingScreen() {
   const navigation = useNavigation<any>();
+  const { completeOnboarding } = useAuth();
   const [currentIndex, setCurrentIndex] = useState(0);
   const flatListRef = useRef<FlatList>(null);
   const scrollX = useRef(new Animated.Value(0)).current;
@@ -415,8 +417,10 @@ export default function OnboardingScreen() {
   };
 
   const handleGetStarted = async () => {
-    await AsyncStorage.setItem('hasSeenOnboarding', 'true');
-    navigation.replace('MainTabs');
+    await completeOnboarding();
+    // AuthGate will unmount this navigator and show LockScreen for PIN setup.
+    // The navigate call below is a no-op safety net in case the navigator persists.
+    try { navigation.replace('MainTabs'); } catch (_) {}
   };
 
   const renderSlide = useCallback(

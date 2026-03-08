@@ -1,7 +1,7 @@
 export type Language = 'en' | 'ar';
 
 export const strings = {
-  versionNumber: '1.2.0',
+  versionNumber: '1.3.0',
 
   en: {
     // App
@@ -49,6 +49,7 @@ export const strings = {
     confirmDeleteMsg: 'Are you sure you want to delete this goal? All savings data will be lost.',
     confirmDeleteEntry: 'Are you sure you want to delete this savings entry?',
     cancel: 'Cancel',
+    ok: 'OK',
     delete: 'Delete',
     save: 'Save',
     amount: 'Amount',
@@ -123,6 +124,24 @@ export const strings = {
     noActivity: 'No activity yet',
     noActivityInRange: 'No activity in this date range',
     allGoalsFilter: 'All Goals',
+
+    // Lock Screen
+    createPIN: 'Create a PIN',
+    confirmPIN: 'Confirm PIN',
+    enterPIN: 'Enter PIN',
+    welcomeBack: 'Welcome back!',
+    createPINSubtitle: 'Set a 6-digit PIN to secure your FinVista data.',
+    confirmPINSubtitle: 'Re-enter your PIN to confirm.',
+    enterPINSubtitle: 'Enter your 6-digit PIN to access FinVista.',
+    unlockWithFingerprint: 'Use fingerprint to unlock.',
+    unlockWithFaceID: 'Use Face ID to unlock.',
+    usePINInstead: 'Use PIN instead',
+    useFingerprintInstead: 'Use Fingerprint instead',
+    useFaceIDInstead: 'Use Face ID instead',
+    pinMismatch: "PINs don't match. Please start over.",
+    incorrectPIN: 'Incorrect PIN. Try again.',
+    sessionExpiredTitle: 'Session Expired',
+    sessionExpiredMsg: 'Your session has expired. Please authenticate again to continue.',
   },
 
   ar: {
@@ -166,6 +185,7 @@ export const strings = {
     confirmDeleteMsg: 'هل أنت متأكد من حذف هذا الهدف؟ ستُفقد جميع بيانات المدخرات.',
     confirmDeleteEntry: 'هل أنت متأكد من حذف هذا الإدخال؟',
     cancel: 'إلغاء',
+    ok: 'حسناً',
     delete: 'حذف',
     save: 'حفظ',
     amount: 'المبلغ',
@@ -237,6 +257,24 @@ export const strings = {
     noActivity: 'لا يوجد نشاط بعد',
     noActivityInRange: 'لا يوجد نشاط في هذا النطاق الزمني',
     allGoalsFilter: 'كل الأهداف',
+
+    // Lock Screen
+    createPIN: 'إنشاء رمز PIN',
+    confirmPIN: 'تأكيد رمز PIN',
+    enterPIN: 'أدخل رمز PIN',
+    welcomeBack: 'مرحباً بعودتك!',
+    createPINSubtitle: 'عيّن رمز PIN مكوناً من 6 أرقام لتأمين بياناتك.',
+    confirmPINSubtitle: 'أعد إدخال رمز PIN للتأكيد.',
+    enterPINSubtitle: 'أدخل رمز PIN المكون من 6 أرقام للوصول إلى FinVista.',
+    unlockWithFingerprint: 'استخدم بصمة الإصبع للفتح.',
+    unlockWithFaceID: 'استخدم Face ID للفتح.',
+    usePINInstead: 'استخدم رمز PIN بدلاً من ذلك',
+    useFingerprintInstead: 'استخدم بصمة الإصبع بدلاً من ذلك',
+    useFaceIDInstead: 'استخدم Face ID بدلاً من ذلك',
+    pinMismatch: 'رمزا PIN غير متطابقَين. يرجى البدء من جديد.',
+    incorrectPIN: 'رمز PIN غير صحيح. حاول مجدداً.',
+    sessionExpiredTitle: 'انتهت الجلسة',
+    sessionExpiredMsg: 'انتهت جلستك. يرجى تسجيل الدخول مجدداً للمتابعة.',
   },
 };
 
