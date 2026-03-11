@@ -15,6 +15,8 @@ import {
   TextInput,
   StatusBar,
   RefreshControl,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import { useTheme } from '../contexts/ThemeContext';
 import { useSms } from '../contexts/SmsContext';
@@ -220,6 +222,7 @@ export default function SmsTransactionsScreen() {
   };
 
   return (
+    <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
     <View style={[styles.container, { backgroundColor: theme.bg }]}>
       {/* Header */}
       <View style={styles.header}>
@@ -295,6 +298,7 @@ export default function SmsTransactionsScreen() {
         }
       />
     </View>
+    </KeyboardAvoidingView>
   );
 }
 

@@ -2,6 +2,7 @@ import React, { useState, useMemo, useCallback } from 'react';
 import {
   View, Text, ScrollView, StyleSheet, TouchableOpacity, StatusBar,
   TextInput, Modal, TouchableWithoutFeedback, Pressable, RefreshControl,
+  KeyboardAvoidingView, Platform,
 } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faSearch, faSlidersH, faTimes, faCheck } from '@fortawesome/free-solid-svg-icons';
@@ -130,6 +131,7 @@ export default function GoalsScreen({ navigation }: any) {
   ];
 
   return (
+    <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
     <View style={[styles.container, { backgroundColor: theme.bg }]}>
       {/* ── Header ── */}
       <View style={[styles.header, isRTL && styles.rtl]}>
@@ -329,6 +331,7 @@ export default function GoalsScreen({ navigation }: any) {
         </View>{/* modalRoot */}
       </Modal>
     </View>
+    </KeyboardAvoidingView>
   );
 }
 

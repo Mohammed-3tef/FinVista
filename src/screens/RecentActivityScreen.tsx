@@ -8,6 +8,8 @@ import {
   TouchableOpacity,
   StatusBar,
   RefreshControl,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import { useTheme } from '../contexts/ThemeContext';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -15,6 +17,7 @@ import { useGoals } from '../contexts/GoalsContext';
 import { formatCurrency } from '../utils/calculations';
 import { COLORS, SPACING, RADIUS, FONT_SIZE } from '../constants/theme';
 import Card from '../components/Card';
+import IconButton from '../components/IconButton';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { resolveIcon } from '../constants/icons';
 import { usePullToRefresh } from '../hooks/usePullToRefresh';
@@ -130,6 +133,7 @@ export default function RecentActivityScreen({ navigation }: any) {
   const isFiltered = appliedFrom || appliedTo || appliedGoalId !== 'all';
 
   return (
+    <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
     <View style={[styles.container, { backgroundColor: theme.bg }]}>
       <StatusBar
         barStyle={isDark ? 'light-content' : 'dark-content'}
@@ -138,13 +142,12 @@ export default function RecentActivityScreen({ navigation }: any) {
 
       {/* ── Header ── */}
       <View style={[styles.header, isRTL && styles.rtl]}>
-        <TouchableOpacity
+        <IconButton
+          icon={isRTL ? 'faChevronRight' : 'faChevronLeft'}
           onPress={() => navigation.goBack()}
-          style={[styles.backBtn, { backgroundColor: theme.card }]}
-        >
-          <FontAwesomeIcon icon={isRTL ? resolveIcon('faArrowRight') : resolveIcon('faArrowLeft')} size={15} color={theme.text}
-          />
-        </TouchableOpacity>
+          color={theme.text}
+          backgroundColor={theme.card}
+        />
         <Text style={[styles.headerTitle, { color: theme.text, textAlign: isRTL ? 'right' : 'left' }]}>
           {t.allActivity}
         </Text>
@@ -365,6 +368,7 @@ export default function RecentActivityScreen({ navigation }: any) {
         <View style={{ height: SPACING.xl }} />
       </ScrollView>
     </View>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -379,10 +383,6 @@ const styles = StyleSheet.create({
     paddingTop: SPACING.lg,
     paddingBottom: SPACING.md,
     gap: SPACING.sm,
-  },
-  backBtn: {
-    width: 36, height: 36, borderRadius: RADIUS.md,
-    alignItems: 'center', justifyContent: 'center',
   },
   headerTitle: {
     flex: 1,

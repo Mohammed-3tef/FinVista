@@ -9,7 +9,6 @@ import {
   TextInput as RNTextInput,
   StyleSheet,
   Alert,
-  ActivityIndicator,
   StatusBar,
   Linking,
   Modal,
@@ -41,6 +40,7 @@ import UserNameModal from '../components/UserNameModal';
 import {strings} from '../constants/strings';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { resolveIcon } from '../constants/icons';
+import Button from '../components/Button';
 import { useAuth } from '../contexts/AuthContext';
 import { usePullToRefresh } from '../hooks/usePullToRefresh';
 import { useBiometricAuth } from '../hooks/useBiometricAuth';
@@ -615,23 +615,15 @@ export default function SettingsScreen({ navigation }: any) {
 
           <View
             style={[styles.testSection, { borderTopWidth: 1, borderTopColor: theme.cardBorder }]}>
-            <TouchableOpacity
+            <Button
+              label={isTesting
+                ? (language === 'ar' ? 'جاري الإرسال...' : 'Sending...')
+                : (language === 'ar' ? 'تجربة الإشعار' : 'Test Notification')}
               onPress={handleTestNotification}
+              variant="outline"
+              loading={isTesting}
               disabled={isTesting}
-              style={[
-                styles.testBtn,
-                { borderColor: COLORS.accent, opacity: isTesting ? 0.6 : 1 },
-              ]}>
-              <Text style={[styles.testBtnTxt, { color: COLORS.accent }]}>
-                {isTesting
-                  ? language === 'ar'
-                    ? 'جاري الإرسال...'
-                    : 'Sending...'
-                  : language === 'ar'
-                  ? 'تجربة الإشعار'
-                  : 'Test Notification'}
-              </Text>
-            </TouchableOpacity>
+            />
           </View>
         </Section>
 
@@ -654,26 +646,14 @@ export default function SettingsScreen({ navigation }: any) {
             }
           />
           {/* Scan Inbox */}
-          <TouchableOpacity
+          <Button
+            label={isRTL ? 'مسح صندوق الوارد' : 'Scan Inbox for Bank SMS'}
             onPress={handleScanInbox}
+            variant="outline"
+            loading={isScanning}
             disabled={isScanning}
-            style={[
-              styles.testBtn,
-              {
-                borderColor: COLORS.info,
-                marginHorizontal: SPACING.md,
-                marginVertical: SPACING.sm,
-                opacity: isScanning ? 0.6 : 1,
-              },
-            ]}>
-            {isScanning ? (
-              <ActivityIndicator color={COLORS.info} />
-            ) : (
-              <Text style={[styles.testBtnTxt, { color: COLORS.info }]}>
-                {isRTL ? 'مسح صندوق الوارد' : 'Scan Inbox for Bank SMS'}
-              </Text>
-            )}
-          </TouchableOpacity>
+            style={{ marginHorizontal: SPACING.md, marginVertical: SPACING.sm }}
+          />
           {/* Transaction count + clear */}
           <View
             style={[
@@ -1168,8 +1148,6 @@ const styles = StyleSheet.create({
   },
   freqBtnTxt: { fontSize: FONT_SIZE.sm, fontWeight: '600' },
   testSection: { paddingHorizontal: SPACING.md, paddingVertical: SPACING.md },
-  testBtn: { paddingVertical: 10, borderRadius: RADIUS.sm, borderWidth: 1.5, alignItems: 'center' },
-  testBtnTxt: { fontSize: FONT_SIZE.sm, fontWeight: '700' },
   brand: { alignItems: 'center', paddingVertical: SPACING.xl },
   brandLogo: { width: 56, height: 56, borderRadius: 14, marginBottom: SPACING.sm },
   brandName: { fontSize: FONT_SIZE.lg, fontWeight: '800', letterSpacing: 2 },

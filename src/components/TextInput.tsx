@@ -4,6 +4,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { COLORS, SPACING, RADIUS, FONT_SIZE } from '../constants/theme';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { resolveIcon } from '../constants/icons';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface Props extends TextInputProps {
   label: string;
@@ -17,6 +18,7 @@ interface Props extends TextInputProps {
 
 export default function TextInput({ label, error, hint, prefix, suffix, required, style, textAlign, ...props }: Props) {
   const { theme, isDark } = useTheme();
+  const { isRTL } = useLanguage();
 
   const borderColor = error
     ? COLORS.danger
@@ -25,9 +27,11 @@ export default function TextInput({ label, error, hint, prefix, suffix, required
   return (
     <View style={styles.container}>
       {/* Label row */}
-      <View style={styles.labelRow}>
+      <View style={[styles.labelRow, {flexDirection: isRTL ? 'row-reverse' : 'row'}]}>
         <Text style={[styles.label, { color: theme.textSecondary, textAlign: textAlign }]}>{label}</Text>
-        {required && <Text style={[styles.required, { textAlign: textAlign }]}> *</Text>}
+        {required && <Text style={[styles.required, { textAlign: textAlign }]}> 
+          <Text style={[styles.requiredStar, { textAlign: textAlign }]}> * </Text>
+        </Text>}
       </View>
 
       {/* Input */}
@@ -72,6 +76,7 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     paddingHorizontal: SPACING.md,
   },
+  requiredStar: { fontSize: FONT_SIZE.sm, fontWeight: '700', color: COLORS.danger },
   inputRowError: { borderWidth: 2 },
   prefix: { fontSize: FONT_SIZE.md, fontWeight: '700', marginRight: 6 },
   suffix: { fontSize: FONT_SIZE.sm, marginLeft: 6 },

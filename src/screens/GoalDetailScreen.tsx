@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Modal, KeyboardAvoidingView, Platform, TextInput as RNTextInput, StatusBar, Alert, RefreshControl } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, Modal, KeyboardAvoidingView, Platform, TextInput as RNTextInput, StatusBar, Alert, RefreshControl } from 'react-native';
 import { useTheme } from '../contexts/ThemeContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useGoals } from '../contexts/GoalsContext';
@@ -8,6 +8,7 @@ import { COLORS, SPACING, RADIUS, FONT_SIZE } from '../constants/theme';
 import Card from '../components/Card';
 import ProgressBar from '../components/ProgressBar';
 import Button from '../components/Button';
+import IconButton from '../components/IconButton';
 import ConfirmModal from '../components/ConfirmModal';
 import ExportBottomSheet, { ExportOption } from '../components/ExportBottomSheet';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
@@ -207,22 +208,34 @@ export default function GoalDetailScreen({ navigation, route }: any) {
   return (
     <View style={[styles.container, { backgroundColor: theme.bg }]}>
       <View style={[styles.header, isRTL && styles.rtl]}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={[styles.backBtn, { backgroundColor: theme.card }]}>
-            <FontAwesomeIcon icon={isRTL ? resolveIcon('faArrowRight') : resolveIcon('faArrowLeft')} size={15} color={theme.text} />
-        </TouchableOpacity>
+        <IconButton
+          icon={isRTL ? 'faChevronRight' : 'faChevronLeft'}
+          onPress={() => navigation.goBack()}
+          color={theme.text}
+          backgroundColor={theme.card}
+        />
         <View style={[styles.headerCenter, isRTL && styles.rtl]}>
           <Text style={[styles.goalName, { color: theme.text, textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={1}>{goal.name}</Text>
         </View>
         <View style={[styles.headerActions, isRTL && styles.rtl]}>
-          <TouchableOpacity onPress={() => navigation.navigate('GoalForm', { goalId: goal.id })} style={[styles.iconBtn, { backgroundColor: COLORS.info + '22' }]}>
-            <FontAwesomeIcon icon={resolveIcon('faPenToSquare')} size={16} color={theme.text} />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => setShowDeleteGoal(true)} style={[styles.iconBtn, { backgroundColor: COLORS.danger + '22' }]}>
-            <FontAwesomeIcon icon={resolveIcon('faTrashCan')} size={16} color={theme.text} />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => setShowGoalExport(true)} style={[styles.iconBtn, { backgroundColor: COLORS.warning + '22' }]}>
-            <FontAwesomeIcon icon={resolveIcon('faEllipsisVertical')} size={16} color={theme.text} />
-          </TouchableOpacity>
+          <IconButton
+            icon="faPenToSquare"
+            onPress={() => navigation.navigate('GoalForm', { goalId: goal.id })}
+            color={theme.text}
+            backgroundColor={COLORS.info + '22'}
+          />
+          <IconButton
+            icon="faTrashCan"
+            onPress={() => setShowDeleteGoal(true)}
+            color={theme.text}
+            backgroundColor={COLORS.danger + '22'}
+          />
+          <IconButton
+            icon="faEllipsisVertical"
+            onPress={() => setShowGoalExport(true)}
+            color={theme.text}
+            backgroundColor={COLORS.warning + '22'}
+          />
         </View>
       </View>
 
@@ -293,9 +306,7 @@ export default function GoalDetailScreen({ navigation, route }: any) {
         {/* Savings History */}
         <View style={[styles.sectionHeader, isRTL && styles.rtl]}>
           <Text style={[styles.sectionTitle, { color: theme.text }]}>{t.savingsHistory}</Text>
-          <TouchableOpacity onPress={openAdd} style={[styles.addBtn, { backgroundColor: COLORS.accent }]}>
-            <Text style={styles.addBtnTxt}>+ {t.addSavings}</Text>
-          </TouchableOpacity>
+          <Button label={`+ ${t.addSavings}`} onPress={openAdd} size="sm" style={styles.addBtn} />
         </View>
 
         {goalEntries.length === 0 ? (
@@ -322,12 +333,20 @@ export default function GoalDetailScreen({ navigation, route }: any) {
                     <Text style={[styles.entryDate, { color: theme.textSecondary, textAlign: isRTL ? 'right' : 'left' }]}>{formatDate(entry.date)}</Text>
                   </View>
                   <View style={[styles.entryActions, isRTL && styles.rtl]}>
-                    <TouchableOpacity onPress={() => openEdit(entry)} style={[styles.entryBtn, { backgroundColor: COLORS.info + '22' }]}>
-                      <FontAwesomeIcon icon={resolveIcon('faPenToSquare')} size={14} color={theme.text} />
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => setDeleteEntryId(entry.id)} style={[styles.entryBtn, { backgroundColor: COLORS.danger + '22' }]}>
-                      <FontAwesomeIcon icon={resolveIcon('faTrashCan')} size={14} color={theme.text} />
-                    </TouchableOpacity>
+                    <IconButton
+                      icon="faPenToSquare"
+                      onPress={() => openEdit(entry)}
+                      color={theme.text}
+                      backgroundColor={COLORS.info + '22'}
+                      size={36}
+                    />
+                    <IconButton
+                      icon="faTrashCan"
+                      onPress={() => setDeleteEntryId(entry.id)}
+                      color={theme.text}
+                      backgroundColor={COLORS.danger + '22'}
+                      size={36}
+                    />
                   </View>
                 </View>
               );
@@ -452,11 +471,9 @@ const styles = StyleSheet.create({
   container: { flex: 1, paddingTop: StatusBar.currentHeight },
   header: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: SPACING.lg, paddingTop: SPACING.lg, paddingBottom: SPACING.md },
   rtl: { flexDirection: 'row-reverse' },
-  backBtn: { width: 38, height: 38, borderRadius: RADIUS.md, alignItems: 'center', justifyContent: 'center', marginRight: SPACING.sm },
   headerCenter: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: SPACING.xs },
   goalName: { flex: 1, fontSize: FONT_SIZE.lg, fontWeight: '800', marginHorizontal: SPACING.xs },
   headerActions: { flexDirection: 'row', gap: SPACING.sm },
-  iconBtn: { width: 36, height: 36, borderRadius: RADIUS.md, alignItems: 'center', justifyContent: 'center' },
   content: { paddingHorizontal: SPACING.lg },
   summaryCard: { marginBottom: SPACING.md },
   summaryIconRow: { flexDirection: 'row', alignItems: 'center', gap: SPACING.sm, marginBottom: SPACING.xs },
@@ -484,7 +501,6 @@ const styles = StyleSheet.create({
   sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: SPACING.md, marginTop: SPACING.sm },
   sectionTitle: { fontSize: FONT_SIZE.lg, fontWeight: '800' },
   addBtn: { paddingHorizontal: SPACING.md, paddingVertical: 8, borderRadius: RADIUS.full },
-  addBtnTxt: { color: COLORS.primary, fontSize: FONT_SIZE.sm, fontWeight: '700' },
   emptyCard: { alignItems: 'center', paddingVertical: SPACING.xl },
   emptyEmoji: { fontSize: 40, marginBottom: SPACING.sm },
   emptyTitle: { fontSize: FONT_SIZE.lg, fontWeight: '700', marginBottom: SPACING.xs },
@@ -495,7 +511,6 @@ const styles = StyleSheet.create({
   entryAmount: { fontSize: FONT_SIZE.md, fontWeight: '700' },
   entryDate: { fontSize: FONT_SIZE.xs, marginTop: 2 },
   entryActions: { flexDirection: 'row', gap: SPACING.xs },
-  entryBtn: { width: 30, height: 30, borderRadius: RADIUS.sm, alignItems: 'center', justifyContent: 'center' },
   modalOuter: { flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.6)' },
   bottomSheet: { borderTopLeftRadius: RADIUS.xl, borderTopRightRadius: RADIUS.xl, padding: SPACING.lg, paddingBottom: SPACING.xl },
   sheetTitle: { fontSize: FONT_SIZE.xl, fontWeight: '800', marginBottom: SPACING.lg },

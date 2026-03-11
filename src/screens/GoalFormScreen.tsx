@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity, KeyboardAvoidingView, Platform, StatusBar } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, KeyboardAvoidingView, Platform, StatusBar } from 'react-native';
 import { useTheme } from '../contexts/ThemeContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useGoals } from '../contexts/GoalsContext';
@@ -8,6 +8,7 @@ import TextInput from '../components/TextInput';
 import Button from '../components/Button';
 import IconPicker from '../components/IconPicker';
 
+import IconButton from '../components/IconButton';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { resolveIcon } from '../constants/icons';
 
@@ -125,19 +126,27 @@ export default function GoalFormScreen({ navigation, route }: Props) {
   };
 
   return (
-    <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+    <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <View style={[styles.container, { backgroundColor: theme.bg }]}>
 
         {/* Header */}
         <View style={[styles.header, isRTL && styles.rtl]}>
-          <TouchableOpacity onPress={() => navigation.goBack()} style={[styles.backBtn, { backgroundColor: theme.card }]}>
-            <FontAwesomeIcon icon={isRTL ? resolveIcon('faArrowRight') : resolveIcon('faArrowLeft')} size={15} color={theme.text} />
-          </TouchableOpacity>
+          <IconButton
+            icon={isRTL ? 'faChevronRight' : 'faChevronLeft'}
+            onPress={() => navigation.goBack()}
+            color={theme.text}
+            backgroundColor={theme.card}
+          />
           <Text style={[styles.title, { color: theme.text }]}>{editGoal ? t.editGoal : t.addGoal}</Text>
           <View style={{ width: 40 }} />
         </View>
 
-        <ScrollView contentContainerStyle={styles.form} showsVerticalScrollIndicator={false}>
+        <ScrollView
+          contentContainerStyle={styles.form}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="interactive"
+        >
 
           {/* Icon preview banner */}
           <View style={[styles.iconBanner, { flexDirection: isRTL ? 'row-reverse' : 'row', backgroundColor: COLORS.accent + '15' }]}>
@@ -165,6 +174,7 @@ export default function GoalFormScreen({ navigation, route }: Props) {
             hint={!errors.name && name.trim().length > 0 ? `${name.trim().length}/50` : undefined}
             maxLength={50}
             textAlign={isRTL ? 'right' : 'left'}
+            required={true}
           />
           <TextInput
             label={t.targetAmount}
@@ -176,6 +186,7 @@ export default function GoalFormScreen({ navigation, route }: Props) {
             prefix={t.currency}
             error={errors.target}
             textAlign={isRTL ? 'right' : 'left'}
+            required={true}
           />
           <TextInput
             label={t.startDate}
@@ -186,6 +197,7 @@ export default function GoalFormScreen({ navigation, route }: Props) {
             error={errors.startDate}
             hint={!errors.startDate ? 'Format: YYYY-MM-DD' : undefined}
             textAlign={isRTL ? 'right' : 'left'}
+            required={true}
           />
           <TextInput
             label={t.deadline}
@@ -196,6 +208,7 @@ export default function GoalFormScreen({ navigation, route }: Props) {
             error={errors.deadline}
             hint={!errors.deadline ? 'Format: YYYY-MM-DD' : undefined}
             textAlign={isRTL ? 'right' : 'left'}
+            required={true}
           />
           <TextInput
             label={t.goalNotes}
@@ -227,8 +240,6 @@ const styles = StyleSheet.create({
     paddingBottom: SPACING.md,
   },
   rtl: { flexDirection: 'row-reverse' },
-  backBtn: { width: 40, height: 40, borderRadius: RADIUS.md, alignItems: 'center', justifyContent: 'center' },
-  backIcon: { fontSize: 20 },
   title: { fontSize: FONT_SIZE.xl, fontWeight: '800' },
   form: { padding: SPACING.lg },
   iconBanner: {

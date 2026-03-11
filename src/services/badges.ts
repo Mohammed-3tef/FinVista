@@ -45,7 +45,7 @@ export const BADGE_DEFINITIONS: BadgeDefinition[] = [
     titleEn: 'First Goal Created',
     titleAr: 'أول هدف تم إنشاؤه',
     descEn: 'You created your very first savings goal!',
-    descAr: 'لقد أنشأت أول هدف للادخار!',
+    descAr: 'عملت أول هدف ادخار ليك! يلا بينا نبدأ.',
     category: 'goals',
   },
   {
@@ -54,7 +54,7 @@ export const BADGE_DEFINITIONS: BadgeDefinition[] = [
     titleEn: 'First Goal Completed',
     titleAr: 'أول هدف مكتمل',
     descEn: 'You completed your first savings goal. Amazing!',
-    descAr: 'أكملت هدف الادخار الأول. رائع!',
+    descAr: 'خلصت أول هدف! جامد أوي!',
     category: 'goals',
   },
   {
@@ -62,8 +62,8 @@ export const BADGE_DEFINITIONS: BadgeDefinition[] = [
     emoji: 'faMedal',
     titleEn: 'Completed 3 Goals',
     titleAr: 'أكملت 3 أهداف',
-    descEn: 'Three goals down — you\'re on a roll!',
-    descAr: 'ثلاثة أهداف منجزة — أنت في تقدم رائع!',
+    descEn: 'Three goals down - you\'re on a roll!',
+    descAr: 'خلصت 3 أهداف! ماشي حلو كده.',
     category: 'goals',
   },
   {
@@ -72,7 +72,7 @@ export const BADGE_DEFINITIONS: BadgeDefinition[] = [
     titleEn: 'Completed 10 Goals',
     titleAr: 'أكملت 10 أهداف',
     descEn: 'Ten goals completed! You\'re a saving machine.',
-    descAr: 'عشرة أهداف مكتملة! أنت آلة ادخار حقيقية.',
+    descAr: '10 أهداف خلصتهم! انت فعلاً آلة ادخار!',
     category: 'goals',
   },
   {
@@ -80,8 +80,8 @@ export const BADGE_DEFINITIONS: BadgeDefinition[] = [
     emoji: 'faMedal',
     titleEn: 'Completed 50 Goals',
     titleAr: 'أكملت 50 هدفاً',
-    descEn: '50 goals completed — legendary dedication!',
-    descAr: '50 هدفاً مكتملاً — تفانٍ أسطوري!',
+    descEn: '50 goals completed - legendary dedication!',
+    descAr: '50 هدف! انت بطل في الادخار بجد.',
     category: 'goals',
   },
   {
@@ -90,7 +90,7 @@ export const BADGE_DEFINITIONS: BadgeDefinition[] = [
     titleEn: 'Completed 100 Goals',
     titleAr: 'أكملت 100 هدف',
     descEn: '100 goals completed. You are unstoppable!',
-    descAr: '100 هدف مكتمل. لا شيء يوقفك!',
+    descAr: '100 هدف مكتمل! محدش يقدر يوقفك!',
     category: 'goals',
   },
 
@@ -101,7 +101,7 @@ export const BADGE_DEFINITIONS: BadgeDefinition[] = [
     titleEn: 'Saved 500 EGP',
     titleAr: 'وفّرت 500 جنيه',
     descEn: 'You\'ve crossed the 500 EGP total savings mark.',
-    descAr: 'تجاوزت حاجز 500 جنيه في المدخرات الكلية.',
+    descAr: 'عدّيت 500 جنيه! بداية كويسة.',
     category: 'savings',
   },
   {
@@ -110,7 +110,7 @@ export const BADGE_DEFINITIONS: BadgeDefinition[] = [
     titleEn: 'Saved 1,000 EGP',
     titleAr: 'وفّرت 1,000 جنيه',
     descEn: 'One thousand EGP saved across all goals!',
-    descAr: 'ألف جنيه موفّر عبر جميع أهدافك!',
+    descAr: 'ألف جنيه متوفرة! حلو أوي.',
     category: 'savings',
   },
   {
@@ -119,7 +119,7 @@ export const BADGE_DEFINITIONS: BadgeDefinition[] = [
     titleEn: 'Saved 5,000 EGP',
     titleAr: 'وفّرت 5,000 جنيه',
     descEn: '5,000 EGP saved! Your future self is smiling.',
-    descAr: '5,000 جنيه موفّرة! مستقبلك يبتسم لك.',
+    descAr: '5,000 جنيه! مستقبلك هيشكرّك بجد.',
     category: 'savings',
   },
   {
@@ -127,8 +127,8 @@ export const BADGE_DEFINITIONS: BadgeDefinition[] = [
     emoji: 'faBank',
     titleEn: 'Saved 10,000 EGP',
     titleAr: 'وفّرت 10,000 جنيه',
-    descEn: '10,000 EGP — you\'re building serious wealth!',
-    descAr: '10,000 جنيه — أنت تبني ثروة حقيقية!',
+    descEn: '10,000 EGP - you\'re stacking some serious cash!',
+    descAr: '10,000 جنيه - انت بتجمع فلوس جامدة!',
     category: 'savings',
   },
   {
@@ -136,8 +136,8 @@ export const BADGE_DEFINITIONS: BadgeDefinition[] = [
     emoji: 'faBank',
     titleEn: 'Saved 50,000 EGP',
     titleAr: 'وفّرت 50,000 جنيه',
-    descEn: '50,000 EGP — you\'re building serious wealth!',
-    descAr: '50,000 جنيه — أنت تبني ثروة حقيقية!',
+    descEn: '50,000 EGP - wow, look at you saving!',
+    descAr: '50,000 جنيه - شوف انت وفّرت قد ايه!',
     category: 'savings',
   },
   {
@@ -145,8 +145,8 @@ export const BADGE_DEFINITIONS: BadgeDefinition[] = [
     emoji: 'faBank',
     titleEn: 'Saved 100,000 EGP',
     titleAr: 'وفّرت 100,000 جنيه',
-    descEn: '100,000 EGP — you\'re building serious wealth!',
-    descAr: '100,000 جنيه — أنت تبني ثروة حقيقية!',
+    descEn: '100,000 EGP - crazy! You\'re crushing it!',
+    descAr: '100,000 جنيه - جامد جدا! انت كسبانها صح!',
     category: 'savings',
   },
 
@@ -157,7 +157,7 @@ export const BADGE_DEFINITIONS: BadgeDefinition[] = [
     titleEn: '3-Day Saving Streak',
     titleAr: 'سلسلة 3 أيام متتالية',
     descEn: 'You saved money 3 days in a row. Keep it up!',
-    descAr: 'وفّرت المال 3 أيام متتالية. استمر!',
+    descAr: 'وفّرت 3 أيام ورا بعض! كمل كده.',
     category: 'streak',
   },
   {
@@ -165,8 +165,8 @@ export const BADGE_DEFINITIONS: BadgeDefinition[] = [
     emoji: 'faBolt',
     titleEn: '7-Day Saving Streak',
     titleAr: 'سلسلة 7 أيام متتالية',
-    descEn: 'A full week of saving — incredible habit!',
-    descAr: 'أسبوع كامل من الادخار — عادة رائعة!',
+    descEn: 'A full week of saving - incredible habit!',
+    descAr: 'أسبوع كامل وفّرت! كمل كده.',
     category: 'streak',
   },
   {
@@ -175,7 +175,7 @@ export const BADGE_DEFINITIONS: BadgeDefinition[] = [
     titleEn: '30-Day Saving Streak',
     titleAr: 'سلسلة 30 يوماً متتالياً',
     descEn: '30 days of consistent saving. You\'re a champion!',
-    descAr: '30 يوماً من الادخار المنتظم. أنت بطل!',
+    descAr: '30 يوم متواصلين! انت بطل في الادخار.',
     category: 'streak',
   },
   {
@@ -183,8 +183,8 @@ export const BADGE_DEFINITIONS: BadgeDefinition[] = [
     emoji: 'faRocket',
     titleEn: '60-Day Saving Streak',
     titleAr: 'سلسلة 60 يوماً متتالياً',
-    descEn: '60 days strong — saving is your superpower!',
-    descAr: '60 يوماً متواصلة — الادخار قوتك الخارقة!',
+    descEn: '60 days strong - saving is your superpower!',
+    descAr: '60 يوم متواصلين - الادخار قوتك الخارقة!',
     category: 'streak',
   },
   {
@@ -193,7 +193,7 @@ export const BADGE_DEFINITIONS: BadgeDefinition[] = [
     titleEn: '90-Day Saving Streak',
     titleAr: 'سلسلة 90 يوماً متتالياً',
     descEn: '90 days! You have mastered the saving habit.',
-    descAr: '90 يوماً! لقد أتقنت عادة الادخار تماماً.',
+    descAr: '90 يوم! بقيت خبير في الادخار بجد.',
     category: 'streak',
   },
 
@@ -203,8 +203,8 @@ export const BADGE_DEFINITIONS: BadgeDefinition[] = [
     emoji: 'faChartBar',
     titleEn: 'Added 50 Transactions',
     titleAr: 'أضفت 50 معاملة',
-    descEn: '50 savings entries recorded — well tracked!',
-    descAr: '50 إدخالاً مسجّلاً — تتبع ممتاز!',
+    descEn: '50 savings entries recorded - well tracked!',
+    descAr: '50 عملية مسجلة - تتبع ممتاز!',
     category: 'transactions',
   },
 ];

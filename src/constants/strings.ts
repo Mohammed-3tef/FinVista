@@ -1,7 +1,7 @@
 export type Language = 'en' | 'ar';
 
 export const strings = {
-  versionNumber: '1.3.0',
+  versionNumber: '1.3.1',
 
   en: {
     // App
@@ -45,7 +45,7 @@ export const strings = {
     deleteGoal: 'Delete Goal',
     goalIcon: 'Goal Icon',
     tapToChangeIcon: 'Tap to change icon',
-    goalNotes: 'Goal Notes',
+    goalNotes: 'Notes',
     goalNotesPlaceholder: 'Add notes about this goal...',
     confirmDelete: 'Confirm Delete',
     confirmDeleteMsg: 'Are you sure you want to delete this goal? All savings data will be lost.',

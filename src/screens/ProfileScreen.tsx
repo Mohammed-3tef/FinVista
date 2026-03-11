@@ -17,6 +17,8 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { COLORS, SPACING, RADIUS, FONT_SIZE } from '../constants/theme';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { resolveIcon } from '../constants/icons';
+import Button from '../components/Button';
+import IconButton from '../components/IconButton';
 
 // ─── Storage keys ─────────────────────────────────────────────────────────────
 export const PROFILE_STORAGE_KEY = '@finvista_profile';
@@ -109,13 +111,14 @@ export default function ProfileScreen({ navigation }: any) {
       <View style={[styles.container, { backgroundColor: theme.bg }]}>
       {/* Header */}
       <View style={[styles.header, { borderBottomColor: theme.cardBorder }]}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
-          <FontAwesomeIcon
-            icon={resolveIcon(isRTL ? 'faChevronRight' : 'faChevronLeft')}
-            size={18}
-            color={COLORS.accent}
-          />
-        </TouchableOpacity>
+        <IconButton
+          icon={isRTL ? 'faChevronRight' : 'faChevronLeft'}
+          onPress={() => navigation.goBack()}
+          color={theme.text}
+          backgroundColor={theme.card}
+          size={38}
+          iconSize={15}
+        />
         <Text style={[styles.headerTitle, { color: theme.text }]}>
           {isRTL ? 'الملف الشخصي' : 'Profile'}
         </Text>
@@ -213,20 +216,16 @@ export default function ProfileScreen({ navigation }: any) {
         </View>
 
         {/* ── Save button ── */}
-        <TouchableOpacity
+        <Button
+          label={isSaving
+            ? (isRTL ? 'جاري الحفظ...' : 'Saving...')
+            : (isRTL ? 'حفظ الملف الشخصي' : 'Save Profile')}
           onPress={handleSave}
+          icon="faCheck"
+          loading={isSaving}
           disabled={isSaving || !hasChanges}
-          style={[
-            styles.saveBtn,
-            (isSaving || !hasChanges) && styles.saveBtnDisabled,
-          ]}>
-          <FontAwesomeIcon icon={resolveIcon('faCheck')} size={16} color={COLORS.primary} />
-          <Text style={styles.saveBtnTxt}>
-            {isSaving
-              ? isRTL ? 'جاري الحفظ...' : 'Saving...'
-              : isRTL ? 'حفظ الملف الشخصي' : 'Save Profile'}
-          </Text>
-        </TouchableOpacity>
+          style={styles.saveBtn}
+        />
       </ScrollView>
       </View>
     </KeyboardAvoidingView>
@@ -243,12 +242,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.md,
     paddingVertical: SPACING.md,
     borderBottomWidth: 1,
-  },
-  backBtn: {
-    width: 36,
-    height: 36,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   headerTitle: {
     fontSize: FONT_SIZE.lg,
@@ -344,19 +337,7 @@ const styles = StyleSheet.create({
   spacer36: { width: 36 },
   inputLTR: { textAlign: 'left' as const },
   inputRTL: { textAlign: 'right' as const },
-  saveBtnDisabled: { opacity: 0.55 },
   saveBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: SPACING.sm,
-    backgroundColor: COLORS.accent,
     borderRadius: RADIUS.lg,
-    paddingVertical: SPACING.md,
-  },
-  saveBtnTxt: {
-    fontSize: FONT_SIZE.md,
-    fontWeight: '700',
-    color: COLORS.primary,
   },
 });

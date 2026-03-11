@@ -3,7 +3,6 @@ import {
   View,
   Text,
   ScrollView,
-  TouchableOpacity,
   StyleSheet,
   StatusBar,
   Animated,
@@ -15,6 +14,7 @@ import { BADGE_DEFINITIONS, BadgeCategory } from '../services/badges';
 import { COLORS, SPACING, RADIUS, FONT_SIZE } from '../constants/theme';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { resolveIcon } from '../constants/icons';
+import IconButton from '../components/IconButton';
 
 // ─── Category metadata ────────────────────────────────────────────────────────
 const CATEGORY_META: Record<
@@ -164,13 +164,14 @@ export default function AchievementsScreen({ navigation }: any) {
     <View style={[styles.container, { backgroundColor: theme.bg }]}>
       {/* Header */}
       <View style={[styles.header, { borderBottomColor: theme.cardBorder }]}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
-          <FontAwesomeIcon
-            icon={resolveIcon(isRTL ? 'faChevronRight' : 'faChevronLeft')}
-            size={18}
-            color={COLORS.accent}
-          />
-        </TouchableOpacity>
+        <IconButton
+          icon={isRTL ? 'faChevronRight' : 'faChevronLeft'}
+          onPress={() => navigation.goBack()}
+          color={theme.text}
+          backgroundColor={theme.card}
+          size={38}
+          iconSize={15}
+        />
         <Text style={[styles.headerTitle, { color: theme.text }]}>
           {isRTL ? 'الإنجازات' : 'Achievements'}
         </Text>
@@ -292,12 +293,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.md,
     paddingVertical: SPACING.md,
     borderBottomWidth: 1,
-  },
-  backBtn: {
-    width: 36,
-    height: 36,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   headerTitle: {
     fontSize: FONT_SIZE.lg,
