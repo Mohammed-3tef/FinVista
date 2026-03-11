@@ -7,6 +7,7 @@ export interface Goal {
   createdAt: string;
   icon?: string; // FontAwesome icon name, e.g. 'faBullseye'
   isFavorite?: boolean;
+  notes?: string;
 }
 
 export interface SavingsEntry {

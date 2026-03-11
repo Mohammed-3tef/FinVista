@@ -28,6 +28,7 @@ export default function GoalFormScreen({ navigation, route }: Props) {
   const [startDate, setStartDate] = useState(editGoal?.startDate ? editGoal.startDate.substring(0, 10) : new Date().toISOString().substring(0, 10));
   const [deadline, setDeadline] = useState(editGoal?.deadline ? editGoal.deadline.substring(0, 10) : '');
   const [icon, setIcon] = useState(editGoal?.icon || 'faBullseye');
+  const [notes, setNotes] = useState(editGoal?.notes || '');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
 
@@ -113,6 +114,7 @@ export default function GoalFormScreen({ navigation, route }: Props) {
       startDate: new Date(startDate).toISOString(),
       deadline: new Date(deadline).toISOString(),
       icon,
+      notes: notes.trim() || undefined,
     };
     if (editGoal) {
       updateGoal(editGoal.id, data);
@@ -193,6 +195,17 @@ export default function GoalFormScreen({ navigation, route }: Props) {
             placeholder="YYYY-MM-DD"
             error={errors.deadline}
             hint={!errors.deadline ? 'Format: YYYY-MM-DD' : undefined}
+            textAlign={isRTL ? 'right' : 'left'}
+          />
+          <TextInput
+            label={t.goalNotes}
+            value={notes}
+            onChangeText={v => setNotes(v.length <= 500 ? v : notes)}
+            placeholder={t.goalNotesPlaceholder}
+            multiline
+            numberOfLines={4}
+            maxLength={500}
+            hint={notes.length > 0 ? `${notes.length}/500` : undefined}
             textAlign={isRTL ? 'right' : 'left'}
           />
 

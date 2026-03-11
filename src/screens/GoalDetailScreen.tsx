@@ -261,6 +261,16 @@ export default function GoalDetailScreen({ navigation, route }: any) {
           </View>
         </Card>
 
+        {/* Goal Notes */}
+        {!!goal.notes && (
+          <Card style={styles.notesCard}>
+            <View style={[styles.notesHeader, isRTL && styles.rtl]}>
+              <Text style={[styles.notesLabel, { color: theme.textSecondary }]}>{t.goalNotes}</Text>
+            </View>
+            <Text style={[styles.notesText, { color: theme.text, textAlign: isRTL ? 'right' : 'left' }]}>{goal.notes}</Text>
+          </Card>
+        )}
+
         {/* Savings Needed */}
         {remaining > 0 && daysLeft > 0 && (
           <Card style={styles.neededCard}>
@@ -462,6 +472,10 @@ const styles = StyleSheet.create({
   gridLabel: { fontSize: FONT_SIZE.xs, marginBottom: 2 },
   gridValue: { fontSize: FONT_SIZE.lg, fontWeight: '700' },
   neededCard: { marginBottom: SPACING.md },
+  notesCard: { marginBottom: SPACING.md },
+  notesHeader: { flexDirection: 'row', alignItems: 'center', gap: SPACING.xs, marginBottom: SPACING.sm },
+  notesLabel: { fontSize: FONT_SIZE.xs, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.5 },
+  notesText: { fontSize: FONT_SIZE.sm, lineHeight: 20 },
   neededTitle: { fontSize: FONT_SIZE.md, fontWeight: '700', marginBottom: SPACING.md },
   neededGrid: { flexDirection: 'row', gap: SPACING.sm },
   neededItem: { flex: 1, borderRadius: RADIUS.md, padding: SPACING.sm, alignItems: 'center' },
