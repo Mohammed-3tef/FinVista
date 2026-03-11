@@ -165,7 +165,18 @@ import {
   faExclamationTriangle,
   faCheck,
   faCircleExclamation,
-  faFingerprint
+  faFingerprint,
+  faBank,
+  faBold,
+  faCrown,
+  faUserAstronaut,
+  faUserTie,
+  faUserSecret,
+  faUserNinja,
+  faUserGraduate,
+  faUserGear,
+  faUserDoctor,
+  faBolt
 } from '@fortawesome/free-solid-svg-icons';
 
 import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
@@ -348,6 +359,17 @@ export const ICON_MAP: Record<string, IconDefinition> = {
   faCheck,
   faCircleExclamation,
   faFingerprint,
+  faBank,
+  faBold,
+  faCrown,
+  faUserAstronaut,
+  faUserTie,
+  faUserSecret,
+  faUserNinja,
+  faUserGraduate,
+  faUserGear,
+  faUserDoctor,
+  faBolt,
 
   faSpotify,
   faYoutube,

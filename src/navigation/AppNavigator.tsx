@@ -20,6 +20,8 @@ import AnalyticsScreen from '../screens/AnalyticsScreen';
 import SmsTransactionsScreen from '../screens/SmsTransactionsScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import OnboardingScreen from '../screens/OnboardingScreen';
+import ProfileScreen from '../screens/ProfileScreen';
+import AchievementsScreen from '../screens/AchievementsScreen';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { resolveIcon } from '../constants/icons';
 
@@ -156,6 +158,16 @@ export default function AppNavigator() {
         <Stack.Screen
           name="RecentActivity"
           component={RecentActivityScreen}
+          options={{ presentation: 'card' }}
+        />
+        <Stack.Screen
+          name="Profile"
+          component={ProfileScreen}
+          options={{ presentation: 'card' }}
+        />
+        <Stack.Screen
+          name="Achievements"
+          component={AchievementsScreen}
           options={{ presentation: 'card' }}
         />
       </Stack.Navigator>

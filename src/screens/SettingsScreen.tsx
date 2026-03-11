@@ -18,11 +18,14 @@ import {
   Platform,
   RefreshControl,
 } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import notifee, { AndroidImportance } from '@notifee/react-native';
 import { useTheme } from '../contexts/ThemeContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useSms } from '../contexts/SmsContext';
+import { useBadges } from '../contexts/BadgesContext';
+import { loadProfile, UserProfile } from './ProfileScreen';
 import { COLORS, SPACING, RADIUS, FONT_SIZE } from '../constants/theme';
 import { ALLOCATION_PRIORITY_OPTIONS, POLL_INTERVAL_OPTIONS } from '../constants/types';
 import {
@@ -122,7 +125,7 @@ function BiometricPinModal({ visible, isRTL, biometricType, onClose, onVerify, t
   );
 }
 
-export default function SettingsScreen() {
+export default function SettingsScreen({ navigation }: any) {
   const { theme, isDark, toggleTheme } = useTheme();
   const { t, language, isRTL, setLanguage } = useLanguage();
   const {
@@ -148,6 +151,7 @@ export default function SettingsScreen() {
 
   const { lock, hasPinSet, isBiometricEnabled, enableBiometric, disableBiometric } = useAuth();
   const { isAvailable: isBioAvailable, biometricType } = useBiometricAuth();
+  const { earnedBadges } = useBadges();
 
   const [reminders, setReminders] = useState<ReminderSettings>({
     enabled: true,
@@ -156,26 +160,36 @@ export default function SettingsScreen() {
   const [notifPermission, setNotifPermission] = useState(false);
   const [isTesting, setIsTesting] = useState(false);
   const [userName, setUserName] = useState('');
+  const [profile, setProfile] = useState<UserProfile | null>(null);
   const [nameModalVisible, setNameModalVisible] = useState(false);
   const [bioPinModalVisible, setBioPinModalVisible] = useState(false);
 
   const loadSettings = useCallback(async () => {
-    const [s, ns, nameVal] = await Promise.all([
+    const [s, ns, nameVal, prof] = await Promise.all([
       getReminderSettings(),
       notifee.getNotificationSettings(),
       AsyncStorage.getItem(USER_NAME_KEY),
+      loadProfile(),
     ]);
     setReminders(s);
     const granted = ns.authorizationStatus >= 1;
     setNotifPermission(granted);
     if (granted && s.enabled) scheduleReminder(s, language);
     if (nameVal) setUserName(nameVal);
+    setProfile(prof);
   }, [language]);
 
   useEffect(() => {
     loadSettings();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Reload profile data when returning from ProfileScreen
+  useFocusEffect(
+    useCallback(() => {
+      loadProfile().then(setProfile);
+    }, []),
+  );
 
   const { refreshProps } = usePullToRefresh(
     useCallback(async () => { await loadSettings(); }, [loadSettings]),
@@ -449,18 +463,58 @@ export default function SettingsScreen() {
 
         {/* Profile */}
         <Section title={isRTL ? 'الملف الشخصي' : 'Profile'}>
+          {/* Profile card navigates to full ProfileScreen */}
+          <TouchableOpacity
+            onPress={() => navigation.navigate('Profile')}
+            style={[
+              styles.profileCard,
+              isRTL && styles.rtl,
+              { borderBottomWidth: 1, borderBottomColor: theme.cardBorder },
+            ]}
+            activeOpacity={0.7}>
+            {/* Avatar */}
+            <View style={[styles.profileAvatar, { backgroundColor: COLORS.accent + '22', borderColor: COLORS.accent }]}>
+              <FontAwesomeIcon
+                icon={resolveIcon(profile?.avatarEmoji || 'faUser')}
+                size={22}
+                color={COLORS.accent}
+              />
+            </View>
+            {/* Info */}
+            <View style={[{ flex: 1 }, isRTL && { alignItems: 'flex-end' }]}>
+              <Text style={[styles.profileName, { color: theme.text }]} numberOfLines={1}>
+                {profile?.name || (isRTL ? 'اضغط لتعيين ملفك الشخصي' : 'Tap to set up profile')}
+              </Text>
+              {!!profile?.phone && (
+                <Text style={[styles.profilePhone, { color: theme.textSecondary }]} numberOfLines={1}>
+                  {profile.phone}
+                </Text>
+              )}
+            </View>
+            <FontAwesomeIcon
+              icon={resolveIcon(isRTL ? 'faChevronLeft' : 'faChevronRight')}
+              size={12}
+              color={theme.textMuted}
+            />
+          </TouchableOpacity>
+
+          {/* Achievements row */}
           <Row
-            label={isRTL ? 'اسم المستخدم' : 'User Name'}
+            label={isRTL ? 'الإنجازات' : 'Achievements'}
             noBorder
-            onPress={() => setNameModalVisible(true)}
+            onPress={() => navigation.navigate('Achievements')}
             right={
               <View style={[styles.nameRight, isRTL && styles.rtl]}>
-                <Text style={[styles.nameValue, { color: theme.textMuted }]} numberOfLines={1}>
-                  {userName || (isRTL ? 'اضغط للتعيين' : 'Tap to set')}
+                <Text style={[styles.nameValue, { color: COLORS.accent }]}>
+                  <FontAwesomeIcon icon={resolveIcon('faTrophy')} size={10} color={COLORS.accent} />
+                  {' '}{earnedBadges.length}
                 </Text>
-                <Text style={{ color: theme.textMuted, marginHorizontal: 4 }}>
-                  <FontAwesomeIcon icon={resolveIcon(isRTL ? 'faChevronLeft' : 'faChevronRight')} size={8} color={theme.textMuted} />
-                </Text>
+                <FontAwesomeIcon
+                  icon={resolveIcon(isRTL ? 'faChevronLeft' : 'faChevronRight')}
+                  size={8}
+                  color={theme.textMuted}
+                  style={{ marginHorizontal: 4 }}
+                />
               </View>
             }
           />
@@ -1215,4 +1269,38 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.lg,
   },
   modalTitle: { fontSize: FONT_SIZE.lg, fontWeight: '700' },
+
+  // Profile card (Settings → Profile section)
+  profileCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.md,
+    gap: SPACING.md,
+  },
+  profileAvatar: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    borderWidth: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexShrink: 0,
+  },
+  profileInitials: {
+    fontSize: 20,
+    fontWeight: '800',
+    color: COLORS.accent,
+  },
+  profileAvatarEmoji: {
+    fontSize: 26,
+  },
+  profileName: {
+    fontSize: FONT_SIZE.md,
+    fontWeight: '700',
+  },
+  profilePhone: {
+    fontSize: FONT_SIZE.sm,
+    marginTop: 2,
+  },
 });

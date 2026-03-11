@@ -7,6 +7,7 @@ import { View, Modal, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { ThemeProvider, useTheme } from './src/contexts/ThemeContext';
 import { LanguageProvider, useLanguage } from './src/contexts/LanguageContext';
 import { GoalsProvider } from './src/contexts/GoalsContext';
+import { BadgesProvider } from './src/contexts/BadgesContext';
 import { SmsProvider } from './src/contexts/SmsContext';
 import { AuthProvider, useAuth } from './src/contexts/AuthContext';
 import AppNavigator from './src/navigation/AppNavigator';
@@ -129,10 +130,13 @@ export default function App() {
       <LanguageProvider>
         <AuthProvider>
           <GoalsProvider>
-            {/* SmsProvider must be inside GoalsProvider (uses useGoals) */}
-            <SmsProvider>
-              <AuthGate />
-            </SmsProvider>
+            {/* BadgesProvider must be inside GoalsProvider (watches goals & entries) */}
+            <BadgesProvider>
+              {/* SmsProvider must be inside GoalsProvider (uses useGoals) */}
+              <SmsProvider>
+                <AuthGate />
+              </SmsProvider>
+            </BadgesProvider>
           </GoalsProvider>
         </AuthProvider>
       </LanguageProvider>
