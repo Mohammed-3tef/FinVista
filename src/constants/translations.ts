@@ -7,9 +7,9 @@ export const translations = {
     confirmPIN: 'Confirm PIN',
     enterPIN: 'Enter PIN',
     welcomeBack: 'Welcome back!',
-    createPINSubtitle: 'Set a 6-digit PIN to secure your FinVista data.',
+    createPINSubtitle: 'Set a 6-digit PIN to secure your Haweshly data.',
     confirmPINSubtitle: 'Re-enter your PIN to confirm.',
-    enterPINSubtitle: 'Enter your 6-digit PIN to access FinVista.',
+    enterPINSubtitle: 'Enter your 6-digit PIN to access Haweshly.',
     unlockWithFingerprint: 'Use fingerprint to unlock.',
     unlockWithFaceID: 'Use Face ID to unlock.',
     usePINInstead: 'Use PIN instead',
@@ -19,7 +19,7 @@ export const translations = {
     incorrectPIN: 'Incorrect PIN. Try again.',
 
     // App
-    appName: 'FinVista',
+    appName: 'Haweshly',
     tagline: 'Your Financial Future',
 
     // Navigation
@@ -95,7 +95,7 @@ export const translations = {
     appearance: 'Appearance',
 
     // Notifications
-    reminderTitle: 'FinVista Reminder 💰',
+    reminderTitle: 'Haweshly Reminder 💰',
     notifMessages: [
       'Save today, relax tomorrow ✨ Every small effort counts towards your bigger dreams.',
       "You're getting closer to your goal 💪 Keep going and don't let anything stop you.",
@@ -162,7 +162,7 @@ export const translations = {
     welcomeBack: 'مرحباً بعودتك!',
     createPINSubtitle: 'عيّن رمز PIN مكوناً من 6 أرقام لتأمين بياناتك.',
     confirmPINSubtitle: 'أعد إدخال رمز PIN للتأكيد.',
-    enterPINSubtitle: 'أدخل رمز PIN المكون من 6 أرقام للوصول إلى FinVista.',
+    enterPINSubtitle: 'أدخل رمز PIN المكون من 6 أرقام للوصول إلى Haweshly.',
     unlockWithFingerprint: 'استخدم بصمة الإصبع للفتح.',
     unlockWithFaceID: 'استخدم Face ID للفتح.',
     usePINInstead: 'استخدم رمز PIN بدلاً من ذلك',
@@ -172,7 +172,7 @@ export const translations = {
     incorrectPIN: 'رمز PIN غير صحيح. حاول مجدداً.',
 
     // App
-    appName: 'FinVista',
+    appName: 'Haweshly',
     tagline: 'مستقبلك المالي',
 
     // Navigation

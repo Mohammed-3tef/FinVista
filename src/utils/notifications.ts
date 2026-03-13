@@ -38,8 +38,8 @@ export const scheduleNotification = async (
     await notifee.requestPermission();
 
     const channelId = await notifee.createChannel({
-      id: 'finvista_reminders',
-      name: 'FinVista Reminders',
+      id: 'haweshly_reminders',
+      name: 'Haweshly Reminders',
       importance: AndroidImportance?.HIGH ?? 4,
     });
 
@@ -99,8 +99,8 @@ export const sendImmediateNotification = async (
     await notifee.requestPermission();
 
     const channelId = await notifee.createChannel({
-      id: 'finvista_reminders',
-      name: 'FinVista Reminders',
+      id: 'haweshly_reminders',
+      name: 'Haweshly Reminders',
       importance: AndroidImportance?.HIGH ?? 4,
     });
 

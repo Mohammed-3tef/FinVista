@@ -12,10 +12,10 @@ import { COLORS } from '../constants/theme';
 import { translations } from '../constants/translations';
 
 const STORAGE_KEYS = {
-  GOALS: '@finvista_goals',
-  THEME: '@finvista_theme',
-  LANGUAGE: '@finvista_language',
-  REMINDERS: '@finvista_reminders',
+  GOALS: '@haweshly_goals',
+  THEME: '@haweshly_theme',
+  LANGUAGE: '@haweshly_language',
+  REMINDERS: '@haweshly_reminders',
 };
 
 interface AppContextType {

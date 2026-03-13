@@ -20,8 +20,8 @@ interface GoalsContextType {
 }
 const GoalsContext = createContext<GoalsContextType>({} as GoalsContextType);
 
-const GOALS_KEY = 'finvista_goals';
-const ENTRIES_KEY = 'finvista_entries';
+const GOALS_KEY = 'haweshly_goals';
+const ENTRIES_KEY = 'haweshly_entries';
 
 export function GoalsProvider({ children }: { children: ReactNode }) {
   const [goals, setGoals] = useState<Goal[]>([]);

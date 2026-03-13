@@ -1,5 +1,5 @@
 /**
- * FinVista Badge / Achievement System
+ * Haweshly Badge / Achievement System
  *
  * Defining, storing, and checking all badge definitions in one place
  * makes it trivial to add new badges — just append to BADGE_DEFINITIONS.
@@ -9,7 +9,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import notifee, { AndroidImportance } from '@notifee/react-native';
 
 // ─── Storage key ─────────────────────────────────────────────────────────────
-export const BADGES_STORAGE_KEY = '@finvista_badges';
+export const BADGES_STORAGE_KEY = '@haweshly_badges';
 
 // ─── Badge categories ─────────────────────────────────────────────────────────
 export type BadgeCategory =
@@ -244,8 +244,8 @@ export async function awardBadge(
   // Fire a local notification
   try {
     const channelId = await notifee.createChannel({
-      id: 'finvista_achievements',
-      name: 'FinVista Achievements',
+      id: 'haweshly_achievements',
+      name: 'Haweshly Achievements',
       importance: AndroidImportance.HIGH,
       sound: 'default',
     });

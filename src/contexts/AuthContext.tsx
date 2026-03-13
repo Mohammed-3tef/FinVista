@@ -33,8 +33,8 @@ import * as Keychain from 'react-native-keychain';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const PIN_SERVICE = 'com.finvista.pin';
-const HAS_PIN_KEY = '@finvista_has_pin';
+const PIN_SERVICE = 'com.haweshly.pin';
+const HAS_PIN_KEY = '@haweshly_has_pin';
 
 /**
  * Persisted key written when the app goes to background so that, if the OS
@@ -42,8 +42,8 @@ const HAS_PIN_KEY = '@finvista_has_pin';
  * still detect "was backgrounded for a long time" (though cold starts always
  * lock anyway; this key is cleaned up on startup to prevent stale data).
  */
-const BACKGROUNDED_AT_KEY = '@finvista_backgrounded_at';
-const BIOMETRIC_ENABLED_KEY = '@finvista_biometric_enabled';
+const BACKGROUNDED_AT_KEY = '@haweshly_backgrounded_at';
+const BIOMETRIC_ENABLED_KEY = '@haweshly_biometric_enabled';
 const ONBOARDING_KEY = 'hasSeenOnboarding';
 
 /** Window of inactivity (background or foreground) before the session expires. */
@@ -123,7 +123,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     (async () => {
       try {
         // Clean up any stale keys left by older builds or the previous session.
-        await AsyncStorage.multiRemove([BACKGROUNDED_AT_KEY, '@finvista_last_auth']);
+        await AsyncStorage.multiRemove([BACKGROUNDED_AT_KEY, '@haweshly_last_auth']);
         const [hasPinStr, bioStr, onboardingStr] = await Promise.all([
           AsyncStorage.getItem(HAS_PIN_KEY),
           AsyncStorage.getItem(BIOMETRIC_ENABLED_KEY),
@@ -224,7 +224,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const setupPin = useCallback(async (pin: string) => {
-    await Keychain.setGenericPassword('finvista_pin', pin, { service: PIN_SERVICE });
+    await Keychain.setGenericPassword('haweshly_pin', pin, { service: PIN_SERVICE });
     await AsyncStorage.setItem(HAS_PIN_KEY, 'true');
     setHasPinSet(true);
   }, []);

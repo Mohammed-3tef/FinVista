@@ -2,6 +2,7 @@ import XLSX from 'xlsx';
 import RNFS from 'react-native-fs';
 import Share from 'react-native-share';
 import { AnalyticsReportData, GoalSavingsHistoryReportData } from './types';
+import { strings } from '../../constants/strings';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -31,7 +32,7 @@ export async function exportAnalyticsExcel(data: AnalyticsReportData): Promise<v
 
   // Sheet 1 – Summary
   const summaryRows = [
-    ['FinVista Analytics Report'],
+    [`${strings.en.appName} Analytics Report`],
     ['Generated At', data.generatedAt],
     [],
     ['Metric', 'Value'],
@@ -62,7 +63,7 @@ export async function exportAnalyticsExcel(data: AnalyticsReportData): Promise<v
   wsGoals['!cols'] = [{ wch: 26 }, { wch: 18 }, { wch: 18 }, { wch: 14 }, { wch: 16 }];
   XLSX.utils.book_append_sheet(wb, wsGoals, 'Goals');
 
-  await writeAndShare(wb, `FinVista_Analytics_${Date.now()}`, 'FinVista Analytics Report');
+  await writeAndShare(wb, `${strings.en.appName}_Analytics_${Date.now()}`, `${strings.en.appName} Analytics Report`);
 }
 
 // ─── Goal Savings History Excel Export ───────────────────────────────────────
@@ -85,7 +86,7 @@ export async function exportGoalSavingsHistoryExcel(data: GoalSavingsHistoryRepo
   const safeName = data.goalName.replace(/[^a-z0-9]/gi, '_');
   await writeAndShare(
     wb,
-    `FinVista_${safeName}_Savings_${Date.now()}`,
+    `${strings.en.appName}_${safeName}_Savings_${Date.now()}`,
     `${data.goalName} — Savings History`,
   );
 }

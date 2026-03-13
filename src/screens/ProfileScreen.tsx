@@ -21,10 +21,10 @@ import Button from '../components/Button';
 import IconButton from '../components/IconButton';
 
 // ─── Storage keys ─────────────────────────────────────────────────────────────
-export const PROFILE_STORAGE_KEY = '@finvista_profile';
+export const PROFILE_STORAGE_KEY = '@haweshly_profile';
 
 // Also keep name in the legacy key so DashboardScreen continues to work
-const LEGACY_NAME_KEY = '@finvista_user_name';
+const LEGACY_NAME_KEY = '@haweshly_user_name';
 
 export interface UserProfile {
   name: string;

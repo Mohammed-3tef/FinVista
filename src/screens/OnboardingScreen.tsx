@@ -1,5 +1,5 @@
 /**
- * FinVista — Ultra-Premium Onboarding Intro Slider
+ * Haweshly — Ultra-Premium Onboarding Intro Slider
  * Elite financial mastery journey / رحلة التحكم المالي الراقية
  */
 
@@ -30,12 +30,12 @@ import Svg, {
   Polygon,
   Line,
 } from 'react-native-svg';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { SPACING } from '../constants/theme';
 import { resolveIcon } from '../constants/icons';
 import { useAuth } from '../contexts/AuthContext';
+import { strings } from '../constants/strings';
 
 const { width: SW, height: SH } = Dimensions.get('window');
 
@@ -486,7 +486,7 @@ export default function OnboardingScreen() {
             style={styles.logoMark}
             resizeMode="contain"
           />
-          <Text style={styles.logoText}>FinVista</Text>
+          <Text style={styles.logoText}>{strings.en.appName}</Text>
         </View>
       </View>
 

@@ -147,7 +147,7 @@ export default function SmsTransactionsScreen() {
                 styles.typeBadgeTxt,
                 { color: isDeposit ? COLORS.success : COLORS.danger },
               ]}>
-              {isDeposit ? '↑ Deposit' : '↓ Withdrawal'}
+              {isDeposit ? '↓ Deposit' : '↑ Withdrawal'}
             </Text>
           </View>
         </View>
@@ -269,7 +269,7 @@ export default function SmsTransactionsScreen() {
                 styles.filterTxt,
                 { color: filter === f ? COLORS.primary : theme.textSecondary },
               ]}>
-              {f === 'all' ? 'All' : f === 'deposit' ? '↑ Deposits' : '↓ Withdrawals'}
+              {f === 'all' ? 'All' : f === 'deposit' ? '↓ Deposits' : '↑ Withdrawals'}
             </Text>
           </TouchableOpacity>
         ))}

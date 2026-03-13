@@ -4,7 +4,7 @@
 
 <br>
 
-# FinVista – Financial Goals & Savings Tracker
+# Haweshly – Financial Goals & Savings Tracker
 
 A premium fintech-style React Native app for tracking financial goals and savings.
 
@@ -13,9 +13,9 @@ A premium fintech-style React Native app for tracking financial goals and saving
 ![Node](https://img.shields.io/badge/Node-%3E%3D22.11-green?logo=node.js)
 ![Platform](https://img.shields.io/badge/Platform-Android%20%7C%20iOS-lightgrey)
 ![License](https://img.shields.io/badge/License-MPL-yellow)
-![GitHub repo size](https://img.shields.io/github/repo-size/Mohammed-3tef/FinVista)
-![GitHub Release](https://img.shields.io/github/v/release/Mohammed-3tef/FinVista)
-![GitHub Downloads (specific asset, latest release)](https://img.shields.io/github/downloads/Mohammed-3tef/FinVista/latest/app-release.apk)
+![GitHub repo size](https://img.shields.io/github/repo-size/Mohammed-3tef/Haweshly)
+![GitHub Release](https://img.shields.io/github/v/release/Mohammed-3tef/Haweshly)
+![GitHub Downloads (specific asset, latest release)](https://img.shields.io/github/downloads/Mohammed-3tef/Haweshly/latest/app-release.apk)
 
 ## Features
 
@@ -37,15 +37,15 @@ A premium fintech-style React Native app for tracking financial goals and saving
 
 | Screenshot 1 | Screenshot 2 | Screenshot 3 | Screenshot 4 | Screenshot 5 |
 |--------------|--------------|--------------|--------------|--------------|
-| ![Home](./docs/ui/home1.png) | ![Home](./docs/ui/home2.png) | ![All Activities](./docs/ui/all_activities.png) | ![Add Goal](./docs/ui/add_goal.png) | ![Goals](./docs/ui/goals.png) | 
-| ![Goal Filteration](./docs/ui/goal_filteration.png) | ![Goal Details](./docs/ui/goal_details.png) | ![Analytics](./docs/ui/analytics.png) | ![SMS](./docs/ui/sms.png) | ![Settings](./docs/ui/settings1.png) |
-| ![Settings](./docs/ui/settings2.png) | ![Settings](./docs/ui/settings3.png) | ![Lock](./docs/ui/lock.png) | ![Light Mode](./docs/ui/light_mode.png)
+| ![Home](./docs/ui/home.png) | ![All Activities](./docs/ui/all_activities.png) | ![Add Goal](./docs/ui/add_goal.png) | ![Goals](./docs/ui/goals.png) | ![Goal Filteration](./docs/ui/goal_filteration.png) |
+| ![Goal Details](./docs/ui/goal_details.png) | ![Analytics](./docs/ui/analytics.png) | ![SMS](./docs/ui/sms.png) | ![Settings](./docs/ui/settings1.png) | ![Settings](./docs/ui/settings2.png) |
+| ![Settings](./docs/ui/settings3.png) | ![Profile](./docs/ui/profile.png) | ![Achievements](./docs/ui/achievements.png) | ![Lock](./docs/ui/lock.png) | ![Light Mode](./docs/ui/light_mode.png)
 
 ### PDF Documents
 
 | PDF 1 | PDF 2 |
 |-------|-------|
-|![FinVista Analytics](./docs/pdf/FinVista_Analytics.jpg) | ![FinVista Goal](./docs/pdf/FinVista_Goal.jpg) |
+|![Haweshly Analytics](./docs/pdf/Haweshly_Analytics.jpg) | ![Haweshly Goal](./docs/pdf/Haweshly_Goal.jpg) |
 
 ## Setup
 
@@ -56,7 +56,7 @@ A premium fintech-style React Native app for tracking financial goals and saving
 ### Install
 
 ```bash
-cd FinVista
+cd Haweshly
 npm install
 
 # iOS

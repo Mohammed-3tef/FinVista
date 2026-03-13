@@ -1,5 +1,5 @@
 /**
- * FinVista - Financial Goals Tracker
+ * Haweshly - Financial Goals Tracker
  * @format
  */
 
@@ -25,7 +25,7 @@ const smsHeadlessTask = async (event) => {
   try {
     await runSmsBgCheck();
   } catch (e) {
-    console.warn('[FinVista BG] SMS check error:', e);
+    console.warn('[Haweshly BG] SMS check error:', e);
   } finally {
     BackgroundFetch.finish(taskId);
   }
@@ -40,7 +40,7 @@ AppRegistry.registerHeadlessTask('SmsCheckTask', () => async () => {
   try {
     await runSmsBgCheck();
   } catch (e) {
-    console.warn('[FinVista BG] SmsCheckTask error:', e);
+    console.warn('[Haweshly BG] SmsCheckTask error:', e);
   }
 });
 

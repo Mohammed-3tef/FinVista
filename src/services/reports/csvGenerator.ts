@@ -1,6 +1,7 @@
 import RNFS from 'react-native-fs';
 import Share from 'react-native-share';
 import { AnalyticsReportData, GoalSavingsHistoryReportData } from './types';
+import { strings } from '../../constants/strings';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -52,7 +53,7 @@ export async function exportAnalyticsCsv(data: AnalyticsReportData): Promise<voi
 
   // Prepend metadata rows
   const meta = [
-    `FinVista Analytics Report`,
+    `${strings.en.appName} Analytics Report`,
     `Generated At,${data.generatedAt}`,
     `Total Saved,${fmt(data.totalSaved, data.currency)}`,
     `Total Deposits,${fmt(data.totalDeposits, data.currency)}`,
@@ -65,7 +66,7 @@ export async function exportAnalyticsCsv(data: AnalyticsReportData): Promise<voi
     buildCsv(headers, rows),
   ];
 
-  await writeAndShare(meta.join('\n'), `FinVista_Analytics_${Date.now()}`, 'FinVista Analytics CSV');
+  await writeAndShare(meta.join('\n'), `${strings.en.appName}_Analytics_${Date.now()}`, `${strings.en.appName} Analytics CSV`);
 }
 
 // ─── Goal Savings History CSV Export ─────────────────────────────────────────
@@ -81,5 +82,5 @@ export async function exportGoalSavingsHistoryCsv(data: GoalSavingsHistoryReport
 
   const csv = buildCsv(headers, rows);
   const safeName = data.goalName.replace(/[^a-z0-9]/gi, '_');
-  await writeAndShare(csv, `FinVista_${safeName}_Savings_${Date.now()}`, `${data.goalName} — Savings CSV`);
+  await writeAndShare(csv, `${strings.en.appName}_${safeName}_Savings_${Date.now()}`, `${data.goalName} — Savings CSV`);
 }

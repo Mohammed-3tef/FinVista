@@ -83,27 +83,27 @@ async function configureBackgroundFetch(
           await foregroundTask();
           if (onComplete) await onComplete();
         } catch (e) {
-          console.warn('[FinVista BG] fetch error:', e);
+          console.warn('[Haweshly BG] fetch error:', e);
         } finally {
           BackgroundFetch.finish(taskId);
         }
       },
       (taskId: string) => {
         // Timeout handler
-        console.warn('[FinVista BG] fetch timeout:', taskId);
+        console.warn('[Haweshly BG] fetch timeout:', taskId);
         BackgroundFetch.finish(taskId);
       },
     );
   } catch (e) {
-    console.warn('[FinVista BG] configure error:', e);
+    console.warn('[Haweshly BG] configure error:', e);
   }
 }
 
 // ─── Storage Keys ─────────────────────────────────────────────────────────────
-const KEYWORDS_KEY      = '@finvista_sms_keywords';
-const PRIORITY_KEY      = '@finvista_allocation_priority';
-const POLL_INTERVAL_KEY = '@finvista_poll_interval';
-const PERMISSION_KEY    = '@finvista_sms_permission';
+const KEYWORDS_KEY      = '@haweshly_sms_keywords';
+const PRIORITY_KEY      = '@haweshly_allocation_priority';
+const POLL_INTERVAL_KEY = '@haweshly_poll_interval';
+const PERMISSION_KEY    = '@haweshly_sms_permission';
 
 // ─── Context Types ────────────────────────────────────────────────────────────
 export interface SmsContextType {
@@ -225,7 +225,7 @@ export function SmsProvider({ children }: { children: ReactNode }) {
       if (nextState === 'active') {
         const freshTxs = await loadSmsTransactions();
         setTransactions(freshTxs);
-        const bgKey = await AsyncStorage.getItem('@finvista_bg_last_checked');
+        const bgKey = await AsyncStorage.getItem('@haweshly_bg_last_checked');
         if (bgKey) {
           const bgTs = Number(bgKey);
           setLastCheckedAt(prev => (prev === null || bgTs > prev ? bgTs : prev));

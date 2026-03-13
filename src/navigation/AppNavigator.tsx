@@ -109,7 +109,7 @@ function TabNavigator() {
       <ConfirmModal
         visible={exitModalVisible}
         title={isRTL ? 'خروج من التطبيق' : 'Exit App'}
-        message={isRTL ? 'هل أنت متأكد أنك تريد الخروج من FinVista؟' : 'Are you sure you want to exit FinVista?'}
+        message={isRTL ? `هل أنت متأكد أنك تريد الخروج من ${t.appName}؟` : `Are you sure you want to exit ${t.appName}?`}
         confirmLabel={isRTL ? 'خروج' : 'Exit'}
         cancelLabel={isRTL ? 'البقاء' : 'Stay'}
         danger={false}

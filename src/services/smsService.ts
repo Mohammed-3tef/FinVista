@@ -11,9 +11,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SmsKeywords, SmsTransaction } from '../constants/types';
 
 // ─── Storage Keys ────────────────────────────────────────────────────────────
-const SMS_TRANSACTIONS_KEY = '@finvista_sms_transactions';
-const SMS_PROCESSED_IDS_KEY = '@finvista_processed_sms';
-const SMS_BLOCK_LIST_KEY    = '@finvista_sms_blocklist';
+const SMS_TRANSACTIONS_KEY = '@haweshly_sms_transactions';
+const SMS_PROCESSED_IDS_KEY = '@haweshly_processed_sms';
+const SMS_BLOCK_LIST_KEY    = '@haweshly_sms_blocklist';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 export interface RawSms {
@@ -45,7 +45,7 @@ export async function requestSmsPermission(): Promise<SmsPermissionStatus> {
       PermissionsAndroid.PERMISSIONS.READ_SMS,
       {
         title: 'SMS Permission',
-        message: 'FinVista needs access to your SMS to auto-detect bank transactions.',
+        message: 'Haweshly needs access to your SMS to auto-detect bank transactions.',
         buttonPositive: 'Allow',
         buttonNegative: 'Deny',
       },

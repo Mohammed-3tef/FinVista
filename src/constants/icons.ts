@@ -1,5 +1,5 @@
 /**
- * Central FontAwesome icon registry for FinVista.
+ * Central FontAwesome icon registry for Haweshly.
  * All goal & category icons are stored as plain string keys (e.g. 'faBullseye')
  * and resolved here to actual IconDefinition objects for rendering.
  */

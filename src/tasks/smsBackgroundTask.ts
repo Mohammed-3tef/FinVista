@@ -33,12 +33,12 @@ import {
 import { Goal, SavingsEntry, generateId } from '../utils/calculations';
 
 // ─── Storage key constants (must match GoalsContext + SmsContext) ─────────────
-const GOALS_KEY      = 'finvista_goals';
-const ENTRIES_KEY    = 'finvista_entries';
-const KEYWORDS_KEY   = '@finvista_sms_keywords';
-const PRIORITY_KEY   = '@finvista_allocation_priority';
+const GOALS_KEY      = 'haweshly_goals';
+const ENTRIES_KEY    = 'haweshly_entries';
+const KEYWORDS_KEY   = '@haweshly_sms_keywords';
+const PRIORITY_KEY   = '@haweshly_allocation_priority';
 /** Last-checked timestamp managed exclusively by this background task */
-export const BG_LAST_CHECKED_KEY = '@finvista_bg_last_checked';
+export const BG_LAST_CHECKED_KEY = '@haweshly_bg_last_checked';
 
 // ─── Core background processor ───────────────────────────────────────────────
 /**

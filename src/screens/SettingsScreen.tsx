@@ -46,7 +46,7 @@ import { usePullToRefresh } from '../hooks/usePullToRefresh';
 import { useBiometricAuth } from '../hooks/useBiometricAuth';
 import PinPad from '../components/PinPad';
 
-export const USER_NAME_KEY = '@finvista_user_name';
+export const USER_NAME_KEY = '@haweshly_user_name';
 
 // ─── Biometric PIN Verification Modal ────────────────────────────────────────
 // Defined at module level so digit presses re-render ONLY this small component,
@@ -383,8 +383,8 @@ export default function SettingsScreen({ navigation }: any) {
     try {
 
       const channelId = await notifee.createChannel({
-        id: 'finvista_reminders',
-        name: 'FinVista Reminders',
+        id: 'haweshly_reminders',
+        name: 'Haweshly Reminders',
         importance: AndroidImportance.HIGH,
         sound: 'default',
       });
@@ -392,7 +392,7 @@ export default function SettingsScreen({ navigation }: any) {
       const message = getMotivationalMessage('your goal', language);
 
       await notifee.displayNotification({
-        title: language === 'ar' ? 'تذكير FinVista 💰' : 'FinVista Reminder 💰',
+        title: language === 'ar' ? `تذكير ${t.appName} 💰` : `${t.appName} Reminder 💰`,
         body: message,
         android: { channelId, pressAction: { id: 'default' }, sound: 'default' },
         ios: { sound: 'default' },
@@ -861,8 +861,8 @@ export default function SettingsScreen({ navigation }: any) {
               Alert.alert(
                 isRTL ? 'قفل التطبيق' : 'Lock App',
                 isRTL
-                  ? 'هل تريد قفل FinVista الآن؟'
-                  : 'Lock FinVista now? You will need to re-authenticate to access your data.',
+                  ? `هل تريد قفل ${t.appName} الآن؟`
+                  : `Lock ${t.appName} now? You will need to re-authenticate to access your data.`,
                 [
                   { text: isRTL ? 'إلغاء' : 'Cancel', style: 'cancel' },
                   {
@@ -885,7 +885,7 @@ export default function SettingsScreen({ navigation }: any) {
 
         {/* About */}
         <Section title={t.about}>
-          <Row label={t.appName} right={<Text style={{ color: theme.textMuted }}>FinVista</Text>} />
+          <Row label={t.appName} right={<Text style={{ color: theme.textMuted }}>{t.appName}</Text>} />
           <Row
             label={t.version}
             noBorder
@@ -900,7 +900,7 @@ export default function SettingsScreen({ navigation }: any) {
             style={styles.brandLogo}
             resizeMode="contain"
           />
-          <Text style={[styles.brandName, { color: theme.textMuted }]}>FinVista</Text>
+          <Text style={[styles.brandName, { color: theme.textMuted }]}>{t.appName}</Text>
           <Text style={[styles.brandTag, { color: theme.textMuted }]}>{t.tagline}</Text>
         </View>
 

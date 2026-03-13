@@ -91,7 +91,7 @@ export default function LockScreen() {
   // ── Biometric trigger ─────────────────────────────────────────────────────
   const triggerBiometric = useCallback(async () => {
     setError('');
-    const result = await authenticate('Unlock FinVista');
+    const result = await authenticate('Unlock Haweshly');
     // Guard: user may have tapped "Use PIN" while the prompt was open
     if (modeRef.current !== 'biometric') return;
     if (result.success) {
@@ -230,7 +230,7 @@ export default function LockScreen() {
             />
         </View>
 
-        <Text style={[styles.appName, { color: theme.text }]}>FinVista</Text>
+        <Text style={[styles.appName, { color: theme.text }]}>{t.appName}</Text>
 
         {/* ── Title / subtitle / error ── */}
         <Animated.View

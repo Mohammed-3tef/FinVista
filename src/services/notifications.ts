@@ -8,7 +8,7 @@ export interface ReminderSettings {
   frequency: 'daily' | 'weekly' | 'monthly';
 }
 
-const REMINDER_KEY = 'finvista_reminders';
+const REMINDER_KEY = 'haweshly_reminders';
 
 export async function getReminderSettings(): Promise<ReminderSettings> {
   const val = await AsyncStorage.getItem(REMINDER_KEY);
@@ -50,8 +50,8 @@ export function getMotivationalMessage(goalName: string, _language: Language): s
 
 // ─── Reminder Scheduling ──────────────────────────────────────────────────────
 
-const REMINDER_CHANNEL_ID      = 'finvista_reminders';
-const REMINDER_NOTIFICATION_ID = 'finvista_reminder';
+const REMINDER_CHANNEL_ID      = 'haweshly_reminders';
+const REMINDER_NOTIFICATION_ID = 'haweshly_reminder';
 
 /**
  * Schedule (or reschedule) a recurring motivational reminder.
@@ -71,7 +71,7 @@ export async function scheduleReminder(
 
   const channelId = await notifee.createChannel({
     id: REMINDER_CHANNEL_ID,
-    name: 'FinVista Reminders',
+    name: 'Haweshly Reminders',
     sound: 'default',
     importance: AndroidImportance.HIGH
   });
@@ -105,7 +105,7 @@ export async function scheduleReminder(
   await notifee.createTriggerNotification(
     {
       id: REMINDER_NOTIFICATION_ID,
-      title: language === 'ar' ? 'تذكير FinVista 💰' : 'FinVista Reminder 💰',
+      title: language === 'ar' ? 'تذكير Haweshly 💰' : 'Haweshly Reminder 💰',
       body: getMotivationalMessage('', language),
       android: {
         channelId,
@@ -123,8 +123,8 @@ export async function cancelReminder(): Promise<void> {
   await notifee.cancelNotification(REMINDER_NOTIFICATION_ID);
 }
 
-const GOAL_MILESTONES_KEY   = '@finvista_goal_milestones';
-const MILESTONE_CHANNEL_ID  = 'finvista_milestones';
+const GOAL_MILESTONES_KEY   = '@haweshly_goal_milestones';
+const MILESTONE_CHANNEL_ID  = 'haweshly_milestones';
 export const MILESTONE_THRESHOLDS = [25, 50, 75, 100] as const;
 
 async function loadGoalMilestones(): Promise<Record<string, number[]>> {

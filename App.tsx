@@ -1,5 +1,5 @@
 /**
- * FinVista - Financial Goals & Savings Tracker
+ * Haweshly - Financial Goals & Savings Tracker
  */
 
 import React, { useState } from 'react';
